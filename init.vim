@@ -18,6 +18,10 @@ Plug 'luochen1990/rainbow'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+" sidebars
+Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'majutsushi/tagbar', {'on': []}
+
 call plug#end()
 
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
@@ -26,3 +30,4 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 source $HOME/.config/nvim/config/keys.vim
 source $HOME/.config/nvim/config/files.vim
 source $HOME/.config/nvim/config/aesthetics.vim
+source $HOME/.config/nvim/config/sidebars.vim
