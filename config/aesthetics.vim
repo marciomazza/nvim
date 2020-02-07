@@ -37,3 +37,8 @@ endif
 " see https://github.com/bling/vim-airline/issues/124#issuecomment-22389800
 " and see https://github.com/bling/vim-airline/wiki/FAQ#there-is-a-pause-when-leaving-insert-mode
 set ttimeoutlen=50
+
+" tpope/vim-fugitive
+if exists("*fugitive#statusline")
+  set statusline+=%{fugitive#statusline()}
+endif
