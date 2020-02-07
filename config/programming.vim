@@ -18,10 +18,13 @@ let g:UltiSnipsEditSplit="vertical"
 
 " dense-analysis/ale
 let g:ale_fix_on_save = 1
-let g:ale_fixers = {'python': ['isort']}
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'python': ['isort']}
 " TODO make mypy togglable?
-" let b:ale_linters = {'python': ['mypy']}
-let g:ale_pattern_options = {'ipython_log.py': {'ale_enabled': 0}}
+let g:ale_linters_explicit = 1
+"let b:ale_linters = {'python': ['mypy']}
+let g:ale_pattern_options = {'ipython_log.py': {'ale_enabled': 0}, 'site-packages': {'ale_enabled': 0}}
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
@@ -46,4 +49,6 @@ let g:jedi#popup_on_dot = 1
 set completeopt-=preview
 
 " psf/black  -- apply black on every save
+" we would just use black in g:ale_fixers but this should be faster
+g:black_fast = 1
 autocmd BufWritePre *.py execute ':Black'

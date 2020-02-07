@@ -6,7 +6,6 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-repeat'
-Plug 'ntpeters/vim-better-whitespace'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'bogado/file-line'
 Plug 'tommcdo/vim-exchange'
@@ -44,9 +43,9 @@ Plug 'psf/black', { 'for': 'python' }
 call plug#end()
 
 " load sub config files
-source $HOME/.config/nvim/config/tuning.vim
-source $HOME/.config/nvim/config/keys.vim
-source $HOME/.config/nvim/config/files.vim
-source $HOME/.config/nvim/config/aesthetics.vim
-source $HOME/.config/nvim/config/sidebars.vim
-source $HOME/.config/nvim/config/programming.vim
+source ~/.config/nvim/config/tuning.vim
+source ~/.config/nvim/config/keys.vim
+source ~/.config/nvim/config/files.vim
+source ~/.config/nvim/config/aesthetics.vim
+source ~/.config/nvim/config/sidebars.vim
+source ~/.config/nvim/config/programming.vim
