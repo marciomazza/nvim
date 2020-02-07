@@ -41,6 +41,9 @@ Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'fisadev/vim-isort', { 'for': 'python' }
 Plug 'psf/black', { 'for': 'python' }
 
+" golang
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+
 call plug#end()
 
 " load sub config files

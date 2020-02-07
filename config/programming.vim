@@ -56,3 +56,10 @@ let g:SuperTabClosePreviewOnPopupClose = 1
 " we would just use black in g:ale_fixers but this should be faster
 g:black_fast = 1
 autocmd BufWritePre *.py execute ':Black'
+
+" golang
+let g:go_debug=['shell-commands']
+au FileType go nmap <leader>r <Plug>(go-run)
+au FileType go nmap <leader>d <Plug>(go-def)
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
