@@ -25,9 +25,8 @@ Plug 'majutsushi/tagbar', {'on': []}
 
 call plug#end()
 
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-
 " load sub config files
+source $HOME/.config/nvim/config/tuning.vim
 source $HOME/.config/nvim/config/keys.vim
 source $HOME/.config/nvim/config/files.vim
 source $HOME/.config/nvim/config/aesthetics.vim
