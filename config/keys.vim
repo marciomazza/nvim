@@ -14,8 +14,11 @@ cnoreabbrev Qall qall
 "" Map leader to ,
 let mapleader=','
 
-"" Close buffer
-noremap <leader>c :bd<CR>
-
 "" Clear search highlight
 nnoremap <silent> <leader><space> :noh<cr>
+
+"" Buffer nav
+noremap <S-Tab>   :bp<CR>
+noremap <Tab>     :bn<CR>
+"" Close buffer
+noremap <leader>c :bd<CR>
