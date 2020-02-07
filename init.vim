@@ -32,6 +32,7 @@ Plug 'chrisbra/Colorizer'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'dense-analysis/ale'
+Plug 'ervandew/supertab'
 
 " python
 Plug 'hdima/python-syntax', { 'for': 'python' }

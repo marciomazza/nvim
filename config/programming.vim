@@ -48,6 +48,10 @@ let g:jedi#popup_on_dot = 1
 " disable documentation window
 set completeopt-=preview
 
+" ervandew/supertab
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabClosePreviewOnPopupClose = 1
+
 " psf/black  -- apply black on every save
 " we would just use black in g:ale_fixers but this should be faster
 g:black_fast = 1
