@@ -17,6 +17,7 @@ Plug 'vim-scripts/grep.vim'
 Plug 'luochen1990/rainbow'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'marciomazza/vim-brogrammer-theme'
 
 " sidebars
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }

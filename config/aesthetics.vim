@@ -1,8 +1,13 @@
-"
-" rainbow
+
+" marciomazza/vim-brogrammer-theme
+"no_buffers_menu silent for the case when the plugin has not yet been installed
+set t_Co=256
+silent! colorscheme brogrammer
+
+" luochen1990/rainbow
 let g:rainbow_active = 1
 
-" vim-airline
+" vim-airline/vim-airline
 let g:airline_theme = 'powerlineish'
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
