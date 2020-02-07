@@ -31,6 +31,14 @@ Plug 'gaving/vim-textobj-argument'
 Plug 'chrisbra/Colorizer'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'dense-analysis/ale'
+
+" python
+Plug 'hdima/python-syntax', { 'for': 'python' }
+Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
+Plug 'davidhalter/jedi-vim', { 'for': 'python' }
+Plug 'fisadev/vim-isort', { 'for': 'python' }
+Plug 'psf/black', { 'for': 'python' }
 
 
 call plug#end()
@@ -41,3 +49,4 @@ source $HOME/.config/nvim/config/keys.vim
 source $HOME/.config/nvim/config/files.vim
 source $HOME/.config/nvim/config/aesthetics.vim
 source $HOME/.config/nvim/config/sidebars.vim
+source $HOME/.config/nvim/config/programming.vim
