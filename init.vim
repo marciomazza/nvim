@@ -10,6 +10,7 @@ Plug 'tpope/vim-repeat'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'bogado/file-line'
 Plug 'tommcdo/vim-exchange'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 " files
 Plug 'ctrlpvim/ctrlp.vim'
