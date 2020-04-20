@@ -30,7 +30,7 @@ let g:ale_echo_msg_warning_str = 'W'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
-""" male isort match black expectaions
+""" make isort match black expectaions
 """ see https://github.com/microsoft/vscode-python/issues/6933#issuecomment-543059396
 """ TODO observe if this is really working... perhaps have a test?
 let g:ale_python_isort_options = '--multi-line=1 --trailing-comma --force-grid-wrap=0 --use-parentheses --line-width=88'
