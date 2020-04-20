@@ -40,7 +40,10 @@ Plug 'hdima/python-syntax', { 'for': 'python' }
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
 Plug 'fisadev/vim-isort', { 'for': 'python' }
-Plug 'psf/black', { 'for': 'python' }
+" TEMP keep tag until this is solved:
+" https://github.com/psf/black/issues/1304
+Plug 'psf/black', { 'for': 'python',  'tag': '19.10b0'  }
+
 
 " golang
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
