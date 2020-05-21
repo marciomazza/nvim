@@ -50,7 +50,8 @@ set completeopt-=preview
 
 " ervandew/supertab
 let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabClosePreviewOnPopupClose = 1
+let g:SuperTabContextDefaultCompletionType = "<c-x><c-o>"
+
 
 " psf/black  -- apply black on every save
 " we would just use black in g:ale_fixers but this should be faster
