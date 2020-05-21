@@ -23,7 +23,7 @@ let g:ale_fixers = {
 \   'python': ['isort']}
 " TODO make mypy togglable?
 let g:ale_linters_explicit = 1
-"let b:ale_linters = {'python': ['mypy']}
+let b:ale_linters = {'python': ['flake8']}
 let g:ale_pattern_options = {'ipython_log.py': {'ale_enabled': 0}, 'site-packages': {'ale_enabled': 0}}
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
