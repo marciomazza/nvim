@@ -5,6 +5,8 @@ augroup vimrc-python
   autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=8 colorcolumn=79
       \ formatoptions+=croq softtabstop=4 smartindent
       \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
+  " ajh17/VimCompletesMe: use omnicompletion with tab just on python files
+  autocmd FileType python let b:vcm_tab_complete = "omni"
 augroup END
 
 " hdima/python-syntax -- full python syntax highlighting
@@ -33,11 +35,6 @@ let g:ale_python_isort_options = '--multi-line=1 --trailing-comma --force-grid-w
 let g:jedi#show_call_signatures = "0"
 " disable documentation window
 set completeopt-=preview
-
-" ervandew/supertab
-let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabContextDefaultCompletionType = "<c-x><c-o>"
-
 
 " psf/black  -- apply black on every save
 " we would just use black in g:ale_fixers but this should be faster

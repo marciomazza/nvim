@@ -32,7 +32,7 @@ Plug 'gaving/vim-textobj-argument'
 Plug 'chrisbra/Colorizer'
 Plug 'honza/vim-snippets'
 Plug 'dense-analysis/ale'
-Plug 'ervandew/supertab'
+Plug 'ajh17/VimCompletesMe'
 " If you don't have nodejs and yarn
 " use pre build, add 'vim-plug' to the filetype list so vim-plug can update this plugin
 " see: https://github.com/iamcco/markdown-preview.nvim/issues/50
