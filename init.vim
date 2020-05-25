@@ -30,7 +30,6 @@ Plug 'majutsushi/tagbar', {'on': []}
 Plug 'jiangmiao/auto-pairs'
 Plug 'gaving/vim-textobj-argument'
 Plug 'chrisbra/Colorizer'
-Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'dense-analysis/ale'
 Plug 'ervandew/supertab'

@@ -10,12 +10,6 @@ augroup END
 " hdima/python-syntax -- full python syntax highlighting
 let g:python_highlight_all = 1
 
-" SirVer/ultisnips
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-b>"
-let g:UltiSnipsEditSplit="vertical"
-
 " dense-analysis/ale
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
