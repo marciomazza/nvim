@@ -38,7 +38,7 @@ set completeopt-=preview
 
 " psf/black  -- apply black on every save
 " we would just use black in g:ale_fixers but this should be faster
-g:black_fast = 1
+let g:black_fast = 1
 autocmd BufWritePre *.py execute ':Black'
 
 " golang
