@@ -8,6 +8,7 @@ augroup vimrc-python
   " ajh17/VimCompletesMe: use omnicompletion with tab just on python files
   autocmd FileType python let b:vcm_tab_complete = "omni"
 augroup END
+iabbrev pdb breakpoint()
 
 " hdima/python-syntax -- full python syntax highlighting
 let g:python_highlight_all = 1
