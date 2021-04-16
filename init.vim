@@ -54,6 +54,9 @@ Plug 'psf/black', { 'for': 'python' }
 " golang
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
+" docker
+Plug 'ekalinin/Dockerfile.vim'
+
 call plug#end()
 
 " load sub config files
