@@ -12,6 +12,12 @@ Plug 'bogado/file-line'
 Plug 'tommcdo/vim-exchange'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
+" utils
+Plug 'CrispyDrone/vim-tasks'
+""" TODO run this only on CrispyDrone/vim-tasks context
+""" for https://github.com/CrispyDrone/vim-tasks#add-tasks
+let maplocalleader="\<space>"
+
 " files
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'vim-scripts/grep.vim'
