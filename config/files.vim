@@ -1,7 +1,7 @@
 
 " ctrlpvim/ctrlp.vim
 set wildmode=list:longest,list:full
-set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__
+set wildignore+=*.o,*.obj,.git,*.rbc,*.pyc,__pycache__,htmlcov,ipython_log.py
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn|tox)$'
 let g:ctrlp_user_command = "find %s -type f | grep -Ev '"+ g:ctrlp_custom_ignore +"'"
 let g:ctrlp_use_caching = 0
@@ -11,4 +11,6 @@ let g:ctrlp_open_new_file = 'r'
 
 " grep.vim
 nnoremap <silent> <leader>f :Rgrep<CR>
-let Grep_Default_Options = '-IR'
+""" FIXME understand why grep is not honoring ipython_log.py in wildignore and
+"""   probably remove this exclude
+let Grep_Default_Options = '-IR --exclude=ipython_log.py --exclude-dir="htmlcov"'
