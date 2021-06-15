@@ -5,7 +5,7 @@ set t_Co=256
 silent! colorscheme brogrammer
 
 set number
-set relativenumber
+" set relativenumber
 
 " luochen1990/rainbow
 let g:rainbow_active = 1
