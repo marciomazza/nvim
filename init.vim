@@ -39,6 +39,7 @@ Plug 'chrisbra/Colorizer'
 Plug 'honza/vim-snippets'
 Plug 'dense-analysis/ale'
 Plug 'ajh17/VimCompletesMe'
+Plug 'cespare/vim-toml'
 " If you don't have nodejs and yarn
 " use pre build, add 'vim-plug' to the filetype list so vim-plug can update this plugin
 " see: https://github.com/iamcco/markdown-preview.nvim/issues/50
