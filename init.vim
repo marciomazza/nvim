@@ -11,6 +11,7 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'bogado/file-line'
 Plug 'tommcdo/vim-exchange'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'editorconfig/editorconfig-vim'
 
 " utils
 Plug 'CrispyDrone/vim-tasks'
