@@ -10,6 +10,10 @@ let g:NERDTreeWinSize = 40
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeQuitOnOpen = 1
 noremap <F3> :NERDTreeToggle<CR>
+"" avoid conflict that show brackets on nerdtree
+""   https://github.com/luochen1990/rainbow/issues/92
+let g:rainbow_conf = { 'separately': { 'nerdtree': 0 } }
+
 
 " majutsushi/tagbar
 "

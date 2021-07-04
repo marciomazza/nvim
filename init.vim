@@ -28,6 +28,8 @@ Plug 'luochen1990/rainbow'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'marciomazza/vim-brogrammer-theme'
+Plug 'ryanoasis/vim-devicons'
+
 
 " sidebars
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
