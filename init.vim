@@ -25,8 +25,8 @@ Plug 'vim-scripts/grep.vim'
 
 " aesthetics
 Plug 'luochen1990/rainbow'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
 Plug 'marciomazza/vim-brogrammer-theme'
 
 " sidebars
