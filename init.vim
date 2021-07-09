@@ -33,7 +33,7 @@ Plug 'ryanoasis/vim-devicons'
 
 " sidebars
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'majutsushi/tagbar', {'on': []}
+Plug 'preservim/tagbar'
 
 " programming in general
 Plug 'jiangmiao/auto-pairs'
