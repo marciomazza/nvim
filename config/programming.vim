@@ -27,8 +27,8 @@ let g:ale_fix_on_save = 1
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace']}
 let g:ale_linters_explicit = 1
-""" TODO make mypy togglable?
-let g:ale_linters = {'python': ['flake8', 'mypy']}
+""" use mypy linter? make it togglable?
+let g:ale_linters = {'python': ['flake8']}
 let g:ale_python_flake8_options="--ignore E501"
 " https://mypy.readthedocs.io/en/latest/running_mypy.html#mapping-file-paths-to-modules
 let g:python_mypy_use_global = 1
