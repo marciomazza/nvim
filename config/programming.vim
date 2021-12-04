@@ -51,6 +51,7 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 let g:jedi#show_call_signatures = "0"
 " disable documentation window
 set completeopt-=preview
+let g:jedi#goto_command = "gd"
 
 " golang
 let g:go_debug=['shell-commands']
