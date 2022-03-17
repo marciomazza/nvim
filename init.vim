@@ -14,10 +14,13 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'editorconfig/editorconfig-vim'
 
 " utils
+
 Plug 'CrispyDrone/vim-tasks'
 """ TODO run this only on CrispyDrone/vim-tasks context
 """ for https://github.com/CrispyDrone/vim-tasks#add-tasks
 let maplocalleader="\<space>"
+""" no time marks for @done
+let g:TasksDateFormat = ''
 
 " files
 Plug 'ctrlpvim/ctrlp.vim'
