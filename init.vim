@@ -51,6 +51,7 @@ Plug 'cespare/vim-toml'
 " see: https://github.com/iamcco/markdown-preview.nvim/issues/50
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 Plug 'editorconfig/editorconfig-vim'
+Plug 'jparise/vim-graphql'
 
 " python
 Plug 'hdima/python-syntax', { 'for': 'python' }
