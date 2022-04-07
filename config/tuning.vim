@@ -43,7 +43,3 @@ imap <F6> <C-o>:syntax on<C-o>:setlocal spell! spelllang=en_us<CR>
 
 " vimdiff -- ignore whitespace differences
 set diffopt+=iwhite
-
-" restore old gx behaviour
-" (from https://github.com/vim/vim/issues/4738#issuecomment-856925080)
-nnoremap <silent> gx :execute 'silent! !xdg-open ' . shellescape(expand('<cWORD>'), 1)<cr>
