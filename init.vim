@@ -46,10 +46,7 @@ Plug 'honza/vim-snippets'
 Plug 'dense-analysis/ale'
 Plug 'ajh17/VimCompletesMe'
 Plug 'cespare/vim-toml'
-" If you don't have nodejs and yarn
-" use pre build, add 'vim-plug' to the filetype list so vim-plug can update this plugin
-" see: https://github.com/iamcco/markdown-preview.nvim/issues/50
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'editorconfig/editorconfig-vim'
 Plug 'jparise/vim-graphql'
 
