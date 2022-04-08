@@ -23,3 +23,6 @@ let g:lightline = {
       \ 'component_type': { 'buffers': 'tabsel' },
       \ }
 set showtabline=2
+
+"" for vim-devicons
+set encoding=utf8

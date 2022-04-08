@@ -26,14 +26,6 @@ let g:TasksDateFormat = ''
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'vim-scripts/grep.vim'
 
-" aesthetics
-Plug 'luochen1990/rainbow'
-Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
-Plug 'marciomazza/vim-brogrammer-theme'
-Plug 'ryanoasis/vim-devicons'
-
-
 " sidebars
 Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'preservim/tagbar'
@@ -62,6 +54,14 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 " docker
 Plug 'ekalinin/Dockerfile.vim'
+
+" aesthetics
+Plug 'luochen1990/rainbow'
+Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
+Plug 'marciomazza/vim-brogrammer-theme'
+"" vim-devicons must go last (according to install instructions)
+Plug 'ryanoasis/vim-devicons'
 
 call plug#end()
 
