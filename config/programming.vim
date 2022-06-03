@@ -25,7 +25,8 @@ let g:python_highlight_all = 1
 "" ALE linters & fixers
 let g:ale_fix_on_save = 1
 let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace']}
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'python': ['autoflake']}
 let g:ale_linters_explicit = 1
 """ use mypy linter? make it togglable?
 let g:ale_linters = {'python': ['flake8']}
