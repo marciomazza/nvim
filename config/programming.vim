@@ -28,13 +28,9 @@ let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \   'python': ['autoflake']}
 let g:ale_linters_explicit = 1
-""" use mypy linter? make it togglable?
-let g:ale_linters = {'python': ['flake8']}
+let g:ale_linters = {'python': ['flake8', 'pyright']}
 """ W503 is not PEP 8 compliant and black disregards it
 let g:ale_python_flake8_options="--ignore E501,W503"
-" https://mypy.readthedocs.io/en/latest/running_mypy.html#mapping-file-paths-to-modules
-let g:python_mypy_use_global = 1
-let g:ale_python_mypy_options = "--namespace-packages --explicit-package-bases"
 let g:ale_pattern_options = {'ipython_log.py': {'ale_enabled': 0}, 'site-packages': {'ale_enabled': 0}}
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
