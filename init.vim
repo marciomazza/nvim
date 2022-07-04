@@ -41,6 +41,7 @@ Plug 'cespare/vim-toml'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'editorconfig/editorconfig-vim'
 Plug 'jparise/vim-graphql'
+Plug 'github/copilot.vim'
 
 " python
 Plug 'hdima/python-syntax', { 'for': 'python' }
