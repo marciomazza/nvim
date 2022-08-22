@@ -28,9 +28,9 @@ set ignorecase
 set smartcase
 
 "" Tabs. May be overriten by autocmd rules
-set tabstop=4
+set tabstop=2
 set softtabstop=0
-set shiftwidth=4
+set shiftwidth=2
 set expandtab
 
 "" Vmap for maintain Visual Mode after shifting > and <
