@@ -1,6 +1,4 @@
 
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-
 "" The PC is fast enough, do syntax highlight syncing from start
 augroup vimrc-sync-fromstart
   autocmd!
