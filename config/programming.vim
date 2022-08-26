@@ -50,6 +50,11 @@ let g:jedi#show_call_signatures = "0"
 " disable documentation window
 set completeopt-=preview
 let g:jedi#goto_command = "gd"
+" hack to go to fully qualified names in strings ( like in settings.py )
+" TODO: create a function that uses jedi#goto_definition and falls back to using this if it fails
+" so that we use only one shortcut
+noremap ga yi":Pyimport <C-R>+<CR>
+
 
 " golang
 let g:go_debug=['shell-commands']
