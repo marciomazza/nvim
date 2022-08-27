@@ -55,6 +55,11 @@ let g:jedi#goto_command = "gd"
 " so that we use only one shortcut
 noremap ga yi":Pyimport <C-R>+<CR>
 
+" hack to make jedi-vim find the fixture definitions of pytest_django
+python3 << EOF
+from jedi.plugins.pytest import _PYTEST_FIXTURE_MODULES
+_PYTEST_FIXTURE_MODULES.append(("pytest_django", "fixtures"))
+EOF
 
 " golang
 let g:go_debug=['shell-commands']
