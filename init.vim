@@ -47,8 +47,6 @@ Plug 'github/copilot.vim'
 Plug 'hdima/python-syntax', { 'for': 'python' }
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
 Plug 'davidhalter/jedi-vim', { 'for': 'python' }
-Plug 'fisadev/vim-isort', { 'for': 'python' }
-Plug 'psf/black', { 'for': 'python' }
 
 " golang
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
