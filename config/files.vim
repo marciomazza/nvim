@@ -12,8 +12,6 @@ let g:ctrlp_open_new_file = 'r'
 
 " grep.vim
 nnoremap <silent> <leader>f :Rgrep<CR>
-""" FIXME understand why grep is not honoring ipython_log.py in wildignore and
-"""   probably remove this exclude
 let Grep_Default_Options = '-IR'
 let Grep_Skip_Files = '*~ ipython_log.py*'
 let Grep_Skip_Dirs = 'RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz'
