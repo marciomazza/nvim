@@ -1,46 +1,34 @@
-vim.cmd [[
+-- The PC is fast enough, do syntax highlight syncing from start
+-- TODO probably remove this if start using treesitter
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "*",
+  command = ":syntax sync fromstart",
+})
 
-"" The PC is fast enough, do syntax highlight syncing from start
-augroup vimrc-sync-fromstart
-  autocmd!
-  autocmd BufEnter * :syntax sync fromstart
-augroup END
+-- Copy/Paste/Cut with standard clipboard
+vim.opt.clipboard = 'unnamed,unnamedplus'
 
-"" Remember cursor position
-augroup vimrc-remember-cursor-position
-  autocmd!
-  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-augroup END
+-- Enable hidden buffers
+vim.opt.hidden = true
 
-au FocusGained,BufEnter,BufWinEnter,CursorHold,CursorMoved * :checktime
+-- Searching
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
 
-"" Copy/Paste/Cut
-if has('unnamedplus')
-  set clipboard=unnamed,unnamedplus
-endif
+-- tabstops (may be overriten by autocmd rules)
+vim.opt.tabstop=2
+vim.opt.softtabstop=0
+vim.opt.shiftwidth=2
+vim.opt.expandtab = true
 
-"" Enable hidden buffers
-set hidden
+local set_keymap = require('utils').set_keymap
 
-"" Searching
-set ignorecase
-set smartcase
+-- maintain Visual Mode after shifting > and <
+set_keymap('v', '<', '<gv')
+set_keymap('v', '>', '>gv')
 
-"" Tabs. May be overriten by autocmd rules
-set tabstop=2
-set softtabstop=0
-set shiftwidth=2
-set expandtab
+-- toggle spell check
+set_keymap('', '<F6>', ':syntax on<CR>:setlocal spell! spelllang=en_us<CR>')
 
-"" Vmap for maintain Visual Mode after shifting > and <
-vmap < <gv
-vmap > >gv
-
-"" toggle spell check
-map <F6> :syntax on<CR>:setlocal spell! spelllang=en_us<CR>
-imap <F6> <C-o>:syntax on<C-o>:setlocal spell! spelllang=en_us<CR>
-
-" vimdiff -- ignore whitespace differences
-set diffopt+=iwhite
-
-]]
+-- vimdiff -- ignore whitespace differences
+vim.opt.diffopt:append {'iwhite'}

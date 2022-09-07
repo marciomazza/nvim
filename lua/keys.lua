@@ -20,16 +20,14 @@ vim.cmd [[
 -- Map leader to ,
 vim.g.mapleader = ','
 
-local map = vim.api.nvim_set_keymap
-options = { noremap = true, silent = true }
+local set_keymap = require('utils').set_keymap
 
 -- Clear search highlight
-map('n', '<leader><space>', ':noh<cr>', options)
+set_keymap('n', '<leader><space>', ':noh<cr>')
 
 -- Buffer nav
-map('n', '<S-Tab>', ':bp<cr>', options)
-map('n', '<Tab>', ':bn<cr>', options)
+set_keymap('n', '<S-Tab>', ':bp<cr>')
+set_keymap('n', '<Tab>', ':bn<cr>')
 
 -- Close buffer
-map('n', '<leader>c', ':bd<cr>', options)
-
+set_keymap('n', '<leader>c', ':bd<cr>')
