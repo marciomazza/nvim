@@ -1,76 +1,79 @@
-call plug#begin()
+require('packer').startup(function(use)
+  -- Packer can manage itself
+  use 'wbthomason/packer.nvim'
 
-" basic
-Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
-Plug 'terryma/vim-multiple-cursors'
-Plug 'bogado/file-line'
-Plug 'tommcdo/vim-exchange'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'editorconfig/editorconfig-vim'
+  -- basic
+  use 'tpope/vim-sensible'
+  use 'tpope/vim-abolish'
+  use 'tpope/vim-commentary'
+  use 'tpope/vim-fugitive'
+  use 'tpope/vim-surround'
+  use 'tpope/vim-repeat'
+  use 'terryma/vim-multiple-cursors'
+  use 'bogado/file-line'
+  use 'tommcdo/vim-exchange'
+  use 'junegunn/fzf'
+  use 'editorconfig/editorconfig-vim'
 
-" utils
+  -- utils
+  use 'CrispyDrone/vim-tasks'
 
-Plug 'CrispyDrone/vim-tasks'
-""" TODO run this only on CrispyDrone/vim-tasks context
-""" for https://github.com/CrispyDrone/vim-tasks#add-tasks
-let maplocalleader="\<space>"
-""" no time marks for @done
-let g:TasksDateFormat = ''
+  -- files
+  use 'ctrlpvim/ctrlp.vim'
+  use 'vim-scripts/grep.vim'
 
-" files
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'vim-scripts/grep.vim'
+  -- sidebars
+  use {'preservim/nerdtree', opt = true, cmd = {'NERDTreeToggle'}}
+  use 'preservim/tagbar'
 
-" sidebars
-Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'preservim/tagbar'
+  -- programming in general
+  use 'jiangmiao/auto-pairs'
+  use 'gaving/vim-textobj-argument'
+  use 'chrisbra/Colorizer'
+  use 'honza/vim-snippets'
+  use 'dense-analysis/ale'
+  use 'ajh17/VimCompletesMe'
+  use 'cespare/vim-toml'
+  use {'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
+  use 'jparise/vim-graphql'
+  use 'github/copilot.vim'
 
-" programming in general
-Plug 'jiangmiao/auto-pairs'
-Plug 'gaving/vim-textobj-argument'
-Plug 'chrisbra/Colorizer'
-Plug 'honza/vim-snippets'
-Plug 'dense-analysis/ale'
-Plug 'ajh17/VimCompletesMe'
-Plug 'cespare/vim-toml'
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
-Plug 'editorconfig/editorconfig-vim'
-Plug 'jparise/vim-graphql'
-Plug 'github/copilot.vim'
+  -- python
+  use {'hdima/python-syntax', ft = {'python'}}
+  use {'raimon49/requirements.txt.vim', ft = {'requirements'}}
+  -- temporaryly use my own local fork
+  -- TODO probably revert back to 'davidhalter/jedi-vim' if and after PR is accepted
+  -- https://github.com/davidhalter/jedi/pull/1879
+  use {'~/repos/jedi-vim', ft = {'python'}}
 
-" python
-Plug 'hdima/python-syntax', { 'for': 'python' }
-Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
-" temporaryly use my own local fork
-" TODO probably revert back to 'davidhalter/jedi-vim' if and after PR is accepted
-" https://github.com/davidhalter/jedi/pull/1879
-Plug '~/repos/jedi-vim', { 'for': 'python' }
+  -- golang
+  use {'fatih/vim-go', run = ':GoUpdateBinaries'}
 
-" golang
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+  -- docker
+  use 'ekalinin/Dockerfile.vim'
 
-" docker
-Plug 'ekalinin/Dockerfile.vim'
+  -- aesthetics
+  use 'luochen1990/rainbow'
+  use 'itchyny/lightline.vim'
+  use 'mengelbrecht/lightline-bufferline'
+  use 'marciomazza/vim-brogrammer-theme'
+  -- vim-devicons must go last (according to install instructions)
+  use 'ryanoasis/vim-devicons'
 
-" aesthetics
-Plug 'luochen1990/rainbow'
-Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
-Plug 'marciomazza/vim-brogrammer-theme'
-"" vim-devicons must go last (according to install instructions)
-Plug 'ryanoasis/vim-devicons'
+end)
 
-call plug#end()
+-- configure CrispyDrone/vim-tasks
+-- TODO run this only on CrispyDrone/vim-tasks context
+-- for https://github.com/CrispyDrone/vim-tasks#add-tasks
+vim.g.maplocalleader = '<Space>'
+-- no time marks for @done
+vim.g.TasksDateFormat = ''
 
-" load sub config files
-source ~/.config/nvim/config/tuning.vim
-source ~/.config/nvim/config/keys.vim
-source ~/.config/nvim/config/files.vim
-source ~/.config/nvim/config/aesthetics.vim
-source ~/.config/nvim/config/sidebars.vim
-source ~/.config/nvim/config/programming.vim
+
+-- load sub config files
+require('tuning')
+require('keys')
+require('files')
+require('aesthetics')
+require('sidebars')
+require('programming')

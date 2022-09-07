@@ -1,3 +1,4 @@
+vim.cmd [[
 
 "" preservim/nerdtree
 let g:NERDTreeChDirMode=2
@@ -21,3 +22,5 @@ nnoremap <silent> <F4> :TagbarToggle<CR>
 let g:tagbar_autoclose = 1
 "" sort by position in file
 let g:tagbar_sort = 0
+
+]]

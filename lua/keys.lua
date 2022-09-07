@@ -1,24 +1,35 @@
 
-"" no one is really happy until you have these shortcuts
-cnoreabbrev W! w!
-cnoreabbrev Q! q!
-cnoreabbrev Qall! qall!
-cnoreabbrev Wq wq
-cnoreabbrev Wa wa
-cnoreabbrev wQ wq
-cnoreabbrev WQ wq
-cnoreabbrev W w
-cnoreabbrev Q q
-cnoreabbrev Qall qall
+-- no one is really happy until you have these shortcuts
+-- apparently, there's no equivalent to the "cnoreabbrev" in lua
+-- https://github.com/nanotee/nvim-lua-guide/issues/37
+vim.cmd [[
+  cnoreabbrev W! w!
+  cnoreabbrev Q! q!
+  cnoreabbrev Qall! qall!
+  cnoreabbrev Qa! qa!
+  cnoreabbrev Wq wq
+  cnoreabbrev Wa wa
+  cnoreabbrev wQ wq
+  cnoreabbrev WQ wq
+  cnoreabbrev W w
+  cnoreabbrev Q q
+  cnoreabbrev Qa qa
+  cnoreabbrev Qall qall
+]]
 
-"" Map leader to ,
-let mapleader=','
+-- Map leader to ,
+vim.g.mapleader = ','
 
-"" Clear search highlight
-nnoremap <silent> <leader><space> :noh<cr>
+local map = vim.api.nvim_set_keymap
+options = { noremap = true, silent = true }
 
-"" Buffer nav
-noremap <S-Tab>   :bp<CR>
-noremap <Tab>     :bn<CR>
-"" Close buffer
-noremap <leader>c :bd<CR>
+-- Clear search highlight
+map('n', '<leader><space>', ':noh<cr>', options)
+
+-- Buffer nav
+map('n', '<S-Tab>', ':bp<cr>', options)
+map('n', '<Tab>', ':bn<cr>', options)
+
+-- Close buffer
+map('n', '<leader>c', ':bd<cr>', options)
+

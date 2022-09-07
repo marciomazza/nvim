@@ -1,3 +1,4 @@
+vim.cmd [[
 
 " generall python options
 augroup vimrc-python
@@ -63,3 +64,5 @@ au FileType go nmap <leader>r <Plug>(go-run)
 au FileType go nmap <leader>d <Plug>(go-def)
 let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
+
+]]

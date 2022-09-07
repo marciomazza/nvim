@@ -1,3 +1,4 @@
+vim.cmd [[
 
 "" The PC is fast enough, do syntax highlight syncing from start
 augroup vimrc-sync-fromstart
@@ -41,3 +42,5 @@ imap <F6> <C-o>:syntax on<C-o>:setlocal spell! spelllang=en_us<CR>
 
 " vimdiff -- ignore whitespace differences
 set diffopt+=iwhite
+
+]]
