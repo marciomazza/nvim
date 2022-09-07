@@ -46,7 +46,10 @@ Plug 'github/copilot.vim'
 " python
 Plug 'hdima/python-syntax', { 'for': 'python' }
 Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
-Plug 'davidhalter/jedi-vim', { 'for': 'python' }
+" temporaryly use my own local fork
+" TODO probably revert back to 'davidhalter/jedi-vim' if and after PR is accepted
+" https://github.com/davidhalter/jedi/pull/1879
+Plug '~/repos/jedi-vim', { 'for': 'python' }
 
 " golang
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
