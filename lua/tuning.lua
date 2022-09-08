@@ -3,20 +3,13 @@ local set_keymap = require('utils').set_keymap
 -- tolerate some typos on file related commands
   -- apparently, there's no equivalent to the "cnoreabbrev" in lua
   -- https://github.com/nanotee/nvim-lua-guide/issues/37
-vim.cmd [[
-  cnoreabbrev W! w!
-  cnoreabbrev Q! q!
-  cnoreabbrev Qall! qall!
-  cnoreabbrev Qa! qa!
-  cnoreabbrev Wq wq
-  cnoreabbrev Wa wa
-  cnoreabbrev wQ wq
-  cnoreabbrev WQ wq
-  cnoreabbrev W w
-  cnoreabbrev Q q
-  cnoreabbrev Qa qa
-  cnoreabbrev Qall qall
-]]
+abbrev_translations = {
+  'W! w!', 'Q! q!', 'Qall! qall!', 'Qa! qa!', 'Wq wq', 'Wa wa',
+  'wQ wq', 'WQ wq', 'W w', 'Q q', 'Qa qa', 'Qall qall',
+}
+for _, entry in pairs(abbrev_translations) do
+  vim.cmd(string.format("cnoreabbrev %s", entry))
+end
 
 -- The PC is fast enough, do syntax highlight syncing from start
 -- TODO probably remove this if start using treesitter
