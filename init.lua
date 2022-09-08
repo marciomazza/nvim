@@ -66,7 +66,7 @@ end)
 -- configure CrispyDrone/vim-tasks
 -- TODO run this only on CrispyDrone/vim-tasks context
 -- for https://github.com/CrispyDrone/vim-tasks#add-tasks
-vim.g.maplocalleader = '<Space>'
+vim.g.maplocalleader = ' '
 -- no time marks for @done
 vim.g.TasksDateFormat = ''
 
