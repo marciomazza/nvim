@@ -32,3 +32,9 @@ set_keymap('', '<F6>', ':syntax on<CR>:setlocal spell! spelllang=en_us<CR>')
 
 -- vimdiff -- ignore whitespace differences
 vim.opt.diffopt:append {'iwhite'}
+
+-- configure CrispyDrone/vim-tasks
+-- TODO run this only on CrispyDrone/vim-tasks context
+-- for https://github.com/CrispyDrone/vim-tasks#add-tasks
+vim.g.maplocalleader = ' '
+vim.g.TasksDateFormat = ''  -- no time marks for @done
