@@ -13,13 +13,13 @@ vim.opt.hidden = true
 
 -- Searching
 vim.opt.ignorecase = true
-vim.opt.smartcase = true
+vim.opt.smartcase  = true
 
 -- tabstops (may be overriten by autocmd rules)
-vim.opt.tabstop=2
-vim.opt.softtabstop=0
-vim.opt.shiftwidth=2
-vim.opt.expandtab = true
+vim.opt.tabstop     = 2
+vim.opt.softtabstop = 0
+vim.opt.shiftwidth  = 2
+vim.opt.expandtab   = true
 
 local set_keymap = require('utils').set_keymap
 
@@ -42,3 +42,9 @@ vim.g.TasksDateFormat = ''  -- no time marks for @done
 -- junegunn/vim-easy-align
 set_keymap('n', 'ga', '<Plug>(EasyAlign)')
 set_keymap('x', 'ga', '<Plug>(EasyAlign)')
+
+-- grep.vim
+set_keymap('n', '<leader>f', ':Rgrep<CR>')
+vim.g.Grep_Default_Options = '-IR'
+vim.g.Grep_Skip_Files = '*~ ipython_log.py*'
+vim.g.Grep_Skip_Dirs = 'RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz'
