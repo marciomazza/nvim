@@ -65,7 +65,6 @@ end)
 
 -- load sub config files
 require('tuning')
-require('keys')
 require('aesthetics')
 require('sidebars')
 require('programming')

@@ -1,3 +1,23 @@
+local set_keymap = require('utils').set_keymap
+
+-- tolerate some typos on file related commands
+  -- apparently, there's no equivalent to the "cnoreabbrev" in lua
+  -- https://github.com/nanotee/nvim-lua-guide/issues/37
+vim.cmd [[
+  cnoreabbrev W! w!
+  cnoreabbrev Q! q!
+  cnoreabbrev Qall! qall!
+  cnoreabbrev Qa! qa!
+  cnoreabbrev Wq wq
+  cnoreabbrev Wa wa
+  cnoreabbrev wQ wq
+  cnoreabbrev WQ wq
+  cnoreabbrev W w
+  cnoreabbrev Q q
+  cnoreabbrev Qa qa
+  cnoreabbrev Qall qall
+]]
+
 -- The PC is fast enough, do syntax highlight syncing from start
 -- TODO probably remove this if start using treesitter
 vim.api.nvim_create_autocmd("BufEnter", {
@@ -21,7 +41,22 @@ vim.opt.softtabstop = 0
 vim.opt.shiftwidth  = 2
 vim.opt.expandtab   = true
 
-local set_keymap = require('utils').set_keymap
+-- leader
+vim.g.mapleader = ','
+
+
+-- Clear search highlight
+set_keymap('n', '<leader><space>', ':noh<cr>')
+
+-- Buffer nav
+set_keymap('n', '<S-Tab>', ':bp<cr>')
+set_keymap('n', '<Tab>', ':bn<cr>')
+
+-- Close buffer
+set_keymap('n', '<leader>c', ':bd<cr>')
+
+-- fzf
+set_keymap('n', '<leader>e', ':FZF<cr>')
 
 -- maintain Visual Mode after shifting > and <
 set_keymap('v', '<', '<gv')
