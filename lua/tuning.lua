@@ -25,15 +25,14 @@ vim.api.nvim_create_autocmd("BufEnter", {
   command = ":syntax sync fromstart",
 })
 
--- Copy/Paste/Cut with standard clipboard
-vim.opt.clipboard = 'unnamed,unnamedplus'
-
--- Enable hidden buffers
-vim.opt.hidden = true
+vim.g.mapleader     = ','                    -- leader
+vim.opt.clipboard   = 'unnamed,unnamedplus'  -- use standard clipboard
+vim.opt.hidden      = true                   -- Enable hidden buffers
+vim.opt.diffopt:append {'iwhite'}            -- ignore whitespace in vimdiff
 
 -- Searching
-vim.opt.ignorecase = true
-vim.opt.smartcase  = true
+vim.opt.ignorecase  = true
+vim.opt.smartcase   = true
 
 -- tabstops (may be overriten by autocmd rules)
 vim.opt.tabstop     = 2
@@ -41,22 +40,11 @@ vim.opt.softtabstop = 0
 vim.opt.shiftwidth  = 2
 vim.opt.expandtab   = true
 
--- leader
-vim.g.mapleader = ','
-
-
--- Clear search highlight
-set_keymap('n', '<leader><space>', ':noh<cr>')
-
--- Buffer nav
-set_keymap('n', '<S-Tab>', ':bp<cr>')
-set_keymap('n', '<Tab>', ':bn<cr>')
-
--- Close buffer
-set_keymap('n', '<leader>c', ':bd<cr>')
-
--- fzf
-set_keymap('n', '<leader>e', ':FZF<cr>')
+set_keymap('n', '<leader><space>', ':noh<cr>')  -- clear search highlight
+set_keymap('n', '<Tab>', ':bn<cr>')             -- buffer nav
+set_keymap('n', '<S-Tab>', ':bp<cr>')           -- buffer nav
+set_keymap('n', '<leader>c', ':bd<cr>')         -- close buffer
+set_keymap('n', '<leader>e', ':FZF<cr>')        -- open file with fzf
 
 -- maintain Visual Mode after shifting > and <
 set_keymap('v', '<', '<gv')
@@ -64,9 +52,6 @@ set_keymap('v', '>', '>gv')
 
 -- toggle spell check
 set_keymap('', '<F6>', ':syntax on<CR>:setlocal spell! spelllang=en_us<CR>')
-
--- vimdiff -- ignore whitespace differences
-vim.opt.diffopt:append {'iwhite'}
 
 -- configure CrispyDrone/vim-tasks
 -- TODO run this only on CrispyDrone/vim-tasks context
