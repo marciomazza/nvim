@@ -38,3 +38,7 @@ vim.opt.diffopt:append {'iwhite'}
 -- for https://github.com/CrispyDrone/vim-tasks#add-tasks
 vim.g.maplocalleader = ' '
 vim.g.TasksDateFormat = ''  -- no time marks for @done
+
+-- junegunn/vim-easy-align
+set_keymap('n', 'ga', '<Plug>(EasyAlign)')
+set_keymap('x', 'ga', '<Plug>(EasyAlign)')

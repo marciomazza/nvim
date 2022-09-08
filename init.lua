@@ -14,6 +14,7 @@ require('packer').startup(function(use)
   use 'tommcdo/vim-exchange'
   use 'editorconfig/editorconfig-vim'
   use 'farmergreg/vim-lastplace'  -- remember cursor position on file reopen
+  use 'junegunn/vim-easy-align'
 
   -- utils
   use 'CrispyDrone/vim-tasks'
