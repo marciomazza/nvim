@@ -12,7 +12,6 @@ require('packer').startup(function(use)
   use 'terryma/vim-multiple-cursors'
   use 'bogado/file-line'
   use 'tommcdo/vim-exchange'
-  use 'junegunn/fzf'
   use 'editorconfig/editorconfig-vim'
   use 'farmergreg/vim-lastplace'  -- remember cursor position on file reopen
 
@@ -20,7 +19,7 @@ require('packer').startup(function(use)
   use 'CrispyDrone/vim-tasks'
 
   -- files
-  use 'ctrlpvim/ctrlp.vim'
+  use 'junegunn/fzf'
   use 'vim-scripts/grep.vim'
 
   -- sidebars

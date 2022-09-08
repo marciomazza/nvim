@@ -31,3 +31,6 @@ set_keymap('n', '<Tab>', ':bn<cr>')
 
 -- Close buffer
 set_keymap('n', '<leader>c', ':bd<cr>')
+
+-- fzf
+set_keymap('n', '<leader>e', ':FZF<cr>')
