@@ -58,11 +58,4 @@ let g:jedi#goto_command = "gd"
 " so that we use only one shortcut
 noremap gy yi":Pyimport <C-R>+<CR>
 
-" golang
-let g:go_debug=['shell-commands']
-au FileType go nmap <leader>r <Plug>(go-run)
-au FileType go nmap <leader>d <Plug>(go-def)
-let g:go_def_mode='gopls'
-let g:go_info_mode='gopls'
-
 ]]

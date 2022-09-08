@@ -47,9 +47,6 @@ require('packer').startup(function(use)
   -- https://github.com/davidhalter/jedi/pull/1879
   use {'~/repos/jedi-vim', ft = {'python'}}
 
-  -- golang
-  use {'fatih/vim-go', run = ':GoUpdateBinaries'}
-
   -- docker
   use 'ekalinin/Dockerfile.vim'
 
