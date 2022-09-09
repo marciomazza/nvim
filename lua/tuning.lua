@@ -38,6 +38,7 @@ set_keymap('n', '<Tab>', ':bn<cr>')             -- buffer nav
 set_keymap('n', '<S-Tab>', ':bp<cr>')           -- buffer nav
 set_keymap('n', '<leader>c', ':bd<cr>')         -- close buffer
 set_keymap('n', '<leader>e', ':FZF<cr>')        -- open file with fzf
+set_keymap('n', '<leader>l', ':luafile %<cr>')  -- reload lua file
 
 -- maintain Visual Mode after shifting > and <
 set_keymap('v', '<', '<gv')
