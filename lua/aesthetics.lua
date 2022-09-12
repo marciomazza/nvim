@@ -1,6 +1,4 @@
--- marciomazza/vim-brogrammer-theme
--- no_buffers_menu silent for the case when the plugin has not yet been installed
-vim.cmd('silent! colorscheme brogrammer')
+vim.cmd.colorscheme 'PaperColor'
 
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -10,7 +8,7 @@ vim.g.rainbow_active = 1
 
 -- itchyny/lightline.vim & mengelbrecht/lightline-bufferline
 vim.g.lightline = {
-  colorscheme = 'wombat',
+  colorscheme = 'PaperColor',
   active= {
     left = { { 'mode', 'paste' },
     { 'gitbranch', 'readonly', 'filename', 'modified' } }

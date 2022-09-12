@@ -54,10 +54,9 @@ require('packer').startup(function(use)
   use 'luochen1990/rainbow'
   use 'itchyny/lightline.vim'
   use 'mengelbrecht/lightline-bufferline'
-  use 'marciomazza/vim-brogrammer-theme'
   -- vim-devicons must go last (according to install instructions)
   use 'ryanoasis/vim-devicons'
-
+  use 'NLKNguyen/papercolor-theme'
 end)
 
 -- load sub config files
