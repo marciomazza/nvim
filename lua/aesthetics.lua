@@ -2,6 +2,7 @@ vim.cmd.colorscheme 'PaperColor'
 
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.cmdheight = 0  -- autohide the command-line (https://vi.stackexchange.com/a/38231)
 
 -- luochen1990/rainbow
 vim.g.rainbow_active = 1
