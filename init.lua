@@ -31,7 +31,7 @@ require('packer').startup(function(use)
     requires = { 'kyazdani42/nvim-web-devicons' },
     config = require('sidebars').nvim_tree_config
   }
-  use 'preservim/tagbar'
+  use { 'preservim/tagbar', config = require('sidebars').tagbar_config }
 
   -- programming in general
   use 'jiangmiao/auto-pairs'
@@ -69,6 +69,5 @@ end)
 -- load sub config files
 require('tuning')
 require('aesthetics')
-require('sidebars')
 require('programming')
 require('extras')
