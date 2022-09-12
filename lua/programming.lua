@@ -1,5 +1,11 @@
 local set_keymap = require('utils').set_keymap
 
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
+  auto_install = true,
+  highlight = { enable = true, additional_vim_regex_highlighting = false },
+}
+
 -- generall python options
 local python_augroup = vim.api.nvim_create_augroup('python-augroup', {clear = true})
 
@@ -19,9 +25,6 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.b.vcm_tab_complete = "omni"
   end
 })
-
--- hdima/python-syntax -- full python syntax highlighting
-vim.g.python_highlight_all = 1
 
 -- dense-analysis/ale ----------------------------------------------------------
 

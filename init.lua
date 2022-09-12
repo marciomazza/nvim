@@ -38,9 +38,12 @@ require('packer').startup(function(use)
   use {'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
   use 'jparise/vim-graphql'
   use 'github/copilot.vim'
+  use {
+    'nvim-treesitter/nvim-treesitter',
+    run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
+  }
 
   -- python
-  use {'hdima/python-syntax', ft = {'python'}}
   use {'raimon49/requirements.txt.vim', ft = {'requirements'}}
   -- temporaryly use my own local fork
   -- TODO probably revert back to 'davidhalter/jedi-vim' if and after PR is accepted
