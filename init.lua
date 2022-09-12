@@ -1,3 +1,5 @@
+set_keymap = require('utils').set_keymap
+
 require('packer').startup(function(use)
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
@@ -24,7 +26,11 @@ require('packer').startup(function(use)
   use 'vim-scripts/grep.vim'
 
   -- sidebars
-  use {'preservim/nerdtree', opt = true, cmd = {'NERDTreeToggle'}}
+  use {
+    'kyazdani42/nvim-tree.lua',
+    requires = { 'kyazdani42/nvim-web-devicons' },
+    config = require('sidebars').nvim_tree_config
+  }
   use 'preservim/tagbar'
 
   -- programming in general
@@ -57,8 +63,6 @@ require('packer').startup(function(use)
   use 'luochen1990/rainbow'
   use 'itchyny/lightline.vim'
   use 'mengelbrecht/lightline-bufferline'
-  -- vim-devicons must go last (according to install instructions)
-  use 'ryanoasis/vim-devicons'
   use 'NLKNguyen/papercolor-theme'
 end)
 
