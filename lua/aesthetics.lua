@@ -20,3 +20,5 @@ vim.g.lightline = {
   component_type = { buffers = 'tabsel' },
 }
 vim.opt.showtabline=2
+vim.g['lightline#bufferline#modified'] = ' ★'
+vim.g['lightline#bufferline#read_only'] = ' '
