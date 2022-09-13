@@ -44,19 +44,7 @@ require('packer').startup(function(use)
   use {'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
   use 'jparise/vim-graphql'
   use 'github/copilot.vim'
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
-    requires = { 'p00f/nvim-ts-rainbow' },
-    config = function()
-      require'nvim-treesitter.configs'.setup {
-        ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
-        auto_install = true,
-        highlight = { enable = true, additional_vim_regex_highlighting = false },
-        rainbow = { enable = true }, -- enable nvim-ts-rainbow
-      }
-    end
-  }
+  use (require('treesitter'))
 
   -- python
   use {'raimon49/requirements.txt.vim', ft = {'requirements'}}
@@ -77,6 +65,7 @@ end)
 -- load sub config files
 require('tuning')
 require('aesthetics')
+require('treesitter')
 require('python')
 require('ale')
 require('extras')
