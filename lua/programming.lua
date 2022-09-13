@@ -1,5 +1,3 @@
-local set_keymap = require('utils').set_keymap
-
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
   auto_install = true,

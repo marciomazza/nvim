@@ -1,5 +1,3 @@
-local set_keymap = require('utils').set_keymap
-
 -- tolerate some typos on file related commands
   -- apparently, there's no equivalent to the "cnoreabbrev" in lua
   -- https://github.com/nanotee/nvim-lua-guide/issues/37
