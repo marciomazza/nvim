@@ -47,6 +47,13 @@ require('packer').startup(function(use)
   use {
     'nvim-treesitter/nvim-treesitter',
     run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
+    config = function()
+      require'nvim-treesitter.configs'.setup {
+        ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
+        auto_install = true,
+        highlight = { enable = true, additional_vim_regex_highlighting = false },
+      }
+    end
   }
 
   -- python
@@ -69,6 +76,6 @@ end)
 -- load sub config files
 require('tuning')
 require('aesthetics')
-require('programming')
+require('python')
 require('ale')
 require('extras')

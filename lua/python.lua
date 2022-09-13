@@ -1,11 +1,3 @@
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
-  auto_install = true,
-  highlight = { enable = true, additional_vim_regex_highlighting = false },
-}
-
--- python ----------------------------------------------------------------------
-
 -- davidhalter/jedi-vim
 vim.g['jedi#show_call_signatures'] = "0"
 vim.opt.completeopt:remove {'preview'}  -- disable documentation window
