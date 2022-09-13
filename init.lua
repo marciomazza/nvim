@@ -13,9 +13,9 @@ require('packer').startup(function(use)
   use 'tpope/vim-repeat'
   use 'terryma/vim-multiple-cursors'
   use 'bogado/file-line'
-  use 'tommcdo/vim-exchange'
+  use 'tommcdo/vim-exchange'           -- TODO: check if this is still needed
   use 'editorconfig/editorconfig-vim'
-  use 'farmergreg/vim-lastplace'  -- remember cursor position on file reopen
+  use 'farmergreg/vim-lastplace'       -- remember cursor position on file reopen
   use 'junegunn/vim-easy-align'
 
   -- utils
@@ -38,9 +38,7 @@ require('packer').startup(function(use)
   use 'gaving/vim-textobj-argument'
   use 'dense-analysis/ale'
   use 'ajh17/VimCompletesMe'
-  use 'cespare/vim-toml'
   use {'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
-  use 'jparise/vim-graphql'
   use 'github/copilot.vim'
   use (require('treesitter'))
 
@@ -50,9 +48,6 @@ require('packer').startup(function(use)
   -- TODO probably revert back to 'davidhalter/jedi-vim' if and after PR is accepted
   -- https://github.com/davidhalter/jedi/pull/1879
   use {'~/repos/jedi-vim', ft = {'python'}}
-
-  -- docker
-  use 'ekalinin/Dockerfile.vim'
 
   -- aesthetics
   use 'itchyny/lightline.vim'
