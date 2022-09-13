@@ -36,8 +36,6 @@ require('packer').startup(function(use)
   -- programming in general
   use 'jiangmiao/auto-pairs'
   use 'gaving/vim-textobj-argument'
-  use 'chrisbra/Colorizer'
-  use 'honza/vim-snippets'
   use 'dense-analysis/ale'
   use 'ajh17/VimCompletesMe'
   use 'cespare/vim-toml'
