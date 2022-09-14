@@ -24,14 +24,7 @@ require('packer').startup(function(use)
   -- files
   use 'junegunn/fzf'
   use 'vim-scripts/grep.vim'
-
-  -- sidebars
-  use {
-    'kyazdani42/nvim-tree.lua',
-    requires = { 'kyazdani42/nvim-web-devicons' },
-    config = require('sidebars').nvim_tree_config
-  }
-  use { 'preservim/tagbar', config = require('sidebars').tagbar_config }
+  use (require('sidebars'))  -- nvim-tree & preservim/tagbar
 
   -- programming in general
   use 'jiangmiao/auto-pairs'
