@@ -45,6 +45,10 @@ set_keymap('v', '>', '>gv')
 -- toggle spell check
 set_keymap('', '<F6>', ':syntax on<CR>:setlocal spell! spelllang=en_us<CR>')
 
+-- hack to suppress "E173: n more files to edit" after :q without visiting all files
+-- https://vi.stackexchange.com/a/31552
+vim.api.nvim_create_autocmd("QuitPre", { command = ":blast" })
+
 -- configure CrispyDrone/vim-tasks
 -- TODO run this only on CrispyDrone/vim-tasks context
 -- for https://github.com/CrispyDrone/vim-tasks#add-tasks
