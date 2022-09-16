@@ -1,6 +1,8 @@
 -- davidhalter/jedi-vim
-vim.g['jedi#show_call_signatures'] = "0"
+vim.g['jedi#show_call_signatures']  = "0"
 vim.opt.completeopt:remove {'preview'}  -- disable documentation window
+-- turn off completions from jedi since we use a custom nvim-cmp source
+vim.g['jedi#completions_enabled'] = "0"
 
 function jedi_goto()
   -- based on autoload/jedi.vim ... function! jedi#goto()
@@ -12,7 +14,8 @@ function jedi_goto()
   return jedi_goto_success
 end
 
---- extend jedi#goto to fall back to pyimport (useful for names inside comments or under quotes)
+-- extend jedi#goto to fall back to pyimport
+-- (useful for names inside comments or under quotes)
 function jedi_goto_or_pyimport()
   if jedi_goto() then
     return
@@ -21,6 +24,7 @@ function jedi_goto_or_pyimport()
   filename = vim.fn['expand']('<cfile>')
   vim.fn['jedi#py_import'](filename)
 end
+
 -- general python options
 local python_augroup = vim.api.nvim_create_augroup('python-augroup', {clear = true})
 
@@ -36,8 +40,6 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.bo.formatoptions = 'croqj'
     vim.wo.colorcolumn   = '100'
     vim.cmd('iabbrev pdb breakpoint()')  -- TODO make this only local to python files
-    -- ajh17/VimCompletesMe: use omnicompletion with tab just on python files
-    vim.b.vcm_tab_complete = "omni"
     vim.keymap.set('n', 'gd', jedi_goto_or_pyimport, {buffer = true})
   end
 })

@@ -30,12 +30,12 @@ require('packer').startup(function(use)
   use 'jiangmiao/auto-pairs'
   use 'gaving/vim-textobj-argument'
   use 'dense-analysis/ale'
-  use 'ajh17/VimCompletesMe'
   use {'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
   use {'github/copilot.vim', config = function()
     vim.g.copilot_filetypes = { gitcommit = true }
   end}
   use (require('treesitter'))
+  use (require('nvim-cmp'))
 
   -- python
   use {'raimon49/requirements.txt.vim', ft = {'requirements'}}
@@ -48,6 +48,7 @@ require('packer').startup(function(use)
   use 'itchyny/lightline.vim'
   use 'mengelbrecht/lightline-bufferline'
   use 'NLKNguyen/papercolor-theme'
+
 end)
 
 -- load sub config files
