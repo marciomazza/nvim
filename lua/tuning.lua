@@ -2,8 +2,9 @@
   -- apparently, there's no equivalent to the "cnoreabbrev" in lua
   -- https://github.com/nanotee/nvim-lua-guide/issues/37
 abbrev_translations = {
-  'W! w!', 'Q! q!', 'Qall! qall!', 'Qa! qa!', 'Wq wq', 'Wa wa',
-  'wQ wq', 'WQ wq', 'W w', 'Q q', 'Qa qa', 'Qall qall',
+  'W w', 'Q q', 'Qa qa', 'E e',
+  'W! w!', 'Q! q!', 'Qa! qa!', 'Qall qall', 'Qall! qall!',
+  'Wq wq', 'Wa wa', 'wQ wq', 'WQ wq', 'qw wq',
 }
 for _, entry in pairs(abbrev_translations) do
   vim.cmd(string.format("cnoreabbrev %s", entry))
