@@ -32,7 +32,9 @@ require('packer').startup(function(use)
   use 'dense-analysis/ale'
   use 'ajh17/VimCompletesMe'
   use {'iamcco/markdown-preview.nvim', run = 'cd app && yarn install', cmd = 'MarkdownPreview'}
-  use 'github/copilot.vim'
+  use {'github/copilot.vim', config = function()
+    vim.g.copilot_filetypes = { gitcommit = true }
+  end}
   use (require('treesitter'))
 
   -- python
