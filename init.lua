@@ -54,7 +54,6 @@ end)
 -- load sub config files
 require('tuning')
 require('appearance')
-require('treesitter')
 require('python')
 require('ale')
 require('extras')
