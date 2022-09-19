@@ -44,7 +44,7 @@ require('packer').startup(function(use)
   -- https://github.com/davidhalter/jedi/pull/1879
   use {'~/repos/jedi-vim', ft = {'python'}}
 
-  -- aesthetics
+  -- appearance
   use 'itchyny/lightline.vim'
   use 'mengelbrecht/lightline-bufferline'
   use 'NLKNguyen/papercolor-theme'
@@ -53,7 +53,7 @@ end)
 
 -- load sub config files
 require('tuning')
-require('aesthetics')
+require('appearance')
 require('treesitter')
 require('python')
 require('ale')
