@@ -10,6 +10,6 @@ def get_jedi_completions():
     path = vim.current.buffer.name
     project = get_default_project(path)
     script = Script(source, path=path, project=project)
-    completions = script.complete(row, column)
+    completions = script.complete()
     result = [dict(name=c.name, type=c.type) for c in completions]
     return result
