@@ -65,3 +65,8 @@ set_keymap('n', '<leader>f', ':Rgrep<CR>')
 vim.g.Grep_Default_Options = '-IR'
 vim.g.Grep_Skip_Files = '*~ ipython_log.py*'
 vim.g.Grep_Skip_Dirs = 'RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz'
+
+-- change comment style for sql
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "sql", callback = function() vim.opt.commentstring = "-- %s" end
+})
