@@ -30,3 +30,4 @@ vim.g.ale_sign_info = '▶'
 -- ALE mappings
 set_keymap('n', '<C-k>', '<Plug>(ale_previous_wrap)')
 set_keymap('n', '<C-j>', '<Plug>(ale_next_wrap)')
+set_keymap('n', '<C-l>', '<Plug>(ale_detail)')
