@@ -28,7 +28,14 @@ return {
     require'nvim-treesitter.configs'.setup {
       ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
       auto_install = true,
-      highlight = { enable = true, additional_vim_regex_highlighting = false },
+      highlight = {
+        enable = true,
+        disable = function(lang, bufnr)
+          -- disable treesitter for buffers that are too big (it's too slow)
+          buffer_size = vim.fn.line2byte(vim.fn.line('$') + 1) - 1
+          return buffer_size > 300 * 1024 -- 300KB
+        end,
+      },
       rainbow = { enable = true }, -- enable nvim-ts-rainbow
     }
   end,
