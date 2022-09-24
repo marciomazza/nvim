@@ -37,6 +37,8 @@ return {
         end,
       },
       rainbow = { enable = true }, -- enable nvim-ts-rainbow
+      indent = { enable = true },
+      incremental_selection = { enable = true },
     }
   end,
 }
