@@ -36,24 +36,23 @@ require('packer').startup(function(use)
   end}
   use (require('treesitter'))
   use (require('nvim-cmp'))
+  use 'neovim/nvim-lspconfig'
 
   -- python
   use {'raimon49/requirements.txt.vim', ft = {'requirements'}}
-  -- temporaryly use my own local fork
-  -- TODO probably revert back to 'davidhalter/jedi-vim' if and after PR is accepted
-  -- https://github.com/davidhalter/jedi/pull/1879
-  use {'~/repos/jedi-vim', ft = {'python'}}
 
   -- appearance
   use 'itchyny/lightline.vim'
   use 'mengelbrecht/lightline-bufferline'
   use 'NLKNguyen/papercolor-theme'
+  use 'folke/lsp-colors.nvim'
 
 end)
 
 -- load sub config files
 require('tuning')
 require('appearance')
+require('lsp')
 require('python')
 require('ale')
 require('extras')

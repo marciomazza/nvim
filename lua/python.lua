@@ -1,30 +1,3 @@
--- davidhalter/jedi-vim
-vim.g['jedi#show_call_signatures']  = "0"
-vim.opt.completeopt:remove {'preview'}  -- disable documentation window
--- turn off completions from jedi since we use a custom nvim-cmp source
-vim.g['jedi#completions_enabled'] = "0"
-
-function jedi_goto()
-  -- based on autoload/jedi.vim ... function! jedi#goto()
-  vim.cmd [[
-    python3 jedi_goto_names = jedi_vim.goto(mode="goto")
-    python3 success_lua_boolean = "true" if jedi_goto_names else "false"
-    python3 vim.exec_lua(f"jedi_goto_success = {success_lua_boolean}")
-  ]]
-  return jedi_goto_success
-end
-
--- extend jedi#goto to fall back to pyimport
--- (useful for names inside comments or under quotes)
-function jedi_goto_or_pyimport()
-  if jedi_goto() then
-    return
-  end
-  -- if goto definition did't work, try pyimport
-  filename = vim.fn['expand']('<cfile>')
-  vim.fn['jedi#py_import'](filename)
-end
-
 -- general python options
 local python_augroup = vim.api.nvim_create_augroup('python-augroup', {clear = true})
 
@@ -40,6 +13,5 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.bo.formatoptions = 'croqj'
     vim.wo.colorcolumn   = '100'
     vim.cmd('iabbrev pdb breakpoint()')  -- TODO make this only local to python files
-    vim.keymap.set('n', 'gd', jedi_goto_or_pyimport, {buffer = true})
   end
 })
