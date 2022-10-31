@@ -10,9 +10,6 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
 
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
   -- Mappings.
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
@@ -25,6 +22,9 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<leader>a', vim.lsp.buf.code_action, bufopts)
 end
 
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
 require('lspconfig').pyright.setup {
-  on_attach = on_attach,
+    on_attach = on_attach,
+    capabilities = capabilities,
 }
