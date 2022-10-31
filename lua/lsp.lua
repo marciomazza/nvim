@@ -26,5 +26,5 @@ local on_attach = function(client, bufnr)
 end
 
 require('lspconfig').pyright.setup {
-    on_attach = on_attach,
+  on_attach = on_attach,
 }

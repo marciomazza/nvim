@@ -1,0 +1,7 @@
+# The commits listed here are ignored when running `git blame`
+#
+# cofigure this by running:
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Format code
+6e4942e521d008427a6a491351b125413b5aa377

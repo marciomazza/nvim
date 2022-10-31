@@ -15,5 +15,5 @@ return {
       vim.g.tagbar_autoclose = 1
       vim.g.tagbar_sort = 0  -- sort by position in file
     end
- }
+  }
 }
