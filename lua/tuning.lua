@@ -70,3 +70,5 @@ vim.g.Grep_Skip_Dirs = 'RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz'
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "sql", callback = function() vim.opt.commentstring = "-- %s" end
 })
+
+set_keymap('n', '<leader>m', ':PackerSync<CR>')
