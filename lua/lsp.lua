@@ -23,8 +23,10 @@ local on_attach = function(client, bufnr)
 end
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
+-- for some strange reason jedi language server completion breaks if this is true
+capabilities.textDocument.completion.completionItem.snippetSupport = false
 
-require('lspconfig').pyright.setup {
+require('lspconfig').jedi_language_server.setup {
     on_attach = on_attach,
     capabilities = capabilities,
 }
