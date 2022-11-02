@@ -1,17 +1,10 @@
--- Mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { silent=true }
 vim.keymap.set('n', '<C-l>', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '<C-j>', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<C-k>', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, opts)
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
-
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
@@ -26,7 +19,21 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 -- for some strange reason jedi language server completion breaks if this is true
 capabilities.textDocument.completion.completionItem.snippetSupport = false
 
-require('lspconfig').jedi_language_server.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
+local lspconfig = require 'lspconfig'
+
+plone = require('plone')
+
+lspconfig.util.on_setup = lspconfig.util.add_hook_before(lspconfig.util.on_setup,
+  function(config)
+    local plone_config = plone.get_plone_config()
+    if plone_config ~= nil then
+      config.root_dir = function() return plone_config.root_dir end
+      config.init_options = { workspace = { extraPaths = plone_config.extra_paths } }
+    end
+  end
+)
+
+lspconfig.jedi_language_server.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
 }
