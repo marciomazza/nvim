@@ -38,9 +38,6 @@ require('packer').startup(function(use)
   use (require('nvim-cmp'))
   use 'neovim/nvim-lspconfig'
 
-  -- python
-  use {'raimon49/requirements.txt.vim', ft = {'requirements'}}
-
   -- appearance
   use 'itchyny/lightline.vim'
   use 'mengelbrecht/lightline-bufferline'
