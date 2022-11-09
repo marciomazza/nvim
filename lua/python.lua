@@ -15,3 +15,9 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.cmd('iabbrev pdb breakpoint()')  -- TODO make this only local to python files
   end
 })
+
+-- zcml plone files are xml
+vim.api.nvim_create_autocmd({"BufRead","BufNewFile"}, {
+  pattern = "*.zcml",
+  callback = function() vim.bo.filetype = "xml" end
+})
