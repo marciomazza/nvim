@@ -12,7 +12,7 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.bo.smartindent   = true
     vim.bo.formatoptions = 'croqj'
     vim.wo.colorcolumn   = '100'
-    vim.cmd('iabbrev pdb breakpoint()')  -- TODO make this only local to python files
+    vim.cmd('iabbrev pdb __import__("pdb").set_trace()')  -- TODO make this only local to python files
   end
 })
 
