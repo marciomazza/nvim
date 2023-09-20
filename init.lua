@@ -12,7 +12,6 @@ require('packer').startup(function(use)
   use 'tpope/vim-surround'
   use 'tpope/vim-repeat'
   use 'terryma/vim-multiple-cursors'
-  use 'bogado/file-line'
   use 'tommcdo/vim-exchange'           -- TODO: check if this is still needed
   use 'editorconfig/editorconfig-vim'
   use 'farmergreg/vim-lastplace'       -- remember cursor position on file reopen
