@@ -12,7 +12,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<leader>a', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set({'n', 'v'}, '<leader>a', vim.lsp.buf.code_action, bufopts)
 end
 
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
