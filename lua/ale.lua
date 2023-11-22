@@ -10,6 +10,7 @@ endfunction
 
 execute ale#fix#registry#Add('luafmt', 'FormatLua', ['lua'], 'luafmt for lua')
 execute ale#fix#registry#Add('djlint', 'FormatDjlint', ['html'], 'djlint for html')
+execute ale#fix#registry#Add('djlint', 'FormatDjlint', ['htmldjango'], 'djlint for htmldjango')
 
 ]]
 )
@@ -23,7 +24,8 @@ vim.g.ale_fixers = {
     ["*"] = {"remove_trailing_lines", "trim_whitespace"},
     python = {"autoflake", "black", "isort"},
     lua = {"luafmt"},
-    html = {"djlint"}
+    html = {"djlint"},
+    htmldjango = {"djlint"}
 }
 vim.g.ale_python_black_use_global = 1
 vim.g.ale_python_isort_use_global = 1
