@@ -41,3 +41,11 @@ lspconfig.jedi_language_server.setup {
     on_attach = on_attach,
     capabilities = capabilities
 }
+
+-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#ruff_lsp
+lspconfig.ruff_lsp.setup {
+    on_attach = function(client, bufnr)
+        require("lsp-format").on_attach(client, bufnr) -- enable format on save
+        vim.keymap.set({"n", "v"}, "<leader>a", vim.lsp.buf.code_action, bufopts)
+    end
+}

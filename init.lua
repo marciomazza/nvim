@@ -39,6 +39,7 @@ require("packer").startup(
         use(require("treesitter"))
         use(require("nvim-cmp"))
         use "neovim/nvim-lspconfig"
+        use "lukas-reineke/lsp-format.nvim"
 
         -- appearance
         use "itchyny/lightline.vim"
