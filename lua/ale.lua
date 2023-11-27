@@ -1,14 +1,9 @@
 vim.cmd(
   [[
-function! FormatLua(buffer) abort
-    return {'command': 'luafmt --stdin'}
-endfunction
-
 function! FormatDjlint(buffer) abort
     return {'command': 'djlint --reformat -'}
 endfunction
 
-execute ale#fix#registry#Add('luafmt', 'FormatLua', ['lua'], 'luafmt for lua')
 execute ale#fix#registry#Add('djlint', 'FormatDjlint', ['html'], 'djlint for html')
 execute ale#fix#registry#Add('djlint', 'FormatDjlint', ['htmldjango'], 'djlint for htmldjango')
 
@@ -22,7 +17,6 @@ vim.g.ale_linters_explicit = 1
 vim.g.ale_fix_on_save = 1
 vim.g.ale_fixers = {
   ["*"] = { "remove_trailing_lines", "trim_whitespace" },
-  lua = { "luafmt" },
   html = { "djlint" },
   htmldjango = { "djlint" }
 }

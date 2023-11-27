@@ -38,6 +38,10 @@ require("packer").startup(
     }
     use(require("treesitter"))
     use(require("nvim-cmp"))
+
+    -- lsp
+    use "williamboman/mason.nvim"
+    use "williamboman/mason-lspconfig.nvim"
     use "neovim/nvim-lspconfig"
     use "lukas-reineke/lsp-format.nvim"
 
@@ -48,6 +52,7 @@ require("packer").startup(
     use "folke/lsp-colors.nvim"
   end
 )
+
 
 -- load sub config files
 require("tuning")

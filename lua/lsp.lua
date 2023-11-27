@@ -4,7 +4,7 @@ vim.keymap.set("n", "<C-j>", vim.diagnostic.goto_next, opts)
 vim.keymap.set("n", "<C-k>", vim.diagnostic.goto_prev, opts)
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts)
 
-local on_attach = function(client, bufnr)
+local function set_lsp_keymaps(bufnr)
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
   vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
@@ -18,6 +18,11 @@ end
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 -- for some strange reason jedi language server completion breaks if this is true
 capabilities.textDocument.completion.completionItem.snippetSupport = false
+
+require("mason").setup()
+require("mason-lspconfig").setup {
+  ensure_installed = { "lua_ls", "jedi_language_server", "ruff_lsp" },
+}
 
 local lspconfig = require "lspconfig"
 
@@ -37,8 +42,17 @@ lspconfig.util.on_setup =
       end
     )
 
+lspconfig.lua_ls.setup {
+  on_attach = function(client, bufnr)
+    require("lsp-format").on_attach(client, bufnr) -- enable format on save
+    set_lsp_keymaps(bufnr)
+  end
+}
+
 lspconfig.jedi_language_server.setup {
-  on_attach = on_attach,
+  on_attach = function(_, bufnr)
+    set_lsp_keymaps(bufnr)
+  end,
   capabilities = capabilities
 }
 
@@ -46,6 +60,6 @@ lspconfig.jedi_language_server.setup {
 lspconfig.ruff_lsp.setup {
   on_attach = function(client, bufnr)
     require("lsp-format").on_attach(client, bufnr) -- enable format on save
-    vim.keymap.set({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action, bufopts)
+    set_lsp_keymaps(bufnr)
   end
 }
