@@ -8,3 +8,6 @@
 
 # Reformat using luafmt
 2c659da71345b5ba6011d63912af46b89d18e424
+
+# Reformat using lua-language-server
+8c82e517880298921fc9c62591e66a5baa75c605
