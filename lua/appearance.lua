@@ -7,17 +7,17 @@ vim.opt.relativenumber = true
 
 -- itchyny/lightline.vim & mengelbrecht/lightline-bufferline
 vim.g.lightline = {
-    colorscheme = "PaperColor",
-    active = {
-        left = {
-            {"mode", "paste"},
-            {"gitbranch", "readonly", "filename", "modified"}
-        }
-    },
-    component_function = {gitbranch = "FugitiveHead"},
-    tabline = {left = {{"buffers"}}, right = {{}}},
-    component_expand = {buffers = "lightline#bufferline#buffers"},
-    component_type = {buffers = "tabsel"}
+  colorscheme = "PaperColor",
+  active = {
+    left = {
+      { "mode",      "paste" },
+      { "gitbranch", "readonly", "filename", "modified" }
+    }
+  },
+  component_function = { gitbranch = "FugitiveHead" },
+  tabline = { left = { { "buffers" } }, right = { {} } },
+  component_expand = { buffers = "lightline#bufferline#buffers" },
+  component_type = { buffers = "tabsel" }
 }
 vim.opt.showtabline = 2
 vim.g["lightline#bufferline#modified"] = " ★"

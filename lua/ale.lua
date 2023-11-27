@@ -1,5 +1,5 @@
 vim.cmd(
-    [[
+  [[
 function! FormatLua(buffer) abort
     return {'command': 'luafmt --stdin'}
 endfunction
@@ -21,20 +21,20 @@ vim.g.ale_linters_explicit = 1
 -- ALE fixers
 vim.g.ale_fix_on_save = 1
 vim.g.ale_fixers = {
-    ["*"] = {"remove_trailing_lines", "trim_whitespace"},
-    lua = {"luafmt"},
-    html = {"djlint"},
-    htmldjango = {"djlint"}
+  ["*"] = { "remove_trailing_lines", "trim_whitespace" },
+  lua = { "luafmt" },
+  html = { "djlint" },
+  htmldjango = { "djlint" }
 }
 vim.g.ale_python_black_use_global = 1
 vim.g.ale_python_isort_use_global = 1
 vim.g.ale_python_isort_options = "--float-to-top --profile black"
 
-local disabled = {ale_enabled = 0, ale_fixers = {}}
+local disabled = { ale_enabled = 0, ale_fixers = {} }
 
 vim.g.ale_pattern_options = {
-    ["ipython_log.py"] = disabled,
-    ["site-packages"] = disabled,
-    ["plone"] = disabled,
-    ["repos"] = disabled
+  ["ipython_log.py"] = disabled,
+  ["site-packages"] = disabled,
+  ["plone"] = disabled,
+  ["repos"] = disabled
 }
