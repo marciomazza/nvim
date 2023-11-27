@@ -11,7 +11,7 @@ parser_config.dockerfile = {
 return {
   "nvim-treesitter/nvim-treesitter",
   run = function()
-    require("nvim-treesitter.install").update({ with_sync = true })
+    require "nvim-treesitter.install".update({ with_sync = true })
   end,
   requires = {
     "p00f/nvim-ts-rainbow"
@@ -22,6 +22,7 @@ return {
       auto_install = true,
       highlight = {
         enable = true,
+        ---@diagnostic disable-next-line: unused-local
         disable = function(lang, bufnr)
           -- disable treesitter for buffers that are too big (it's too slow)
           local buffer_size = vim.fn.line2byte(vim.fn.line("$") + 1) - 1

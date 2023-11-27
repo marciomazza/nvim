@@ -9,7 +9,7 @@ return {
   },
   config = function()
     vim.opt.completeopt = { "menu", "menuone", "noselect" }
-    local cmp = require("cmp")
+    local cmp = require "cmp"
     cmp.setup {
       mapping = cmp.mapping.preset.insert(
         {
@@ -25,7 +25,7 @@ return {
         { name = "path" },
         { name = "nvim_lua" }
       },
-      formatting = { format = require("lspkind").cmp_format() }
+      formatting = { format = require "lspkind".cmp_format() }
     }
   end
 }

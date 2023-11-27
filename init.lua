@@ -1,6 +1,6 @@
-set_keymap = require("utils").set_keymap -- FIXME: this is a hack
+set_keymap = require "utils".set_keymap -- FIXME: this is a hack
 
-require("packer").startup(
+require "packer".startup(
   function(use)
     -- Packer can manage itself
     use "wbthomason/packer.nvim"
@@ -23,7 +23,7 @@ require("packer").startup(
     -- files
     use "junegunn/fzf"
     use "vim-scripts/grep.vim"
-    use(require("sidebars")) -- nvim-tree & preservim/tagbar
+    use(require "sidebars") -- nvim-tree & preservim/tagbar
 
     -- programming in general
     use "jiangmiao/auto-pairs"
@@ -36,8 +36,8 @@ require("packer").startup(
         vim.g.copilot_filetypes = { gitcommit = true, markdown = true }
       end
     }
-    use(require("treesitter"))
-    use(require("nvim-cmp"))
+    use(require "treesitter")
+    use(require "nvim-cmp")
 
     -- lsp
     use "williamboman/mason.nvim"
@@ -55,9 +55,9 @@ require("packer").startup(
 
 
 -- load sub config files
-require("tuning")
-require("appearance")
-require("lsp")
-require("python")
-require("ale")
-require("extras")
+require "tuning"
+require "appearance"
+require "lsp"
+require "python"
+require "ale"
+require "extras"

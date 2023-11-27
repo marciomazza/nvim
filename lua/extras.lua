@@ -13,7 +13,7 @@ local function custom_netrw_BrowseX()
 
   -- "gx" originally calls <Plug>NetrwBrowseX, that is:
   --   netrw#BrowseX(netrw#GX(),netrw#CheckIfRemote(netrw#GX()))<cr>
-  check_if_remote = vim.fn["netrw#CheckIfRemote"]
+  local check_if_remote = vim.fn["netrw#CheckIfRemote"]
   vim.fn["netrw#BrowseX"](filename, check_if_remote(filename))
 end
 
