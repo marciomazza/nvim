@@ -17,6 +17,7 @@ end
 
 local capabilities = require "cmp_nvim_lsp".default_capabilities()
 -- for some strange reason jedi language server completion breaks if this is true
+-- TODO: invetigate or report a bug
 capabilities.textDocument.completion.completionItem.snippetSupport = false
 
 require "mason".setup()
@@ -42,9 +43,32 @@ lspconfig.util.on_setup =
       end
     )
 
+-- format on save using lsp
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+local register_lsp_format_on_save = function(client, bufnr, extra_operation)
+  if client.supports_method("textDocument/formatting") then
+    vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+    vim.api.nvim_create_autocmd(
+      "BufWritePre",
+      {
+        group = augroup,
+        buffer = bufnr,
+        callback = function()
+          local winview = vim.fn.winsaveview() -- saves cursor and scroll positions etc
+          vim.lsp.buf.format()
+          if extra_operation ~= nil then
+            extra_operation()
+          end
+          vim.fn.winrestview(winview) -- restores
+        end
+      }
+    )
+  end
+end
+
 lspconfig.lua_ls.setup {
   on_attach = function(client, bufnr)
-    require "lsp-format".on_attach(client, bufnr) -- enable format on save
+    register_lsp_format_on_save(client, bufnr)
     set_lsp_keymaps(bufnr)
   end
 }
@@ -56,10 +80,19 @@ lspconfig.jedi_language_server.setup {
   capabilities = capabilities
 }
 
+local ruff_lsp_execute_fix_all = function()
+  vim.lsp.buf.code_action {
+    filter = function(action)
+      return action.kind == "source.fixAll"
+    end,
+    apply = true
+  }
+end
+
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#ruff_lsp
 lspconfig.ruff_lsp.setup {
   on_attach = function(client, bufnr)
-    require "lsp-format".on_attach(client, bufnr) -- enable format on save
+    register_lsp_format_on_save(client, bufnr, ruff_lsp_execute_fix_all)
     set_lsp_keymaps(bufnr)
   end
 }

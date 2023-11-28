@@ -43,7 +43,6 @@ require "packer".startup(
     use "williamboman/mason.nvim"
     use "williamboman/mason-lspconfig.nvim"
     use "neovim/nvim-lspconfig"
-    use "lukas-reineke/lsp-format.nvim"
 
     -- appearance
     use "itchyny/lightline.vim"
