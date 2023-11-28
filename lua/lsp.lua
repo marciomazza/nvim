@@ -44,6 +44,7 @@ lspconfig.util.on_setup =
     )
 
 -- format on save using lsp
+-- TODO: extend this to formatters without an lsp
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 local register_lsp_format_on_save = function(client, bufnr, extra_operation)
   if client.supports_method("textDocument/formatting") then
