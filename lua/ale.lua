@@ -20,15 +20,9 @@ vim.g.ale_fixers = {
   html = { "djlint" },
   htmldjango = { "djlint" }
 }
-vim.g.ale_python_black_use_global = 1
-vim.g.ale_python_isort_use_global = 1
-vim.g.ale_python_isort_options = "--float-to-top --profile black"
 
 local disabled = { ale_enabled = 0, ale_fixers = {} }
 
 vim.g.ale_pattern_options = {
-  ["ipython_log.py"] = disabled,
-  ["site-packages"] = disabled,
-  ["plone"] = disabled,
   ["repos"] = disabled
 }
