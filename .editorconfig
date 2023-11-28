@@ -1,0 +1,3 @@
+# see https://github.com/CppCXY/EmmyLuaCodeStyle/blob/master/lua.template.editorconfig
+[*.lua]
+quote_style = double
