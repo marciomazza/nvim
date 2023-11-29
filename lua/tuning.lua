@@ -80,15 +80,20 @@ vim.g.Grep_Default_Options = "-IR"
 vim.g.Grep_Skip_Files = "*~ ipython_log.py*"
 vim.g.Grep_Skip_Dirs = "RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz"
 
--- change comment style for sql
-vim.api.nvim_create_autocmd(
-  "FileType",
-  {
-    pattern = "sql",
-    callback = function()
-      vim.opt.commentstring = "-- %s"
-    end
-  }
-)
+-- change comment style
+local function set_commentstring(filetype, commentstring)
+  vim.api.nvim_create_autocmd(
+    "FileType",
+    {
+      pattern = filetype,
+      callback = function()
+        vim.opt.commentstring = commentstring
+      end
+    }
+  )
+end
+
+set_commentstring("sql", "-- %s")
+set_commentstring("htmldjango", "{# %s #}")
 
 set_keymap("n", "<leader>m", ":PackerSync<CR>")
