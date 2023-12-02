@@ -99,6 +99,7 @@ set_commentstring("htmldjango", "{# %s #}")
 -- configure extra file types
 vim.filetype.add({
   pattern = {
-    [".+%.zcml"] = "xml", -- zcml plone files
+    ["ipython_log%.py.*"] = "python", -- ipython log files
+    [".+%.zcml"] = "xml",             -- zcml plone files
   }
 })
