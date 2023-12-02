@@ -95,5 +95,3 @@ end
 
 set_commentstring("sql", "-- %s")
 set_commentstring("htmldjango", "{# %s #}")
-
-set_keymap("n", "<leader>m", ":PackerSync<CR>")
