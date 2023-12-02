@@ -95,3 +95,10 @@ end
 
 set_commentstring("sql", "-- %s")
 set_commentstring("htmldjango", "{# %s #}")
+
+-- configure extra file types
+vim.filetype.add({
+  pattern = {
+    [".+%.zcml"] = "xml", -- zcml plone files
+  }
+})

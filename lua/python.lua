@@ -18,14 +18,3 @@ vim.api.nvim_create_autocmd(
     end
   }
 )
-
--- zcml plone files are xml
-vim.api.nvim_create_autocmd(
-  { "BufRead", "BufNewFile" },
-  {
-    pattern = "*.zcml",
-    callback = function()
-      vim.bo.filetype = "xml"
-    end
-  }
-)
