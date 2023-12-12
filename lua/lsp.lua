@@ -22,7 +22,7 @@ capabilities.textDocument.completion.completionItem.snippetSupport = false
 
 require "mason".setup()
 require "mason-lspconfig".setup {
-  ensure_installed = { "lua_ls", "jedi_language_server", "ruff_lsp" },
+  ensure_installed = { "lua_ls", "jedi_language_server", "ruff_lsp", "htmx" }
 }
 
 local lspconfig = require "lspconfig"
@@ -96,4 +96,11 @@ lspconfig.ruff_lsp.setup {
     register_lsp_format_on_save(client, bufnr, ruff_lsp_execute_fix_all)
     set_lsp_keymaps(bufnr)
   end
+}
+
+lspconfig.htmx.setup {
+  on_attach = function(_, bufnr)
+    set_lsp_keymaps(bufnr)
+  end,
+  filetypes = { "html", "htmldjango" }
 }
