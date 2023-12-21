@@ -103,3 +103,9 @@ vim.filetype.add({
     [".+%.zcml"] = "xml",             -- zcml plone files
   }
 })
+
+-- add project subdirectories to path to find files (with `gf`, for example)
+vim.opt.path:append { vim.fn.getcwd() .. "/**" }
+-- but ignore the directory `zzz`
+-- TODO: ignore everything that is git ignored
+vim.opt.wildignore:append { "**/zzz/**" }
