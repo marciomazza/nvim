@@ -17,7 +17,7 @@ end
 
 local capabilities = require "cmp_nvim_lsp".default_capabilities()
 -- for some strange reason jedi language server completion breaks if this is true
--- TODO: invetigate or report a bug
+-- TODO: investigate or report a bug
 capabilities.textDocument.completion.completionItem.snippetSupport = false
 
 require "mason".setup()
@@ -90,7 +90,6 @@ local ruff_lsp_execute_fix_all = function()
   }
 end
 
--- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#ruff_lsp
 lspconfig.ruff_lsp.setup {
   on_attach = function(client, bufnr)
     register_lsp_format_on_save(client, bufnr, ruff_lsp_execute_fix_all)
