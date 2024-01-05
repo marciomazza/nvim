@@ -31,7 +31,6 @@ vim.api.nvim_create_autocmd(
   }
 )
 
-vim.g.mapleader = ","                     -- leader
 vim.opt.clipboard = "unnamed,unnamedplus" -- use standard clipboard
 vim.opt.hidden = true                     -- Enable hidden buffers
 vim.opt.diffopt:append { "iwhite" }       -- ignore whitespace in vimdiff
