@@ -31,9 +31,4 @@ return {
     end
   },
 
-  -- appearance
-  "itchyny/lightline.vim",
-  "mengelbrecht/lightline-bufferline",
-  "NLKNguyen/papercolor-theme",
-  "folke/lsp-colors.nvim",
 }

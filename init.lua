@@ -19,7 +19,6 @@ require("lazy").setup("plugins")
 
 -- load sub config files
 require "tuning"
-require "appearance"
 require "python"
 require "ale"
 require "extras"
