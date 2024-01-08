@@ -22,7 +22,6 @@ return {
   -- programming in general
   "jiangmiao/auto-pairs",
   "gaving/vim-textobj-argument",
-  "dense-analysis/ale",
   { "iamcco/markdown-preview.nvim", run = "cd app && yarn install", cmd = "MarkdownPreview" },
   {
     "github/copilot.vim",

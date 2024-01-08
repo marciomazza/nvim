@@ -1,3 +1,5 @@
+local register_lsp_format_on_save = require "utils".register_lsp_format_on_save
+
 local opts = { silent = true }
 vim.keymap.set("n", "<C-l>", vim.diagnostic.open_float, opts)
 vim.keymap.set("n", "<C-j>", vim.diagnostic.goto_next, opts)
@@ -13,30 +15,6 @@ local function set_lsp_keymaps(bufnr)
   vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
   vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, bufopts)
   vim.keymap.set({ "n", "v" }, "<leader>a", vim.lsp.buf.code_action, bufopts)
-end
-
--- format on save using lsp
--- TODO: extend this to formatters without an lsp
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-local function register_lsp_format_on_save(client, bufnr, extra_operation)
-  if client.supports_method("textDocument/formatting") then
-    vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-    vim.api.nvim_create_autocmd(
-      "BufWritePre",
-      {
-        group = augroup,
-        buffer = bufnr,
-        callback = function()
-          local winview = vim.fn.winsaveview() -- saves cursor and scroll positions etc
-          vim.lsp.buf.format()
-          if extra_operation ~= nil then
-            extra_operation()
-          end
-          vim.fn.winrestview(winview) -- restores
-        end
-      }
-    )
-  end
 end
 
 return {
