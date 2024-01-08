@@ -1,4 +1,5 @@
-local set_keymap = require "utils".set_keymap -- FIXME: this is a hack
+local set_keymap = require "utils".set_keymap
+
 return {
   {
     "kyazdani42/nvim-tree.lua",

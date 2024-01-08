@@ -14,9 +14,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-set_keymap = require "utils".set_keymap -- FIXME: this is a hack
-
-vim.g.mapleader = ","                   -- leader
+vim.g.mapleader = "," -- leader
 require("lazy").setup("plugins")
 
 -- load sub config files
