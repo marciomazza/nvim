@@ -23,16 +23,6 @@ for _, entry in pairs(abbrev_translations) do
   vim.cmd(string.format("cnoreabbrev %s", entry))
 end
 
--- The PC is fast enough, do syntax highlight syncing from start
--- TODO probably remove this if start using treesitter
-vim.api.nvim_create_autocmd(
-  "BufEnter",
-  {
-    pattern = "*",
-    command = ":syntax sync fromstart"
-  }
-)
-
 vim.opt.clipboard = "unnamed,unnamedplus" -- use standard clipboard
 vim.opt.hidden = true                     -- Enable hidden buffers
 vim.opt.diffopt:append { "iwhite" }       -- ignore whitespace in vimdiff
