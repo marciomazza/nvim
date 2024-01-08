@@ -20,7 +20,6 @@ require("lazy").setup("plugins")
 -- load sub config files
 require "tuning"
 require "appearance"
-require "lsp"
 require "python"
 require "ale"
 require "extras"

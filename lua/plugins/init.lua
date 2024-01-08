@@ -31,11 +31,6 @@ return {
     end
   },
 
-  -- lsp
-  "williamboman/mason.nvim",
-  "williamboman/mason-lspconfig.nvim",
-  "neovim/nvim-lspconfig",
-
   -- appearance
   "itchyny/lightline.vim",
   "mengelbrecht/lightline-bufferline",
