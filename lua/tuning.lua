@@ -50,6 +50,7 @@ set_keymap("v", ">", ">gv")
 
 -- toggle spell check
 set_keymap("", "<F6>", ":syntax on<CR>:setlocal spell! spelllang=en_us<CR>")
+set_keymap("", "<F7>", ":syntax on<CR>:setlocal spell! spelllang=pt_br<CR>")
 
 -- hack to suppress "E173: n more files to edit" after :q without visiting all files
 -- https://vi.stackexchange.com/a/31552
