@@ -13,7 +13,6 @@ vim.api.nvim_create_autocmd(
       vim.bo.softtabstop = 4
       vim.bo.smartindent = true
       vim.bo.formatoptions = "croqj"
-      vim.wo.colorcolumn = "100"
       vim.cmd('iabbrev pdb __import__("pdb").set_trace()') -- TODO make this only local to python files
     end
   }
