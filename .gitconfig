@@ -1,0 +1,6 @@
+# to apply this configuration, run:
+# git config --local include.path ../.gitconfig
+[blame]
+    # ignores commits listed in this file when running `git blame`
+    # (leia mais em https://akrabat.com/ignoring-revisions-with-git-blame)
+    ignoreRevsFile = .git-blame-ignore-revs
