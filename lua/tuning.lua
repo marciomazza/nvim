@@ -31,9 +31,8 @@ vim.opt.diffopt:append { "iwhite" }       -- ignore whitespace in vimdiff
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
--- tabstops (may be overriten by autocmd rules)
+-- tabstops
 vim.opt.tabstop = 2
-vim.opt.softtabstop = 0
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 
