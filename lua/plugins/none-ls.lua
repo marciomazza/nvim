@@ -3,7 +3,9 @@ local register_lsp_format_on_save = require "utils".register_lsp_format_on_save
 return {
   "nvimtools/none-ls.nvim",
   dependencies = {
-    { "nvim-lua/plenary.nvim" },
+    { "nvim-lua/plenary.nvim",
+      "nvimtools/none-ls-extras.nvim",
+    },
   },
   config = function()
     local null_ls = require("null-ls")
@@ -13,13 +15,14 @@ return {
         register_lsp_format_on_save(client, bufnr)
       end,
       sources = {
-        null_ls.builtins.formatting.trim_whitespace,
-        null_ls.builtins.formatting.trim_newlines,
         null_ls.builtins.formatting.djlint.with({
           filetypes = { "django", "jinja.html", "htmldjango", "html" }
         }),
-        null_ls.builtins.diagnostics.eslint,
         null_ls.builtins.formatting.prettier,
+        -- from nvimtools/none-ls-extras.nvim
+        require("none-ls.formatting.trim_whitespace"),
+        require("none-ls.formatting.trim_newlines"),
+        require("none-ls.diagnostics.eslint"),
       },
     })
   end
