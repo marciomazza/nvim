@@ -1,6 +1,11 @@
 --------------------------------------------------------------------------------
 -- Lazy bootstrap
 --------------------------------------------------------------------------------
+
+-- used by CrispyDrone/vim-tasks
+-- has to be done befor Lazy is loaded
+-- TODO: move to tuning.lua... How??
+vim.g.maplocalleader = " "
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
