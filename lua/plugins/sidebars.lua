@@ -11,7 +11,7 @@ return {
           actions = { open_file = { quit_on_open = true } }
         }
       )
-      set_keymap("n", "<F3>", ":NvimTreeToggle<CR>")
+      set_keymap("n", "<F3>", ":NvimTreeFindFileToggle<CR>")
     end
   },
   {
