@@ -38,5 +38,14 @@ return {
       vim.g.copilot_filetypes = { gitcommit = true, markdown = true }
     end
   },
+  "tweekmonster/django-plus.vim", -- django
+  {
+    "andymass/vim-matchup",
+    config = function()
+      -- Any additional configuration for vim-matchup can go here
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
+    end,
+  },
+
 
 }

@@ -17,6 +17,7 @@ return {
         end
       },
       rainbow = { enable = true }, -- enable nvim-ts-rainbow
+      matchup = { enable = true }, -- enable andymass/vim-matchup
       indent = { enable = true },
       incremental_selection = { enable = true }
     }
