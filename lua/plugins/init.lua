@@ -16,7 +16,8 @@ return {
   "CrispyDrone/vim-tasks",
 
   -- files
-  "junegunn/fzf",
+  { "junegunn/fzf", dir = "~/.fzf", build = "./install --all" },
+
   "vim-scripts/grep.vim",
 
   -- programming in general
