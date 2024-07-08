@@ -80,17 +80,7 @@ return {
       end
 
       lspconfig.lua_ls.setup { on_attach = on_attach }
-
-      local capabilities = require "cmp_nvim_lsp".default_capabilities()
-      -- for some strange reason jedi language server completion breaks if this is true
-      -- TODO: investigate or report a bug
-      capabilities.textDocument.completion.completionItem.snippetSupport = false
-
-      lspconfig.jedi_language_server.setup {
-        on_attach = on_attach,
-        capabilities = capabilities
-      }
-
+      lspconfig.jedi_language_server.setup { on_attach = on_attach }
       lspconfig.ruff.setup { on_attach = on_attach }
       lspconfig.htmx.setup { on_attach = on_attach, filetypes = { "html", "htmldjango" }
       }
