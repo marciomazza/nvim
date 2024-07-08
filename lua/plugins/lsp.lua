@@ -26,7 +26,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup {
-        ensure_installed = { "lua_ls", "jedi_language_server", "ruff_lsp", "htmx" }
+        ensure_installed = { "lua_ls", "jedi_language_server", "ruff", "htmx" }
       }
     end,
   },
@@ -70,18 +70,18 @@ return {
         capabilities = capabilities
       }
 
-      local ruff_lsp_execute_fix_all = function()
+      local ruff_execute_fix_all = function()
         vim.lsp.buf.code_action {
           filter = function(action)
-            return action.kind == "source.fixAll"
+            return action.kind == "source.fixAll.ruff"
           end,
           apply = true
         }
       end
 
-      lspconfig.ruff_lsp.setup {
+      lspconfig.ruff.setup {
         on_attach = function(client, bufnr)
-          register_lsp_format_on_save(client, bufnr, ruff_lsp_execute_fix_all)
+          register_lsp_format_on_save(client, bufnr, ruff_execute_fix_all)
           set_lsp_keymaps(bufnr)
         end
       }
