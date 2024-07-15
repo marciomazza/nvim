@@ -1,3 +1,5 @@
+local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
+
 return {
   "nvimtools/none-ls.nvim",
   dependencies = {
@@ -10,9 +12,8 @@ return {
 
     null_ls.setup({
       sources = {
-        null_ls.builtins.formatting.djlint.with({
-          filetypes = { "django", "jinja.html", "htmldjango", "html" }
-        }),
+        null_ls.builtins.formatting.djlint.with({ filetypes = djlint_filetypes }),
+        null_ls.builtins.diagnostics.djlint.with({ filetypes = djlint_filetypes }),
         null_ls.builtins.formatting.prettier,
         -- from nvimtools/none-ls-extras.nvim
         require("none-ls.formatting.trim_whitespace"),
