@@ -39,6 +39,15 @@ return {
     "folke/noice.nvim",
     event = "VeryLazy",
     config = true,
+    opts = {
+      -- don't show saved file message
+      routes = {
+        {
+          filter = { event = "msg_show", find = " written$" },
+          opts = { skip = true },
+        },
+      },
+    },
     dependencies = {
       "MunifTanjim/nui.nvim",
       "rcarriga/nvim-notify",
