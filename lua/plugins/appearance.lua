@@ -5,6 +5,13 @@ vim.opt.relativenumber = true
 vim.opt.showtabline = 2
 vim.wo.colorcolumn = "100"
 
+local function noice_skip(pattern)
+  return {
+    filter = { event = "msg_show", find = pattern },
+    opts = { skip = true },
+  }
+end
+
 return {
   {
     "NLKNguyen/papercolor-theme",
@@ -40,12 +47,9 @@ return {
     event = "VeryLazy",
     config = true,
     opts = {
-      -- don't show saved file message
       routes = {
-        {
-          filter = { event = "msg_show", find = " written$" },
-          opts = { skip = true },
-        },
+        noice_skip(" written$"), -- don't show saved file message
+        noice_skip("^search hit BOTTOM, continuing at TOP$"),
       },
     },
     dependencies = {
