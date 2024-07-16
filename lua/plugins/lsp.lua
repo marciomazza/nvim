@@ -14,7 +14,7 @@ local pre_format_hooks = {
   end
 }
 
-local lsp_format_on_save = function()
+local function lsp_format_on_save()
   local winview = vim.fn.winsaveview() -- saves cursor and scroll positions etc
   vim.lsp.buf.format {
     filter = function(client)
