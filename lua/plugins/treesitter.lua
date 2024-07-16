@@ -2,7 +2,8 @@ return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
   dependencies = {
-    "p00f/nvim-ts-rainbow"
+    "p00f/nvim-ts-rainbow",
+    "nvim-treesitter/playground"
   },
   config = function()
     require "nvim-treesitter.configs".setup {
@@ -19,7 +20,13 @@ return {
       rainbow = { enable = true }, -- enable nvim-ts-rainbow
       matchup = { enable = true }, -- enable andymass/vim-matchup
       indent = { enable = true },
-      incremental_selection = { enable = true }
+      incremental_selection = { enable = true },
+      playground = {
+        enable = true,
+        disable = {},
+        updatetime = 25,        -- Debounced time for highlighting nodes in the playground from source code
+        persist_queries = false -- Whether the query persists across vim sessions
+      }
     }
 
     -- Temporarily use my own treesitter dockerfile parser
