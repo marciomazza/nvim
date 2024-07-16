@@ -42,7 +42,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup {
-        ensure_installed = { "lua_ls", "jedi_language_server", "ruff", "htmx" }
+        ensure_installed = { "lua_ls", "jedi_language_server", "ruff", "htmx", "taplo" }
       }
     end,
   },
@@ -82,8 +82,8 @@ return {
       lspconfig.lua_ls.setup { on_attach = on_attach }
       lspconfig.jedi_language_server.setup { on_attach = on_attach }
       lspconfig.ruff.setup { on_attach = on_attach }
-      lspconfig.htmx.setup { on_attach = on_attach, filetypes = { "html", "htmldjango" }
-      }
+      lspconfig.htmx.setup { on_attach = on_attach, filetypes = { "html", "htmldjango" } }
+      lspconfig.taplo.setup { on_attach = on_attach }
     end
   },
 }
