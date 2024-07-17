@@ -66,7 +66,10 @@ return {
       end
 
       lspconfig.lua_ls.setup { on_attach = on_attach }
-      lspconfig.jedi_language_server.setup { on_attach = on_attach }
+      lspconfig.jedi_language_server.setup {
+        on_attach = on_attach,
+        handlers = require "jedi".handlers,
+      }
       lspconfig.ruff.setup { on_attach = on_attach }
       lspconfig.htmx.setup { on_attach = on_attach, filetypes = { "html", "htmldjango" } }
       lspconfig.taplo.setup { on_attach = on_attach }
