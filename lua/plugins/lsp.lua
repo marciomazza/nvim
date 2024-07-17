@@ -51,21 +51,7 @@ return {
     config = function()
       local lspconfig = require "lspconfig"
 
-      local plone = require "plone"
-
-      lspconfig.util.on_setup =
-          lspconfig.util.add_hook_before(
-            lspconfig.util.on_setup,
-            function(config)
-              local plone_config = plone.get_plone_config()
-              if plone_config ~= nil then
-                config.root_dir = function()
-                  return plone_config.root_dir
-                end
-                config.init_options = { workspace = { extraPaths = plone_config.extra_paths } }
-              end
-            end
-          )
+      require "plone".setup(lspconfig)
 
       local function on_attach(client, bufnr)
         -- set keymaps for LSP
