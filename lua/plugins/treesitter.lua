@@ -21,7 +21,13 @@ return {
       rainbow = { enable = true }, -- enable nvim-ts-rainbow
       matchup = { enable = true }, -- enable andymass/vim-matchup
       indent = { enable = true },
-      incremental_selection = { enable = true },
+      incremental_selection = { enable = true,
+        keymaps = {
+          init_selection = "<M-Up>",
+          node_incremental = "<M-Up>",
+          node_decremental = "<M-Down>",
+        },
+      },
       playground = {
         enable = true,
         disable = {},
@@ -32,10 +38,13 @@ return {
         select = {
           enable = true,
           keymaps = {
+            ["aa"] = "@parameter.outer",
+            ["ia"] = "@parameter.inner",
             ["af"] = "@function.outer",
             ["if"] = "@function.inner",
-            ["ac"] = "@class.outer",
-            ["ic"] = "@class.inner",
+            ["ac"] = "@comment.outer",
+            ["ic"] = "@comment.inner",
+            ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
           }
         },
         swap = {
