@@ -14,10 +14,18 @@ end
 
 return {
   {
-    "NLKNguyen/papercolor-theme",
+    "rebelot/kanagawa.nvim",
+    lazy = false,
+    priority = 1000,
     config = function()
-      vim.cmd.colorscheme "PaperColor"
-    end
+      require('kanagawa').setup({
+        transparent = true,
+        colors = {
+          bg = "#1e1e1e",
+        },
+      })
+      vim.cmd.colorscheme('kanagawa-wave')
+    end,
   },
   {
     "itchyny/lightline.vim",
@@ -25,7 +33,7 @@ return {
     config = function()
       -- itchyny/lightline.vim & mengelbrecht/lightline-bufferline
       vim.g.lightline = {
-        colorscheme = "PaperColor",
+        colorscheme = "kanagawa-wave",
         active = {
           left = {
             { "mode",      "paste" },
