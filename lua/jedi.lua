@@ -16,7 +16,9 @@ end
 
 local function find_name_inside_quotes(client_id)
   local node = ts_utils.get_node_at_cursor()
-  if not node then return nil end
+  if not node then
+    return
+  end
   local type = node:type()
   -- current node must be at a string
   if type == "string_start" or type == "string_end" then
@@ -31,9 +33,9 @@ local function find_name_inside_quotes(client_id)
   if not module then
     return
   end
-  local open_params, definition_params = get_fake_definition_params(module, obj)
   local client = vim.lsp.get_client_by_id(client_id)
   -- send source to the language server
+  local open_params, definition_params = get_fake_definition_params(module, obj)
   client.notify("textDocument/didOpen", open_params)
   local def = client.request_sync("textDocument/definition", definition_params, 1000)
   return def.result
