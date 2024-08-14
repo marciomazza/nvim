@@ -19,10 +19,11 @@ return {
     priority = 1000,
     config = function()
       require('kanagawa').setup({
-        transparent = true,
         colors = {
-          bg = "#1e1e1e",
-        },
+          palette = {
+            fujiGray = "#9a978d",
+          },
+        }
       })
       vim.cmd.colorscheme('kanagawa-wave')
     end,
