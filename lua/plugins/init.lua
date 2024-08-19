@@ -22,7 +22,6 @@ return {
 
   -- programming in general
   "jiangmiao/auto-pairs",
-  "gaving/vim-textobj-argument",
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
