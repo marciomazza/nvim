@@ -1,5 +1,4 @@
 vim.opt.number = true
-vim.opt.relativenumber = true
 -- It breaks a lot of things, so suspended. Perhaps use it in the future
 -- vim.opt.cmdheight = 0  -- autohide the command-line (https://vi.stackexchange.com/a/38231)
 vim.opt.showtabline = 2
