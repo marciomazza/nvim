@@ -78,15 +78,5 @@ return {
         }
       }
     }
-
-    -- Temporarily use my own treesitter dockerfile parser
-    -- TODO remove this once/if PR is accepted
-    -- https://github.com/camdencheek/tree-sitter-dockerfile/pull/24
-    --
-    -- only takes effect after rerunning :TSInstall dockerfile
-    local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-    parser_config.dockerfile = {
-      install_info = { url = "~/repos/tree-sitter-dockerfile", files = { "src/parser.c" } }
-    }
   end
 }
