@@ -1,8 +1,6 @@
-vim.opt.number = true
--- It breaks a lot of things, so suspended. Perhaps use it in the future
--- vim.opt.cmdheight = 0  -- autohide the command-line (https://vi.stackexchange.com/a/38231)
-vim.opt.showtabline = 2
-vim.wo.colorcolumn = "100"
+vim.opt.number = true      -- enable line numbers in the editor
+vim.opt.showtabline = 2    -- always show the tab line, even if there's only one tab
+vim.wo.colorcolumn = "100" -- set a visual column marker at the 100th character position
 
 local function noice_skip(pattern)
   return {
