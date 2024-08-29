@@ -2,6 +2,7 @@ vim.opt.number = true      -- enable line numbers in the editor
 vim.opt.showtabline = 2    -- always show the tab line, even if there's only one tab
 vim.wo.colorcolumn = "100" -- set a visual column marker at the 100th character position
 vim.o.scrolloff = 999      -- keep the cursor centered when scrolling
+vim.o.signcolumn = "auto"  -- only show the sign column when there are signs to be displayed
 
 local function noice_skip(pattern)
   return {
