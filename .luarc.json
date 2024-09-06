@@ -1,5 +1,4 @@
 {
-  "diagnostics": {
-    "globals": ["vim"]
-  }
+  "runtime.version": "LuaJIT",
+  "diagnostics.globals": ["vim", "set_keymap"]
 }
