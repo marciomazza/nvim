@@ -17,14 +17,14 @@ return {
     lazy = false,
     priority = 1000,
     config = function()
-      require('kanagawa').setup({
+      require("kanagawa").setup({
         colors = {
           palette = {
             fujiGray = "#9a978d",
           },
         }
       })
-      vim.cmd.colorscheme('kanagawa-wave')
+      vim.cmd.colorscheme("kanagawa-wave")
     end,
   },
   {

@@ -41,7 +41,7 @@ local function find_name_inside_quotes(client_id)
   return def.result
 end
 
-local default_handler = vim.lsp.handlers['textDocument/definition']
+local default_handler = vim.lsp.handlers["textDocument/definition"]
 
 local function jedi_definition_handler(err, result, ctx, config)
   if result == nil or vim.tbl_isempty(result) then
