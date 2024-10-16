@@ -51,21 +51,6 @@ return {
   },
   "folke/lsp-colors.nvim",
   {
-    "folke/noice.nvim",
-    event = "VeryLazy",
-    config = true,
-    opts = {
-      routes = {
-        noice_skip(" written$"), -- don't show saved file message
-        noice_skip("^search hit BOTTOM, continuing at TOP$"),
-      },
-    },
-    dependencies = {
-      "MunifTanjim/nui.nvim",
-      "rcarriga/nvim-notify",
-    }
-  },
-  {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     opts = { signs = false },
