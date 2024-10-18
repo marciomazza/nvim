@@ -55,12 +55,6 @@ set_keymap("", "<F7>", ":syntax on<CR>:setlocal spell! spelllang=pt_br<CR>")
 -- https://vi.stackexchange.com/a/31552
 vim.api.nvim_create_autocmd("QuitPre", { command = ":blast" })
 
--- configure CrispyDrone/vim-tasks
--- TODO run this only on CrispyDrone/vim-tasks context
--- for https://github.com/CrispyDrone/vim-tasks#add-tasks
-vim.g.maplocalleader = " "
-vim.g.TasksDateFormat = "" -- no time marks for @done
-
 -- junegunn/vim-easy-align
 set_keymap("n", "ga", "<Plug>(EasyAlign)")
 set_keymap("x", "ga", "<Plug>(EasyAlign)")

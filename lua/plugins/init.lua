@@ -12,9 +12,6 @@ return {
   "farmergreg/vim-lastplace", -- remember cursor position on file reopen
   "junegunn/vim-easy-align",
 
-  -- utils
-  "CrispyDrone/vim-tasks",
-
   -- files
   { "junegunn/fzf", dir = "~/.fzf", build = "./install --all" },
 
