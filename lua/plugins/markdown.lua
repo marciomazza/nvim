@@ -16,7 +16,12 @@ return {
         checked = { scope_highlight = "@markup.strikethrough" },
         position = "overlay",
         custom = {
-          important = { raw = "[~]", rendered = "󰓎 ", highlight = "DiagnosticWarn" },
+          todo = {
+            raw = "[-]",
+            rendered = "󰓎 ",
+            highlight = "DiagnosticWarn",
+            scope_highlight = "DiagnosticWarn",
+          },
         },
       },
     }
