@@ -12,6 +12,16 @@ return {
     "MeanderingProgrammer/render-markdown.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     opts = {
+      anti_conceal = {
+        enabled = false,
+        ignore = {
+          code_background = true,
+          sign = true,
+          check_icon = true,
+          check_scope = true,
+        },
+      },
+      -- render_modes = true,
       checkbox = {
         checked = { scope_highlight = "@markup.strikethrough" },
         position = "overlay",
