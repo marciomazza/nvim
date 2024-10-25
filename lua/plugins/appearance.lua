@@ -25,6 +25,8 @@ return {
         }
       })
       vim.cmd.colorscheme("kanagawa-wave")
+      -- clearer, especially with MeanderingProgrammer/render-markdown.nvim
+      vim.api.nvim_set_hl(0, "DiffChange", { bg = "#d4a520", fg = "#333333", bold = true })
     end,
   },
   {
