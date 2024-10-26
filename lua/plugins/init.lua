@@ -19,12 +19,6 @@ return {
 
   -- programming in general
   "jiangmiao/auto-pairs",
-  {
-    "github/copilot.vim",
-    config = function()
-      vim.g.copilot_filetypes = { gitcommit = true, markdown = true }
-    end
-  },
   "tweekmonster/django-plus.vim", -- django
   {
     "andymass/vim-matchup",
