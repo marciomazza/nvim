@@ -1,6 +1,15 @@
 return {
-  "github/copilot.vim",
-  config = function()
-    vim.g.copilot_filetypes = { gitcommit = true, markdown = true }
-  end
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup({
+        suggestion = {
+          auto_trigger = true,
+        },
+        filetypes = { gitcommit = true, markdown = true },
+      })
+    end,
+  },
 }

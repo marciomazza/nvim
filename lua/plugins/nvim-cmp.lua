@@ -24,7 +24,16 @@ return {
           ["<C-Space>"] = cmp.mapping.complete(),
           -- Accept currently selected item.
           -- Set `select` to `false` to only confirm explicitly selected items.
-          ["<CR>"] = cmp.mapping.confirm({ select = true })
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          -- give <Tab> precedence to copilot.lua
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            local suggestion = require("copilot.suggestion")
+            if suggestion.is_visible() then
+              suggestion.accept()
+            else
+              fallback()
+            end
+          end, { "i", "s" })
         }
       ),
       sources = {
