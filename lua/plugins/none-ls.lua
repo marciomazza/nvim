@@ -17,7 +17,8 @@ return {
         null_ls.builtins.formatting.prettier,
         -- keep this until ruff implements float-to-top
         --   see https://github.com/astral-sh/ruff/issues/6514
-        null_ls.builtins.formatting.isort.with({ extra_args = { "--float-to-top" } }),
+        null_ls.builtins.formatting.isort.with({
+          extra_args = { "--float-to-top", "--profile", "black" } }),
         -- from nvimtools/none-ls-extras.nvim
         require("none-ls.formatting.trim_whitespace"),
         require("none-ls.formatting.trim_newlines"),
