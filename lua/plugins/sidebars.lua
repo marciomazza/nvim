@@ -3,7 +3,7 @@ local set_keymap = require "utils".set_keymap
 return {
   {
     "kyazdani42/nvim-tree.lua",
-    dependencies = { "kyazdani42/nvim-web-devicons" },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require "nvim-tree".setup(
         {
