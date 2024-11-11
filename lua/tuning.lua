@@ -35,6 +35,8 @@ vim.opt.smartcase = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
+-- use this otherwise markdown will have these set to 4
+vim.g.markdown_recommended_style = false
 
 set_keymap("n", "<leader><space>", ":noh<cr>") -- clear search highlight
 set_keymap("n", "<Tab>", ":bn<cr>")            -- buffer nav
