@@ -1,4 +1,6 @@
+-- djlint filetypes should not be formatted by prettier
 local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
+local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json", "yaml" }
 
 return {
   "nvimtools/none-ls.nvim",
@@ -14,7 +16,7 @@ return {
       sources = {
         null_ls.builtins.formatting.djlint.with({ filetypes = djlint_filetypes }),
         null_ls.builtins.diagnostics.djlint.with({ filetypes = djlint_filetypes }),
-        null_ls.builtins.formatting.prettier,
+        null_ls.builtins.formatting.prettier.with({ filetypes = prettier_filetypes }),
         -- keep this until ruff implements float-to-top
         --   see https://github.com/astral-sh/ruff/issues/6514
         null_ls.builtins.formatting.isort.with({
