@@ -51,7 +51,6 @@ return {
       vim.g["lightline#bufferline#read_only"] = " "
     end
   },
-  "folke/lsp-colors.nvim",
   {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
