@@ -58,4 +58,6 @@ return {
       signs = false,
       highlight = { pattern = [[.*<(KEYWORDS)\s*]] },
     }
-  } }
+  },
+  { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true }
+}
