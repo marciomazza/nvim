@@ -57,31 +57,11 @@ set_keymap("", "<F7>", ":syntax on<CR>:setlocal spell! spelllang=pt_br<CR>")
 -- https://vi.stackexchange.com/a/31552
 vim.api.nvim_create_autocmd("QuitPre", { command = ":blast" })
 
--- junegunn/vim-easy-align
-set_keymap("n", "ga", "<Plug>(EasyAlign)")
-set_keymap("x", "ga", "<Plug>(EasyAlign)")
-
 -- grep.vim
 set_keymap("n", "<leader>f", ":Rgrep<CR>")
 vim.g.Grep_Default_Options = "-IR"
 vim.g.Grep_Skip_Files = "*~ ipython_log.py*"
 vim.g.Grep_Skip_Dirs = "RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz"
-
--- change comment style
-local function set_commentstring(filetype, commentstring)
-  vim.api.nvim_create_autocmd(
-    "FileType",
-    {
-      pattern = filetype,
-      callback = function()
-        vim.bo.commentstring = commentstring
-      end
-    }
-  )
-end
-
-set_commentstring("sql", "-- %s")
-set_commentstring("htmldjango", "{# %s #}")
 
 -- configure extra file types
 vim.filetype.add({
