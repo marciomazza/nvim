@@ -74,7 +74,7 @@ local function set_commentstring(filetype, commentstring)
     {
       pattern = filetype,
       callback = function()
-        vim.opt.commentstring = commentstring
+        vim.bo.commentstring = commentstring
       end
     }
   )
