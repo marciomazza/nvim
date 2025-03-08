@@ -73,6 +73,7 @@ return {
       lspconfig.ruff.setup { on_attach = on_attach }
       lspconfig.htmx.setup { on_attach = on_attach, filetypes = { "html", "htmldjango" } }
       lspconfig.taplo.setup { on_attach = on_attach }
+      lspconfig.djlsp.setup { on_attach = on_attach } -- fourdigits/django-template-lsp
     end
   },
 }
