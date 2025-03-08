@@ -10,8 +10,8 @@ return {
 
   -- files
   { "junegunn/fzf", dir = "~/.fzf", build = "./install --all" },
-
   "vim-scripts/grep.vim",
+  "wsdjeg/vim-fetch",
 
   -- programming in general
   "tweekmonster/django-plus.vim", -- django
