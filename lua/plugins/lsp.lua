@@ -59,7 +59,7 @@ return {
         vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
         vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
         vim.keymap.set("n", "gt", vim.lsp.buf.type_definition, bufopts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+        vim.keymap.set("n", "gR", vim.lsp.buf.references, bufopts)
         vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
         vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, bufopts)
         vim.keymap.set({ "n", "v" }, "<leader>x", vim.lsp.buf.code_action, bufopts)
