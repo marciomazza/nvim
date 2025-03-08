@@ -35,7 +35,7 @@ return {
     config = function()
       -- itchyny/lightline.vim & mengelbrecht/lightline-bufferline
       vim.g.lightline = {
-        colorscheme = "kanagawa-wave",
+        colorscheme = "PaperColor",
         active = {
           left = {
             { "mode",      "paste" },
