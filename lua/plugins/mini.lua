@@ -20,5 +20,6 @@ return {
     require("mini.pairs").setup()
     require("mini.surround").setup()
     require("mini.jump").setup()
+    require("mini.splitjoin").setup()
   end,
 }
