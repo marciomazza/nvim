@@ -51,14 +51,6 @@ return {
       vim.g["lightline#bufferline#read_only"] = " "
     end
   },
-  {
-    "folke/todo-comments.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = {
-      signs = false,
-      highlight = { pattern = [[.*<(KEYWORDS)\s*]] },
-    }
-  },
   { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
   {
     "folke/zen-mode.nvim",

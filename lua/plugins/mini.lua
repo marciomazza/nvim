@@ -21,5 +21,14 @@ return {
     require("mini.surround").setup()
     require("mini.jump").setup()
     require("mini.splitjoin").setup()
+    require("mini.extra").setup()
+    local gen_highlighter = require "mini.extra".gen_highlighter
+    require("mini.hipatterns").setup({
+      highlighters = {
+        todo  = gen_highlighter.words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
+        fixme = gen_highlighter.words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
+        xxx   = gen_highlighter.words({ "XXX", "xxx" }, "MiniHipatternsHack"),
+      },
+    })
   end,
 }
