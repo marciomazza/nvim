@@ -59,5 +59,10 @@ return {
       highlight = { pattern = [[.*<(KEYWORDS)\s*]] },
     }
   },
-  { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true }
+  { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
+  {
+    "folke/zen-mode.nvim",
+    dependencies = { "folke/twilight.nvim" },
+  }
+
 }
