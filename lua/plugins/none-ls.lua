@@ -10,7 +10,7 @@ return {
     },
   },
   config = function()
-    local null_ls = require("null-ls")
+    local null_ls = require "null-ls"
 
     null_ls.setup({
       sources = {
@@ -22,9 +22,9 @@ return {
         null_ls.builtins.formatting.isort.with({
           extra_args = { "--float-to-top", "--profile", "black" } }),
         -- from nvimtools/none-ls-extras.nvim
-        require("none-ls.formatting.trim_whitespace"),
-        require("none-ls.formatting.trim_newlines"),
-        require("none-ls.diagnostics.eslint"),
+        require "none-ls.formatting.trim_whitespace",
+        require "none-ls.formatting.trim_newlines",
+        require "none-ls.diagnostics.eslint",
       },
     })
   end
