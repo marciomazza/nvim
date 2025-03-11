@@ -2,7 +2,6 @@ return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
   dependencies = {
-    "p00f/nvim-ts-rainbow",
     "nvim-treesitter/playground",
   },
   config = function()
@@ -17,7 +16,6 @@ return {
           return buffer_size > 300 * 1024 -- 300KB
         end
       },
-      rainbow = { enable = true }, -- enable nvim-ts-rainbow
       matchup = { enable = true }, -- enable andymass/vim-matchup
       indent = { enable = true },
       incremental_selection = { enable = true,

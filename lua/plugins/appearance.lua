@@ -51,6 +51,7 @@ return {
       vim.g["lightline#bufferline#read_only"] = " "
     end
   },
+  "HiPhish/rainbow-delimiters.nvim",
   { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
   {
     "folke/zen-mode.nvim",
