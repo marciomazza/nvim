@@ -22,4 +22,21 @@ return {
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
+  {
+    "stevearc/aerial.nvim",
+    opts = {
+      layout = {
+        min_width = 20,
+        max_width = { 30, 0.3 },
+      },
+      close_on_select = true,
+    },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons"
+    },
+    keys = {
+      { "<F4>", "<cmd>AerialToggle!<CR>", desc = "Toggle Aerial" },
+    },
+  }
 }
