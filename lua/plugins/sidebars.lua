@@ -2,19 +2,6 @@ local set_keymap = require "utils".set_keymap
 
 return {
   {
-    "kyazdani42/nvim-tree.lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      require "nvim-tree".setup(
-        {
-          filters = { dotfiles = true, exclude = { ".env", ".gitignore" } },
-          actions = { open_file = { quit_on_open = true } }
-        }
-      )
-      set_keymap("n", "<F3>", ":NvimTreeFindFileToggle<CR>")
-    end
-  },
-  {
     "preservim/tagbar",
     config = function()
       set_keymap("n", "<F4>", ":TagbarToggle<CR>")
@@ -26,4 +13,5 @@ return {
       vim.g.tagbar_foldlevel = 0
     end
   }
+
 }
