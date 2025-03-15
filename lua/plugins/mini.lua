@@ -9,6 +9,13 @@ return {
   config = function()
     require "mini.ai".setup()
     require "mini.align".setup()
+    require "mini.operators".setup()
+    require "mini.pairs".setup()
+    require "mini.surround".setup()
+    require "mini.jump".setup()
+    require "mini.splitjoin".setup()
+    require "mini.extra".setup()
+
     require "mini.comment".setup {
       options = {
         custom_commentstring = function()
@@ -16,12 +23,6 @@ return {
         end,
       }
     }
-    require "mini.operators".setup()
-    require "mini.pairs".setup()
-    require "mini.surround".setup()
-    require "mini.jump".setup()
-    require "mini.splitjoin".setup()
-    require "mini.extra".setup()
     local gen_highlighter = require "mini.extra".gen_highlighter
     require "mini.hipatterns".setup({
       highlighters = {
