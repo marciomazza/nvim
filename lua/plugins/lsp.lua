@@ -53,7 +53,7 @@ return {
 
       require "plone".setup(lspconfig)
 
-      local function on_attach(client, bufnr)
+      local function on_attach(_, bufnr)
         -- set keymaps for LSP
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
         vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
@@ -65,7 +65,27 @@ return {
         vim.keymap.set({ "n", "v" }, "<leader>x", vim.lsp.buf.code_action, bufopts)
       end
 
-      lspconfig.lua_ls.setup { on_attach = on_attach }
+      lspconfig.lua_ls.setup {
+        on_attach = on_attach,
+        -- based on https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lua_ls
+        on_init = function(client)
+          -- do not configure nvim context if we are not in the nvim config
+          if client.workspace_folders then
+            local path = client.workspace_folders[1].name
+            if path ~= vim.fn.stdpath("config")
+                and (vim.fn.filereadable(path .. "/.luarc.json")
+                  or vim.fn.filereadable(path .. "/.luarc.jsonc")) then
+              return
+            end
+          end
+          client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+            runtime = { version = "LuaJIT" },
+            workspace = { checkThirdParty = false, library = { vim.env.VIMRUNTIME } },
+          })
+        end,
+        settings = { Lua = { diagnostics = { globals = { "vim" } } } },
+      }
+
       lspconfig.jedi_language_server.setup {
         on_attach = on_attach,
         handlers = require "jedi".handlers,
