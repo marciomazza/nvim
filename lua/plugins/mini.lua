@@ -3,6 +3,22 @@ local COMMENTSTRINGS = {
   htmldjango = "{# %s #}",
 }
 
+local function get_highlighters(gen_highlighter)
+  -- switch TODO and HACK highlighters
+  local function get_hl(name)
+    local data = vim.api.nvim_get_hl(0, { name = name, link = false })
+    return { bg = data.bg, fg = data.fg, bold = data.bold }
+  end
+  local todo_data, hack_data = get_hl("MiniHipatternsTodo"), get_hl("MiniHipatternsHack")
+  vim.api.nvim_set_hl(0, "MiniHipatternsTodo", hack_data)
+  vim.api.nvim_set_hl(0, "MiniHipatternsHack", todo_data)
+  return {
+    todo  = gen_highlighter.words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
+    fixme = gen_highlighter.words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
+    xxx   = gen_highlighter.words({ "XXX", "xxx" }, "MiniHipatternsHack"),
+  }
+end
+
 return {
   "echasnovski/mini.nvim",
   version = false,
@@ -16,12 +32,14 @@ return {
     require "mini.splitjoin".setup()
     require "mini.extra".setup()
 
-    local mini_files = require "mini.files"
-    mini_files.setup({
+    local MiniFiles = require "mini.files"
+    MiniFiles.setup({
       mappings = { go_in = "<Enter>", go_out = "<Esc>" },
       windows = { preview = true, width_focus = 15, width_preview = 70 },
     })
-    vim.keymap.set("n", "<F3>", mini_files.open)
+    vim.keymap.set("n", "<F3>", function()
+      MiniFiles.open(vim.api.nvim_buf_get_name(0)) -- open explorer at current file
+    end)
 
     require "mini.comment".setup {
       options = {
@@ -33,11 +51,7 @@ return {
 
     local gen_highlighter = require "mini.extra".gen_highlighter
     require "mini.hipatterns".setup({
-      highlighters = {
-        todo  = gen_highlighter.words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
-        fixme = gen_highlighter.words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
-        xxx   = gen_highlighter.words({ "XXX", "xxx" }, "MiniHipatternsHack"),
-      },
+      highlighters = get_highlighters(gen_highlighter),
     })
   end,
 }
