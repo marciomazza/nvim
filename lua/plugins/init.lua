@@ -29,14 +29,18 @@ return {
         min_width = 20,
         max_width = { 30, 0.3 },
       },
+      focus_on_open = true,
       close_on_select = true,
+      close_automatic_events = { "unfocus", "switch_buffer", "unsupported" },
+      autojump = true,
+      show_guides = true,
     },
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons"
     },
     keys = {
-      { "<F4>", "<cmd>AerialToggle!<CR>", desc = "Toggle Aerial" },
+      { "<F4>", function() require("aerial").toggle() end, desc = "Toggle Aerial" },
     },
   }
 }
