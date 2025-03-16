@@ -33,13 +33,14 @@ return {
     require "mini.extra".setup()
 
     local MiniFiles = require "mini.files"
+    local function minifiles_toggle()
+      if not MiniFiles.close() then MiniFiles.open(vim.api.nvim_buf_get_name(0)) end
+    end
     MiniFiles.setup({
       mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
       windows = { preview = true, width_focus = 15, width_preview = 70 },
     })
-    vim.keymap.set("n", "<F3>", function()
-      MiniFiles.open(vim.api.nvim_buf_get_name(0)) -- open explorer at current file
-    end)
+    vim.keymap.set("n", "<F3>", minifiles_toggle)
 
     require "mini.comment".setup {
       options = {
