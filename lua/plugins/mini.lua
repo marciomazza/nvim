@@ -34,7 +34,7 @@ return {
 
     local MiniFiles = require "mini.files"
     MiniFiles.setup({
-      mappings = { go_in = "<Enter>", go_out = "<Esc>" },
+      mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
       windows = { preview = true, width_focus = 15, width_preview = 70 },
     })
     vim.keymap.set("n", "<F3>", function()
