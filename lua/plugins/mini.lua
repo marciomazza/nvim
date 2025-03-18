@@ -39,6 +39,12 @@ return {
     MiniFiles.setup({
       mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
       windows = { preview = true, width_focus = 15, width_preview = 70 },
+      content = {
+        filter = function(fs_entry)
+          local hidden = vim.startswith(fs_entry.name, ".")
+          return not hidden
+        end,
+      }
     })
     vim.keymap.set("n", "<F3>", minifiles_toggle)
 
