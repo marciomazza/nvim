@@ -19,6 +19,8 @@ local function get_highlighters(gen_highlighter)
   }
 end
 
+local file_explorer_ignored = { ".*\\.pyc", "__pycache__" }
+
 return {
   "echasnovski/mini.nvim",
   version = false,
@@ -41,8 +43,15 @@ return {
       windows = { preview = true, width_focus = 15, width_preview = 70 },
       content = {
         filter = function(fs_entry)
-          local hidden = vim.startswith(fs_entry.name, ".")
-          return not hidden
+          if vim.startswith(fs_entry.name, ".") then
+            return false
+          end
+          for _, pattern in ipairs(file_explorer_ignored) do
+            if vim.fn.match(fs_entry.name, pattern) >= 0 then
+              return false
+            end
+          end
+          return true
         end,
       }
     })
