@@ -2,6 +2,8 @@
 local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
 local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json", "yaml" }
 
+local plone = require "plone"
+
 return {
   "nvimtools/none-ls.nvim",
   dependencies = {
@@ -13,6 +15,9 @@ return {
     local null_ls = require "null-ls"
 
     null_ls.setup({
+      should_attach = function(bufnr)
+        return not plone.is_in_plone_project(bufnr)
+      end,
       sources = {
         null_ls.builtins.formatting.djlint.with({ filetypes = djlint_filetypes }),
         null_ls.builtins.diagnostics.djlint.with({ filetypes = djlint_filetypes }),

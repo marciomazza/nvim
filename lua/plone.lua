@@ -58,4 +58,8 @@ function M.setup(lspconfig)
         end)
 end
 
+function M.is_in_plone_project(bufnr)
+  return string.find(vim.api.nvim_buf_get_name(bufnr), "/plone/")
+end
+
 return M
