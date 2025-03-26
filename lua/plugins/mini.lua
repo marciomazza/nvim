@@ -69,5 +69,9 @@ return {
     require "mini.hipatterns".setup({
       highlighters = get_highlighters(gen_highlighter),
     })
+
+    local MiniPick = require "mini.pick"
+    MiniPick.setup()
+    vim.ui.select = MiniPick.ui_select
   end,
 }
