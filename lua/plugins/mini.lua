@@ -66,9 +66,9 @@ return {
     }
 
     local gen_highlighter = require "mini.extra".gen_highlighter
-    require "mini.hipatterns".setup({
+    require "mini.hipatterns".setup {
       highlighters = get_highlighters(gen_highlighter),
-    })
+    }
 
     local MiniPick = require "mini.pick"
     MiniPick.setup()
