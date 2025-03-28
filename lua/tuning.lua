@@ -1,24 +1,18 @@
 -- tolerate some typos on file related commands
 -- apparently, there's no equivalent to the "cnoreabbrev" in lua
 -- https://github.com/nanotee/nvim-lua-guide/issues/37
-local abbrev_translations = {
-  "W w",
-  "Q q",
-  "Qa qa",
-  "E e",
-  "W! w!",
-  "Q! q!",
-  "Qa! qa!",
-  "Qall qall",
-  "Qall! qall!",
-  "Wq wq",
-  "Wa wa",
-  "wQ wq",
-  "WQ wq",
-  "qw wq"
+local abbreviations = {
+  e  = { "E" },
+  w  = { "W" },
+  qa = { "q", "Q", "QA" },
+  wq = { "Wq", "WQ", "qw", "QW" },
+  wa = { "WA" }
 }
-for _, entry in pairs(abbrev_translations) do
-  vim.cmd(string.format("cnoreabbrev %s", entry))
+for target, sources in pairs(abbreviations) do
+  for _, source in ipairs(sources) do
+    vim.cmd(string.format("cnoreabbrev %s %s", source, target))
+    vim.cmd(string.format("cnoreabbrev %s! %s!", source, target))
+  end
 end
 
 vim.opt.clipboard = "unnamed,unnamedplus" -- use standard clipboard
@@ -78,3 +72,6 @@ vim.opt.wildignore:append { "**/zzz/**" }
 
 -- open splits at the right
 vim.opt.splitright = true
+
+-- disable annoying warnings about swap files
+vim.opt.swapfile = false
