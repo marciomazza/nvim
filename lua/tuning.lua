@@ -75,3 +75,6 @@ vim.opt.path:append { vim.fn.getcwd() .. "/**" }
 -- but ignore the directory `zzz`
 -- TODO: ignore everything that is git ignored
 vim.opt.wildignore:append { "**/zzz/**" }
+
+-- open splits at the right
+vim.opt.splitright = true
