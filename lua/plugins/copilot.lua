@@ -19,7 +19,12 @@ return {
       auto_insert_mode = false,
     },
     keys = {
-      { "<F2>", function() require("CopilotChat").toggle() end, desc = "Toggle CopilotChat" },
+      {
+        "<F2>",
+        function() require("CopilotChat").toggle() end,
+        desc = "Toggle CopilotChat",
+        mode = { "n", "v" }
+      },
     },
   }
 }
