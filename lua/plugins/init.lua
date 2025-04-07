@@ -42,5 +42,6 @@ return {
     keys = {
       { "<F4>", function() require("aerial").toggle() end, desc = "Toggle Aerial" },
     },
-  }
+  },
+  { "andythigpen/nvim-coverage", opts = { auto_reload = true } },
 }
