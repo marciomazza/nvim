@@ -16,7 +16,7 @@ return {
     opts = {
       model = "claude-3.7-sonnet",
       window = { width = 90 },
-      auto_insert_mode = false,
+      auto_insert_mode = true,
     },
     keys = {
       {
