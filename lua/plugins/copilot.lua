@@ -17,6 +17,10 @@ return {
       model = "claude-3.7-sonnet",
       window = { width = 90 },
       auto_insert_mode = true,
+      context = {
+        files = { max_files = 30 },
+        include_git_diff = true,
+      },
     },
     keys = {
       {
