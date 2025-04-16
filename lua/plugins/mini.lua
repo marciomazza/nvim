@@ -33,6 +33,7 @@ return {
     require "mini.jump".setup()
     require "mini.splitjoin".setup()
     require "mini.extra".setup()
+    require "mini.icons".setup()
 
     local MiniFiles = require "mini.files"
     local function minifiles_toggle()
@@ -73,5 +74,8 @@ return {
     local MiniPick = require "mini.pick"
     MiniPick.setup()
     vim.ui.select = MiniPick.ui_select
+    vim.keymap.set("n", "<leader>f", function() MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") }) end)
+    vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live)
+    vim.keymap.set("n", "<leader>e", MiniPick.builtin.files)
   end,
 }

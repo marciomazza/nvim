@@ -9,8 +9,7 @@ return {
   "farmergreg/vim-lastplace", -- remember cursor position on file reopen
 
   -- files
-  { "junegunn/fzf", dir = "~/.fzf", build = "./install --all" },
-  "vim-scripts/grep.vim",
+  { "junegunn/fzf",              dir = "~/.fzf",               build = "./install --all" },
   "wsdjeg/vim-fetch",
 
   -- programming in general

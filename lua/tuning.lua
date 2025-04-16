@@ -34,7 +34,6 @@ vim.keymap.set("n", "<leader><space>", ":noh<cr>") -- clear search highlight
 vim.keymap.set("n", "<Tab>", ":bn<cr>")            -- buffer nav
 vim.keymap.set("n", "<S-Tab>", ":bp<cr>")          -- buffer nav
 vim.keymap.set("n", "<leader>c", ":bd<cr>")        -- close buffer
-vim.keymap.set("n", "<leader>e", ":FZF<cr>")       -- open file with fzf
 vim.keymap.set("n", "<leader>l", ":luafile %<cr>") -- reload lua file
 
 -- maintain Visual Mode after shifting > and <
@@ -49,12 +48,6 @@ vim.keymap.set("", "<F7>", ":syntax on<CR>:setlocal spell! spelllang=pt_br<CR>")
 -- https://vi.stackexchange.com/a/31552
 vim.api.nvim_create_autocmd("QuitPre", { command = ":blast" })
 
--- grep.vim
-vim.keymap.set("n", "<leader>f", ":Rgrep<CR>")
-vim.g.Grep_Default_Options = "-IR"
-vim.g.Grep_Skip_Files = "*~ ipython_log.py*"
-vim.g.Grep_Skip_Dirs = "RCS CVS SCCS htmlcov .pytest_cache .mypy_cache zz"
-
 -- configure extra file types
 vim.filetype.add({
   pattern = {
@@ -68,7 +61,7 @@ vim.filetype.add({
 vim.opt.path:append { vim.fn.getcwd() .. "/**" }
 -- but ignore the directory `zzz`
 -- TODO: ignore everything that is git ignored
-vim.opt.wildignore:append { "**/zzz/**" }
+vim.opt.wildignore:append { "**/zzz/**", ".git", ".git/*" }
 
 -- open splits at the right
 vim.opt.splitright = true
