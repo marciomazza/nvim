@@ -41,7 +41,11 @@ return {
     end
     MiniFiles.setup({
       mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
-      windows = { preview = true, width_focus = 15, width_preview = 70 },
+      windows = {
+        preview = true,
+        width_focus = 20,
+        width_preview = 80,
+      },
       content = {
         filter = function(fs_entry)
           if vim.startswith(fs_entry.name, ".") then
