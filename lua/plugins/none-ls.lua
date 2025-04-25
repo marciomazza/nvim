@@ -12,7 +12,7 @@ return {
 
     -- djlint filetypes should not be formatted by prettier
     local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
-    local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json", "yaml" }
+    local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json" }
 
     null_ls.setup({
       should_attach = function(bufnr)
@@ -22,6 +22,9 @@ return {
         null_ls.builtins.formatting.djlint.with({ filetypes = djlint_filetypes }),
         null_ls.builtins.diagnostics.djlint.with({ filetypes = djlint_filetypes }),
         null_ls.builtins.formatting.prettier.with({ filetypes = prettier_filetypes }),
+        null_ls.builtins.formatting.prettier.with({
+          filetypes = { "yaml" }, extra_args = { "--no-bracket-spacing" }
+        }),
         -- keep this until ruff implements float-to-top
         --   see https://github.com/astral-sh/ruff/issues/6514
         null_ls.builtins.formatting.isort.with({
