@@ -1,7 +1,3 @@
--- djlint filetypes should not be formatted by prettier
-local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
-local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json", "yaml" }
-
 local plone = require "plone"
 
 return {
@@ -13,6 +9,10 @@ return {
   },
   config = function()
     local null_ls = require "null-ls"
+
+    -- djlint filetypes should not be formatted by prettier
+    local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
+    local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json", "yaml" }
 
     null_ls.setup({
       should_attach = function(bufnr)
