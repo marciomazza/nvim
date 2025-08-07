@@ -52,8 +52,11 @@ vim.api.nvim_create_autocmd("QuitPre", { command = ":blast" })
 vim.filetype.add({
   pattern = {
     ["ipython_log%.py.*"] = "python", -- ipython log
-    [".+%.zcml"] = "xml",             -- plone zcml
     [".envrc"] = "zsh",               -- direnv config
+  },
+  extension = {
+    zcml = "xml", -- plone zcml
+    dconf = "dosini",
   }
 })
 
