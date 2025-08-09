@@ -42,7 +42,7 @@ return {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require "mason-lspconfig".setup {
-        ensure_installed = { "lua_ls", "jedi_language_server", "ruff", "htmx", "taplo" }
+        ensure_installed = { "lua_ls", "jedi_language_server", "ruff", "taplo" }
       }
     end,
   },
@@ -91,7 +91,6 @@ return {
         handlers = require "jedi".handlers,
       }
       lspconfig.ruff.setup { on_attach = on_attach }
-      lspconfig.htmx.setup { on_attach = on_attach, filetypes = { "html", "htmldjango" } }
       lspconfig.taplo.setup { on_attach = on_attach }
       lspconfig.djlsp.setup { on_attach = on_attach } -- fourdigits/django-template-lsp
     end
