@@ -27,7 +27,8 @@ return {
   config = function()
     require "mini.ai".setup()
     require "mini.align".setup()
-    require "mini.operators".setup()
+    -- FIXME: temporarily disabled due to conflic with vim.lsp default mappings
+    -- require "mini.operators".setup()
     require "mini.pairs".setup()
     require "mini.surround".setup()
     require "mini.jump".setup()

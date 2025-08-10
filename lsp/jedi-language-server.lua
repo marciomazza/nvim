@@ -53,4 +53,16 @@ local function jedi_definition_handler(err, result, ctx, config)
   default_handler(err, result, ctx, config)
 end
 
-return { handlers = { ["textDocument/definition"] = jedi_definition_handler } }
+---@type vim.lsp.Config
+return {
+  cmd = { "jedi-language-server" },
+  filetypes = { "python" },
+  root_markers = { "buildout.cfg" }, -- for plone
+  handlers = { ["textDocument/definition"] = jedi_definition_handler },
+  before_init = function(params, _)
+    local plone_config = require "plone".get_plone_config()
+    if plone_config ~= nil then
+      params.initializationOptions = { workspace = { extraPaths = plone_config.extra_paths } }
+    end
+  end,
+}
