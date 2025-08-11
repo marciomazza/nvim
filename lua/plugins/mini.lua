@@ -27,8 +27,7 @@ return {
   config = function()
     require "mini.ai".setup()
     require "mini.align".setup()
-    -- FIXME: temporarily disabled due to conflic with vim.lsp default mappings
-    -- require "mini.operators".setup()
+    require "mini.operators".setup({ replace = { prefix = "rr" } })
     require "mini.pairs".setup()
     require "mini.surround".setup()
     require "mini.jump".setup()
