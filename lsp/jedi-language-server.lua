@@ -1,5 +1,3 @@
-local ts_utils = require "nvim-treesitter.ts_utils"
-
 local methods = vim.lsp.protocol.Methods
 
 local fqn_regex = vim.regex([[^\h\w*\(\.\h\w*\)\+$]])
@@ -17,7 +15,7 @@ end
 
 local function build_fake_definition_params(name)
   -- as a trick we prepare a valid python import snippet for the language server
-  local uri = "file://" .. vim.fn.tempname() .. ".py"
+  local uri = string.format("file://%s.py", vim.fn.tempname())
   local module, obj = name:match("^(.*)%.([^%.]+)$")
   local fake_source = string.format("from %s import %s", module, obj)
   local open_params = {
@@ -31,7 +29,7 @@ end
 
 local function build_params_for_quoted_name_def(client)
   local name = get_fully_qualified_name_under_cursor()
-  if name == nil then
+  if not name then
     return
   end
   local open_params, definition_params = build_fake_definition_params(name)
@@ -50,7 +48,7 @@ return {
       params.initializationOptions = { workspace = { extraPaths = plone_config.extra_paths } }
     end
   end,
-  on_attach = function(client, bufnr)
+  on_attach = function(client, _)
     local base_request = client.request
     client.request = function(self, method, params, handler, bufnr_req)
       if method == methods.textDocument_definition then
