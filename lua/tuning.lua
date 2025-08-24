@@ -57,6 +57,9 @@ vim.filetype.add({
   extension = {
     zcml = "xml", -- plone zcml
     dconf = "dosini",
+  },
+  filename = {
+    ["~/.config/ghostty/config"] = "toml", -- ghostty config
   }
 })
 
