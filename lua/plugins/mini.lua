@@ -81,5 +81,38 @@ return {
     vim.keymap.set("n", "<leader>f", function() MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") }) end)
     vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live)
     vim.keymap.set("n", "<leader>e", MiniPick.builtin.files)
+
+    local miniclue = require('mini.clue')
+    miniclue.setup({
+      triggers = {
+        -- `[` and `]` keys
+        { mode = 'n', keys = '[' },
+        { mode = 'n', keys = ']' },
+
+        -- Leader triggers
+        { mode = 'n', keys = '<Leader>' },
+        { mode = 'x', keys = '<Leader>' },
+
+        -- `g` key
+        { mode = 'n', keys = 'g' },
+        { mode = 'x', keys = 'g' },
+
+        -- Window commands
+        { mode = 'n', keys = '<C-w>' },
+        { mode = 'x', keys = '<C-w>' },
+
+        -- `z` key
+        { mode = 'n', keys = 'z' },
+        { mode = 'x', keys = 'z' },
+      },
+
+      clues = {
+        -- Enhance this by adding descriptions for <Leader> mapping groups
+        miniclue.gen_clues.square_brackets(),
+        miniclue.gen_clues.g(),
+        miniclue.gen_clues.windows(),
+        miniclue.gen_clues.z(),
+      },
+    })
   end,
 }
