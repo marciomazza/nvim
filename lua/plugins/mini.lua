@@ -82,37 +82,28 @@ return {
     vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live)
     vim.keymap.set("n", "<leader>e", MiniPick.builtin.files)
 
-    local miniclue = require('mini.clue')
+    local miniclue = require("mini.clue")
     miniclue.setup({
-      triggers = {
-        -- `[` and `]` keys
-        { mode = 'n', keys = '[' },
-        { mode = 'n', keys = ']' },
-
-        -- Leader triggers
-        { mode = 'n', keys = '<Leader>' },
-        { mode = 'x', keys = '<Leader>' },
-
-        -- `g` key
-        { mode = 'n', keys = 'g' },
-        { mode = 'x', keys = 'g' },
-
-        -- Window commands
-        { mode = 'n', keys = '<C-w>' },
-        { mode = 'x', keys = '<C-w>' },
-
-        -- `z` key
-        { mode = 'n', keys = 'z' },
-        { mode = 'x', keys = 'z' },
-      },
-
+      triggers = vim.list_extend(
+        {
+          { mode = "n", keys = "[" },
+          { mode = "n", keys = "]" },
+        },
+        vim.iter({ "<Leader>", "g", "<C-w>", "z" }):map(function(key)
+          return {
+            { mode = "n", keys = key },
+            { mode = "x", keys = key }
+          }
+        end):flatten():totable()),
       clues = {
-        -- Enhance this by adding descriptions for <Leader> mapping groups
         miniclue.gen_clues.square_brackets(),
         miniclue.gen_clues.g(),
         miniclue.gen_clues.windows(),
         miniclue.gen_clues.z(),
       },
+      window = {
+        delay = 300,
+      }
     })
   end,
 }
