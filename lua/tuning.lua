@@ -74,3 +74,13 @@ vim.opt.splitright = true
 
 -- disable annoying warnings about swap files
 vim.opt.swapfile = false
+
+-- stop the block cursor from hiding the character under the cursor
+-- TODO: find a better way to do this
+vim.opt.guicursor = {
+  "n-v-c:hor50",                          -- normal/visual/command → barra vertical grossa
+  "i-ci:ver25",                           -- insert → barra vertical mais fina
+  "r-cr:hor20",                           -- replace → underline
+  "o:hor50",                              -- operator-pending → underline mais grosso
+  "a:blinkwait700-blinkoff400-blinkon250" -- animação opcional
+}
