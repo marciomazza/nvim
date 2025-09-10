@@ -27,6 +27,13 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   callback = lsp_format_on_save,
 })
 
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    local bufopts = { noremap = true, silent = true, buffer = ev.buf }
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+  end
+})
+
 vim.lsp.config("*", {
   root_markers = { "pyproject.toml", ".git", ".jj" },
 })
