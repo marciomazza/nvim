@@ -12,12 +12,20 @@ vim.lsp.config("*", {
 vim.lsp.enable({ "djlsp" }) -- still not known to mason-lspconfig
 
 return {
-  "mason-org/mason-lspconfig.nvim",
-  opts = {
-    ensure_installed = { "lua_ls", "ruff", "jedi_language_server", "taplo" },
+  {
+    "mason-org/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = { "lua_ls", "ruff", "jedi_language_server", "taplo" },
+    },
+    dependencies = {
+      { "mason-org/mason.nvim", opts = {} },
+      "neovim/nvim-lspconfig",
+    },
   },
-  dependencies = {
-    { "mason-org/mason.nvim", opts = {} },
-    "neovim/nvim-lspconfig",
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    opts = {
+      ensure_installed = { "prettier", "prettierd", "stylua" },
+    },
   },
 }
