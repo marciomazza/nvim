@@ -4,7 +4,7 @@ return {
   "tpope/vim-sensible",
   "tpope/vim-abolish",
   "tpope/vim-fugitive",
-  "tpope/vim-repeat",         -- XXX still needed?
+  "tpope/vim-repeat", -- XXX still needed?
   "terryma/vim-multiple-cursors",
   "farmergreg/vim-lastplace", -- remember cursor position on file reopen
 
@@ -36,10 +36,16 @@ return {
     },
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons"
+      "nvim-tree/nvim-web-devicons",
     },
     keys = {
-      { "<F4>", function() require("aerial").toggle() end, desc = "Toggle Aerial" },
+      {
+        "<F4>",
+        function()
+          require("aerial").toggle()
+        end,
+        desc = "Toggle Aerial",
+      },
     },
   },
   { "andythigpen/nvim-coverage", opts = { auto_reload = true } },

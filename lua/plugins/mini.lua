@@ -13,9 +13,9 @@ local function get_highlighters(gen_highlighter)
   vim.api.nvim_set_hl(0, "MiniHipatternsTodo", hack_data)
   vim.api.nvim_set_hl(0, "MiniHipatternsHack", todo_data)
   return {
-    todo  = gen_highlighter.words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
+    todo = gen_highlighter.words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
     fixme = gen_highlighter.words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
-    xxx   = gen_highlighter.words({ "XXX", "xxx" }, "MiniHipatternsHack"),
+    xxx = gen_highlighter.words({ "XXX", "xxx" }, "MiniHipatternsHack"),
   }
 end
 
@@ -25,19 +25,21 @@ return {
   "echasnovski/mini.nvim",
   version = false,
   config = function()
-    require "mini.ai".setup()
-    require "mini.align".setup()
-    require "mini.operators".setup({ replace = { prefix = "rr" } })
-    require "mini.pairs".setup()
-    require "mini.surround".setup()
-    require "mini.jump".setup()
-    require "mini.splitjoin".setup()
-    require "mini.extra".setup()
-    require "mini.icons".setup()
+    require("mini.ai").setup()
+    require("mini.align").setup()
+    require("mini.operators").setup({ replace = { prefix = "rr" } })
+    require("mini.pairs").setup()
+    require("mini.surround").setup()
+    require("mini.jump").setup()
+    require("mini.splitjoin").setup()
+    require("mini.extra").setup()
+    require("mini.icons").setup()
 
-    local MiniFiles = require "mini.files"
+    local MiniFiles = require("mini.files")
     local function minifiles_toggle()
-      if not MiniFiles.close() then MiniFiles.open(vim.api.nvim_buf_get_name(0)) end
+      if not MiniFiles.close() then
+        MiniFiles.open(vim.api.nvim_buf_get_name(0))
+      end
     end
     MiniFiles.setup({
       mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
@@ -58,27 +60,29 @@ return {
           end
           return true
         end,
-      }
+      },
     })
     vim.keymap.set("n", "<F3>", minifiles_toggle)
 
-    require "mini.comment".setup {
+    require("mini.comment").setup({
       options = {
         custom_commentstring = function()
           return COMMENTSTRINGS[vim.bo.filetype] or nil
         end,
-      }
-    }
+      },
+    })
 
-    local gen_highlighter = require "mini.extra".gen_highlighter
-    require "mini.hipatterns".setup {
+    local gen_highlighter = require("mini.extra").gen_highlighter
+    require("mini.hipatterns").setup({
       highlighters = get_highlighters(gen_highlighter),
-    }
+    })
 
-    local MiniPick = require "mini.pick"
+    local MiniPick = require("mini.pick")
     MiniPick.setup()
     vim.ui.select = MiniPick.ui_select
-    vim.keymap.set("n", "<leader>f", function() MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") }) end)
+    vim.keymap.set("n", "<leader>f", function()
+      MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") })
+    end)
     vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live)
     vim.keymap.set("n", "<leader>e", MiniPick.builtin.files)
 
@@ -89,12 +93,17 @@ return {
           { mode = "n", keys = "[" },
           { mode = "n", keys = "]" },
         },
-        vim.iter({ "<Leader>", "g", "<C-w>", "z" }):map(function(key)
-          return {
-            { mode = "n", keys = key },
-            { mode = "x", keys = key }
-          }
-        end):flatten():totable()),
+        vim
+          .iter({ "<Leader>", "g", "<C-w>", "z" })
+          :map(function(key)
+            return {
+              { mode = "n", keys = key },
+              { mode = "x", keys = key },
+            }
+          end)
+          :flatten()
+          :totable()
+      ),
       clues = {
         miniclue.gen_clues.square_brackets(),
         miniclue.gen_clues.g(),
@@ -103,7 +112,7 @@ return {
       },
       window = {
         delay = 300,
-      }
+      },
     })
   end,
 }

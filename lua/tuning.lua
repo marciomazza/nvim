@@ -2,11 +2,11 @@
 -- apparently, there's no equivalent to the "cnoreabbrev" in lua
 -- https://github.com/nanotee/nvim-lua-guide/issues/37
 local abbreviations = {
-  e  = { "E" },
-  w  = { "W" },
+  e = { "E" },
+  w = { "W" },
   qa = { "q", "Q", "QA" },
   wq = { "Wq", "WQ", "qw", "QW" },
-  wa = { "WA" }
+  wa = { "WA" },
 }
 for target, sources in pairs(abbreviations) do
   for _, source in ipairs(sources) do
@@ -16,8 +16,8 @@ for target, sources in pairs(abbreviations) do
 end
 
 vim.opt.clipboard = "unnamed,unnamedplus" -- use standard clipboard
-vim.opt.hidden = true                     -- Enable hidden buffers
-vim.opt.diffopt:append { "iwhite" }       -- ignore whitespace in vimdiff
+vim.opt.hidden = true -- Enable hidden buffers
+vim.opt.diffopt:append({ "iwhite" }) -- ignore whitespace in vimdiff
 
 -- Searching
 vim.opt.ignorecase = true
@@ -31,9 +31,9 @@ vim.opt.expandtab = true
 vim.g.markdown_recommended_style = false
 
 vim.keymap.set("n", "<leader><space>", ":noh<cr>") -- clear search highlight
-vim.keymap.set("n", "<Tab>", ":bn<cr>")            -- buffer nav
-vim.keymap.set("n", "<S-Tab>", ":bp<cr>")          -- buffer nav
-vim.keymap.set("n", "<leader>c", ":bd<cr>")        -- close buffer
+vim.keymap.set("n", "<Tab>", ":bn<cr>") -- buffer nav
+vim.keymap.set("n", "<S-Tab>", ":bp<cr>") -- buffer nav
+vim.keymap.set("n", "<leader>c", ":bd<cr>") -- close buffer
 vim.keymap.set("n", "<leader>l", ":luafile %<cr>") -- reload lua file
 
 -- maintain Visual Mode after shifting > and <
@@ -52,7 +52,7 @@ vim.api.nvim_create_autocmd("QuitPre", { command = ":blast" })
 vim.filetype.add({
   pattern = {
     ["ipython_log%.py.*"] = "python", -- ipython log
-    [".envrc"] = "zsh",               -- direnv config
+    [".envrc"] = "zsh", -- direnv config
   },
   extension = {
     zcml = "xml", -- plone zcml
@@ -60,14 +60,14 @@ vim.filetype.add({
   },
   filename = {
     ["~/.config/ghostty/config"] = "toml", -- ghostty config
-  }
+  },
 })
 
 -- add project subdirectories to path to find files (with `gf`, for example)
-vim.opt.path:append { vim.fn.getcwd() .. "/**" }
+vim.opt.path:append({ vim.fn.getcwd() .. "/**" })
 -- but ignore the directory `zzz`
 -- TODO: ignore everything that is git ignored
-vim.opt.wildignore:append { "**/zzz/**", ".git", ".git/*" }
+vim.opt.wildignore:append({ "**/zzz/**", ".git", ".git/*" })
 
 -- open splits at the right
 vim.opt.splitright = true
@@ -78,11 +78,11 @@ vim.opt.swapfile = false
 -- stop the block cursor from hiding the character under the cursor
 -- TODO: find a better way to do this
 vim.opt.guicursor = {
-  "n-v-c:hor50",                          -- normal/visual/command → barra vertical grossa
-  "i-ci:ver25",                           -- insert → barra vertical mais fina
-  "r-cr:hor20",                           -- replace → underline
-  "o:hor50",                              -- operator-pending → underline mais grosso
-  "a:blinkwait700-blinkoff400-blinkon250" -- animação opcional
+  "n-v-c:hor50", -- normal/visual/command → barra vertical grossa
+  "i-ci:ver25", -- insert → barra vertical mais fina
+  "r-cr:hor20", -- replace → underline
+  "o:hor50", -- operator-pending → underline mais grosso
+  "a:blinkwait700-blinkoff400-blinkon250", -- animação opcional
 }
 
 -- highlight the current line

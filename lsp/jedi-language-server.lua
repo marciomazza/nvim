@@ -19,10 +19,11 @@ local function build_fake_definition_params(name)
   local module, obj = name:match("^(.*)%.([^%.]+)$")
   local fake_source = string.format("from %s import %s", module, obj)
   local open_params = {
-    textDocument = { uri = uri, languageId = "python", version = 0, text = fake_source }
+    textDocument = { uri = uri, languageId = "python", version = 0, text = fake_source },
   }
   local definition_params = {
-    textDocument = { uri = uri }, position = { line = 0, character = #fake_source }
+    textDocument = { uri = uri },
+    position = { line = 0, character = #fake_source },
   }
   return open_params, definition_params
 end
@@ -43,7 +44,7 @@ return {
   filetypes = { "python" },
   root_markers = { "buildout.cfg" }, -- for plone
   before_init = function(params, _)
-    local plone_config = require "plone".get_plone_config()
+    local plone_config = require("plone").get_plone_config()
     if plone_config ~= nil then
       params.initializationOptions = { workspace = { extraPaths = plone_config.extra_paths } }
     end
@@ -56,5 +57,5 @@ return {
       end
       return base_request(self, method, params, handler, bufnr_req)
     end
-  end
+  end,
 }

@@ -16,9 +16,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 vim.g.mapleader = "," -- leader
-require "lazy".setup("plugins")
+require("lazy").setup("plugins")
 
 -- load sub config files
-require "tuning"
-require "extras"
-require "lsp"
+require("tuning")
+require("extras")
+require("lsp")

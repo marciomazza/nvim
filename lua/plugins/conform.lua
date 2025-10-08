@@ -27,6 +27,7 @@ return {
   "stevearc/conform.nvim",
   opts = {
     formatters_by_ft = {
+      lua = { "stylua" },
       python = { "float_imports_to_top", "ruff_organize_imports", "ruff_format" },
     },
     formatters = {
