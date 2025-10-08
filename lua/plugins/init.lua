@@ -13,7 +13,6 @@ return {
   "wsdjeg/vim-fetch",
 
   -- programming in general
-  { "mason-org/mason.nvim", opts = {} },
   "tweekmonster/django-plus.vim", -- django
   {
     "andymass/vim-matchup",
