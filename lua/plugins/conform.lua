@@ -23,12 +23,23 @@ local function float_imports_to_top(bufnr, lines)
   end
 end
 
+local prettier_formatters = { "prettierd", "prettier", stop_after_first = true }
+local html_formatters = { "djlint" } -- TODO: find something better
+
 return {
   "stevearc/conform.nvim",
   opts = {
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "float_imports_to_top", "ruff_organize_imports", "ruff_format" },
+      html = html_formatters,
+      htmldjango = html_formatters,
+      javascript = prettier_formatters,
+      css = prettier_formatters,
+      scss = prettier_formatters,
+      json = prettier_formatters,
+      yaml = prettier_formatters,
+      ["_"] = { "trim_whitespace", "trim_newlines" },
     },
     formatters = {
       float_imports_to_top = {
