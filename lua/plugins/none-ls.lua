@@ -9,8 +9,8 @@ return {
     local null_ls = require("null-ls")
 
     -- djlint filetypes should not be formatted by prettier
-    local djlint_filetypes = { "django", "jinja.html", "htmldjango", "html" }
-    local prettier_filetypes = { "javascript", "typescript", "css", "scss", "less", "json" }
+    local djlint_filetypes = { "htmldjango", "html" }
+    local prettier_filetypes = { "javascript", "css", "scss", "json" }
 
     null_ls.setup({
       sources = {
