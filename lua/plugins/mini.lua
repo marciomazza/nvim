@@ -82,9 +82,9 @@ return {
     vim.ui.select = MiniPick.ui_select
     vim.keymap.set("n", "<leader>f", function()
       MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") })
-    end)
-    vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live)
-    vim.keymap.set("n", "<leader>e", MiniPick.builtin.files)
+    end, { desc = "Find word" })
+    vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live, { desc = "Live grep" })
+    vim.keymap.set("n", "<leader>e", MiniPick.builtin.files, { desc = "Pick file" })
 
     local miniclue = require("mini.clue")
     miniclue.setup({
@@ -109,6 +109,11 @@ return {
         miniclue.gen_clues.g(),
         miniclue.gen_clues.windows(),
         miniclue.gen_clues.z(),
+        -- descriptions for mapping groups
+        {
+          { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
+          { mode = "x", keys = "<Leader>r", desc = "+Refactor" },
+        },
       },
       window = {
         delay = 300,

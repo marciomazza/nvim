@@ -30,11 +30,11 @@ vim.opt.expandtab = true
 -- use this otherwise markdown will have these set to 4
 vim.g.markdown_recommended_style = false
 
-vim.keymap.set("n", "<leader><space>", ":noh<cr>") -- clear search highlight
+vim.keymap.set("n", "<leader><space>", ":noh<cr>", { desc = "Clear highlights" })
 vim.keymap.set("n", "<Tab>", ":bn<cr>") -- buffer nav
 vim.keymap.set("n", "<S-Tab>", ":bp<cr>") -- buffer nav
-vim.keymap.set("n", "<leader>c", ":bd<cr>") -- close buffer
-vim.keymap.set("n", "<leader>l", ":luafile %<cr>") -- reload lua file
+vim.keymap.set("n", "<leader>c", ":bd<cr>", { desc = "Close buffer" })
+vim.keymap.set("n", "<leader>l", ":luafile %<cr>", { desc = "Load lua file" })
 
 -- maintain Visual Mode after shifting > and <
 vim.keymap.set("v", "<", "<gv")
