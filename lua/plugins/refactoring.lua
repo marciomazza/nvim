@@ -1,14 +1,15 @@
-local keymaps = {
-  ["<leader>rf"] = "Extract Function",
-  ["<leader>rv"] = "Extract Variable",
-  ["<leader>rI"] = "Inline Function",
-  ["<leader>ri"] = "Inline Variable",
+local keys_to_actions = {
+  rf = "Extract Function",
+  rv = "Extract Variable",
+  rI = "Inline Function",
+  ri = "Inline Variable",
 }
 
-for key, action in pairs(keymaps) do
-  vim.keymap.set({ "n", "x" }, key, function()
+for keys, action in pairs(keys_to_actions) do
+  local refactor = function()
     return require("refactoring").refactor(action)
-  end, { expr = true })
+  end
+  vim.keymap.set({ "n", "x" }, "<leader>" .. keys, refactor, { expr = true, desc = action })
 end
 
 return {
@@ -19,5 +20,4 @@ return {
   },
   lazy = false,
   opts = {},
-  -- keys = keys,
 }
