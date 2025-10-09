@@ -14,12 +14,9 @@ vim.lsp.enable({ "djlsp" }) -- still not known to mason-lspconfig
 return {
   {
     "mason-org/mason-lspconfig.nvim",
+    dependencies = { { "mason-org/mason.nvim", opts = {} }, "neovim/nvim-lspconfig" },
     opts = {
       ensure_installed = { "lua_ls", "ruff", "jedi_language_server", "taplo" },
-    },
-    dependencies = {
-      { "mason-org/mason.nvim", opts = {} },
-      "neovim/nvim-lspconfig",
     },
   },
   {
@@ -27,5 +24,12 @@ return {
     opts = {
       ensure_installed = { "prettier", "prettierd", "stylua" },
     },
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    opts = function()
+      return { sources = { require("null-ls").builtins.diagnostics.djlint } }
+    end,
   },
 }
