@@ -34,6 +34,7 @@ return {
     require("mini.splitjoin").setup()
     require("mini.extra").setup()
     require("mini.icons").setup()
+    require("mini.cursorword").setup()
 
     local MiniFiles = require("mini.files")
     local function minifiles_toggle()
