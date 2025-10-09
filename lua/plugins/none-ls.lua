@@ -3,12 +3,11 @@ return {
   dependencies = {
     { "nvim-lua/plenary.nvim" },
   },
-  config = function()
-    local null_ls = require("null-ls")
-    null_ls.setup({
+  opts = function()
+    return {
       sources = {
-        null_ls.builtins.diagnostics.djlint,
+        require("null-ls").builtins.diagnostics.djlint,
       },
-    })
+    }
   end,
 }
