@@ -87,23 +87,18 @@ return {
     vim.keymap.set("n", "<leader>e", MiniPick.builtin.files, { desc = "Pick file" })
 
     local miniclue = require("mini.clue")
+
+    local triggers = {
+      { mode = "n", keys = "[" },
+      { mode = "n", keys = "]" },
+    }
+    for _, key in ipairs({ "<Leader>", "g", "<C-w>", "z" }) do
+      table.insert(triggers, { mode = "n", keys = key })
+      table.insert(triggers, { mode = "x", keys = key })
+    end
+
     miniclue.setup({
-      triggers = vim.list_extend(
-        {
-          { mode = "n", keys = "[" },
-          { mode = "n", keys = "]" },
-        },
-        vim
-          .iter({ "<Leader>", "g", "<C-w>", "z" })
-          :map(function(key)
-            return {
-              { mode = "n", keys = key },
-              { mode = "x", keys = key },
-            }
-          end)
-          :flatten()
-          :totable()
-      ),
+      triggers = triggers,
       clues = {
         miniclue.gen_clues.square_brackets(),
         miniclue.gen_clues.g(),
@@ -115,9 +110,7 @@ return {
           { mode = "x", keys = "<Leader>r", desc = "+Refactor" },
         },
       },
-      window = {
-        delay = 300,
-      },
+      window = { delay = 300 },
     })
   end,
 }
