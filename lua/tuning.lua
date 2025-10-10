@@ -32,6 +32,7 @@ vim.keymap.set("n", "<Tab>", vim.cmd.bnext, { desc = "Next buffer" })
 vim.keymap.set("n", "<S-Tab>", vim.cmd.bprevious, { desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>c", vim.cmd.bdelete, { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>l", function()
+  vim.cmd.write()
   vim.cmd.luafile("%")
 end, { desc = "Load lua file" })
 
