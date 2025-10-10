@@ -13,7 +13,10 @@ return {
       },
       workspace = {
         checkThirdParty = false,
-        library = { vim.env.VIMRUNTIME },
+        library = {
+          vim.env.VIMRUNTIME,
+          vim.fn.stdpath("data") .. "/lazy",
+        },
       },
       diagnostics = { globals = { "vim" } },
     },
