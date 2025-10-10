@@ -65,7 +65,7 @@ return {
         end,
       },
     })
-    vim.keymap.set("n", "<F3>", minifiles_toggle)
+    vim.keymap.set("n", "<F3>", minifiles_toggle, { desc = "Toggle file explorer" })
 
     require("mini.comment").setup({
       options = {
