@@ -1,10 +1,7 @@
 return {
 
   -- basic
-  "tpope/vim-sensible",
-  "tpope/vim-abolish",
   "tpope/vim-fugitive",
-  "tpope/vim-repeat", -- XXX still needed?
   "mg979/vim-visual-multi",
   "farmergreg/vim-lastplace", -- remember cursor position on file reopen
 
