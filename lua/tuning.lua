@@ -82,3 +82,5 @@ vim.opt.guicursor = {
   "o:hor50", -- operator-pending → underline mais grosso
   "a:blinkwait700-blinkoff400-blinkon250", -- animação opcional
 }
+
+vim.diagnostic.config({ virtual_text = true })
