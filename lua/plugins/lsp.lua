@@ -1,7 +1,6 @@
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
-    local bufopts = { noremap = true, silent = true, buffer = ev.buf }
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = ev.buf, desc = "Go to definition" })
   end,
 })
 
@@ -9,7 +8,7 @@ vim.lsp.config("*", {
   root_markers = { "pyproject.toml", ".git", ".jj" },
 })
 
-vim.lsp.enable({ "djlsp" }) -- still not known to mason-lspconfig
+vim.lsp.enable("djlsp") -- still not known to mason-lspconfig
 
 return {
   {
