@@ -1,9 +1,6 @@
 return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
-  dependencies = {
-    "nvim-treesitter/playground",
-  },
   config = function()
     require("nvim-treesitter.configs").setup({
       ensure_installed = { "python", "lua", "rust", "javascript", "sql" },
@@ -25,12 +22,6 @@ return {
           node_incremental = "<M-Up>",
           node_decremental = "<M-Down>",
         },
-      },
-      playground = {
-        enable = true,
-        disable = {},
-        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-        persist_queries = false, -- Whether the query persists across vim sessions
       },
     })
   end,
