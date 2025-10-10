@@ -1,9 +1,52 @@
-local COMMENTSTRINGS = {
-  sql = "-- %s",
-  htmldjango = "{# %s #}",
-}
+local function setup_mini_files()
+  local MiniFiles = require("mini.files")
+  local file_explorer_ignored = { ".*\\.pyc", "__pycache__" }
 
-local function get_highlighters(gen_highlighter)
+  local function minifiles_toggle()
+    if not MiniFiles.close() then
+      MiniFiles.open(vim.api.nvim_buf_get_name(0))
+    end
+  end
+
+  MiniFiles.setup({
+    mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
+    windows = {
+      preview = true,
+      width_focus = 20,
+      width_preview = 80,
+    },
+    content = {
+      filter = function(fs_entry)
+        if vim.startswith(fs_entry.name, ".") then
+          return false
+        end
+        for _, pattern in ipairs(file_explorer_ignored) do
+          if vim.fn.match(fs_entry.name, pattern) >= 0 then
+            return false
+          end
+        end
+        return true
+      end,
+    },
+  })
+  vim.keymap.set("n", "<F3>", minifiles_toggle, { desc = "Toggle file explorer" })
+end
+
+local function setup_mini_comment()
+  local custom_comment_patterns = {
+    sql = "-- %s",
+    htmldjango = "{# %s #}",
+  }
+  require("mini.comment").setup({
+    options = {
+      custom_commentstring = function()
+        return custom_comment_patterns[vim.bo.filetype]
+      end,
+    },
+  })
+end
+
+local function setup_mini_hipatterns()
   -- switch TODO and HACK highlighters
   local function get_hl(name)
     local data = vim.api.nvim_get_hl(0, { name = name, link = false })
@@ -12,14 +55,54 @@ local function get_highlighters(gen_highlighter)
   local todo_data, hack_data = get_hl("MiniHipatternsTodo"), get_hl("MiniHipatternsHack")
   vim.api.nvim_set_hl(0, "MiniHipatternsTodo", hack_data)
   vim.api.nvim_set_hl(0, "MiniHipatternsHack", todo_data)
-  return {
-    todo = gen_highlighter.words({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
-    fixme = gen_highlighter.words({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
-    xxx = gen_highlighter.words({ "XXX", "xxx" }, "MiniHipatternsHack"),
-  }
+
+  local words_highlighter = require("mini.extra").gen_highlighter.words
+  require("mini.hipatterns").setup({
+    highlighters = {
+      todo = words_highlighter({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
+      fixme = words_highlighter({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
+      xxx = words_highlighter({ "XXX", "xxx" }, "MiniHipatternsHack"),
+    },
+  })
 end
 
-local file_explorer_ignored = { ".*\\.pyc", "__pycache__" }
+local function setup_mini_pick()
+  local MiniPick = require("mini.pick")
+  MiniPick.setup()
+  vim.ui.select = MiniPick.ui_select
+  vim.keymap.set("n", "<leader>f", function()
+    MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") })
+  end, { desc = "Find word" })
+  vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live, { desc = "Live grep" })
+  vim.keymap.set("n", "<leader>e", MiniPick.builtin.files, { desc = "Pick file" })
+end
+
+local function setup_mini_clue()
+  local MiniClue = require("mini.clue")
+  local triggers = {
+    { mode = "n", keys = "[" },
+    { mode = "n", keys = "]" },
+  }
+  for _, key in ipairs({ "<Leader>", "g", "<C-w>", "z" }) do
+    table.insert(triggers, { mode = "n", keys = key })
+    table.insert(triggers, { mode = "x", keys = key })
+  end
+  MiniClue.setup({
+    triggers = triggers,
+    clues = {
+      MiniClue.gen_clues.square_brackets(),
+      MiniClue.gen_clues.g(),
+      MiniClue.gen_clues.windows(),
+      MiniClue.gen_clues.z(),
+      -- descriptions for groups
+      {
+        { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
+        { mode = "x", keys = "<Leader>r", desc = "+Refactor" },
+      },
+    },
+    window = { delay = 300 },
+  })
+end
 
 return {
   "echasnovski/mini.nvim",
@@ -37,83 +120,10 @@ return {
     require("mini.cursorword").setup()
     require("mini.statusline").setup()
     require("mini.tabline").setup()
-
-    local MiniFiles = require("mini.files")
-    local function minifiles_toggle()
-      if not MiniFiles.close() then
-        MiniFiles.open(vim.api.nvim_buf_get_name(0))
-      end
-    end
-    MiniFiles.setup({
-      mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
-      windows = {
-        preview = true,
-        width_focus = 20,
-        width_preview = 80,
-      },
-      content = {
-        filter = function(fs_entry)
-          if vim.startswith(fs_entry.name, ".") then
-            return false
-          end
-          for _, pattern in ipairs(file_explorer_ignored) do
-            if vim.fn.match(fs_entry.name, pattern) >= 0 then
-              return false
-            end
-          end
-          return true
-        end,
-      },
-    })
-    vim.keymap.set("n", "<F3>", minifiles_toggle, { desc = "Toggle file explorer" })
-
-    require("mini.comment").setup({
-      options = {
-        custom_commentstring = function()
-          return COMMENTSTRINGS[vim.bo.filetype] or nil
-        end,
-      },
-    })
-
-    local gen_highlighter = require("mini.extra").gen_highlighter
-    require("mini.hipatterns").setup({
-      highlighters = get_highlighters(gen_highlighter),
-    })
-
-    local MiniPick = require("mini.pick")
-    MiniPick.setup()
-    vim.ui.select = MiniPick.ui_select
-    vim.keymap.set("n", "<leader>f", function()
-      MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") })
-    end, { desc = "Find word" })
-    vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live, { desc = "Live grep" })
-    vim.keymap.set("n", "<leader>e", MiniPick.builtin.files, { desc = "Pick file" })
-
-    local miniclue = require("mini.clue")
-
-    local triggers = {
-      { mode = "n", keys = "[" },
-      { mode = "n", keys = "]" },
-    }
-    for _, key in ipairs({ "<Leader>", "g", "<C-w>", "z" }) do
-      table.insert(triggers, { mode = "n", keys = key })
-      table.insert(triggers, { mode = "x", keys = key })
-    end
-
-    miniclue.setup({
-      triggers = triggers,
-      clues = {
-        miniclue.gen_clues.square_brackets(),
-        miniclue.gen_clues.g(),
-        miniclue.gen_clues.windows(),
-        miniclue.gen_clues.z(),
-        -- descriptions for mapping groups
-        {
-          { mode = "n", keys = "<Leader>r", desc = "+Refactor" },
-          { mode = "x", keys = "<Leader>r", desc = "+Refactor" },
-        },
-      },
-      window = { delay = 300 },
-    })
+    setup_mini_files()
+    setup_mini_comment()
+    setup_mini_hipatterns()
+    setup_mini_pick()
+    setup_mini_clue()
   end,
 }
