@@ -47,8 +47,4 @@ return {
   },
   "HiPhish/rainbow-delimiters.nvim",
   { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
-  {
-    "folke/zen-mode.nvim",
-    dependencies = { "folke/twilight.nvim" },
-  },
 }
