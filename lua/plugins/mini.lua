@@ -35,6 +35,8 @@ return {
     require("mini.extra").setup()
     require("mini.icons").setup()
     require("mini.cursorword").setup()
+    require("mini.statusline").setup()
+    require("mini.tabline").setup()
 
     local MiniFiles = require("mini.files")
     local function minifiles_toggle()
