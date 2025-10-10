@@ -5,7 +5,7 @@ return {
   "tpope/vim-abolish",
   "tpope/vim-fugitive",
   "tpope/vim-repeat", -- XXX still needed?
-  "terryma/vim-multiple-cursors",
+  "mg979/vim-visual-multi",
   "farmergreg/vim-lastplace", -- remember cursor position on file reopen
 
   -- files
