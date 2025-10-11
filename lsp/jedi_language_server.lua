@@ -44,7 +44,7 @@ return {
   filetypes = { "python" },
   root_markers = { "buildout.cfg" }, -- for plone
   before_init = function(params, _)
-    local plone_extra_paths = require("plone").get_buildout_paths()
+    local plone_extra_paths = require("utils.plone").get_buildout_paths()
     if plone_extra_paths then
       params.initializationOptions = { workspace = { extraPaths = plone_extra_paths } }
     end
