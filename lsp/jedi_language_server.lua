@@ -1,6 +1,4 @@
-local methods = vim.lsp.protocol.Methods
-
-local fqn_regex = vim.regex([[^\h\w*\(\.\h\w*\)\+$]])
+local fully_qualified_name_regex = vim.regex([[^\h\w*\(\.\h\w*\)\+$]])
 
 local function get_fully_qualified_name_under_cursor()
   local node = vim.treesitter.get_node():parent():child(1)
@@ -8,7 +6,7 @@ local function get_fully_qualified_name_under_cursor()
     return
   end
   local text = vim.treesitter.get_node_text(node, 0)
-  if fqn_regex:match_str(text) then
+  if fully_qualified_name_regex:match_str(text) then
     return text
   end
 end
@@ -27,6 +25,8 @@ local function build_fake_definition_params(name)
   }
   return open_params, definition_params
 end
+
+local methods = vim.lsp.protocol.Methods
 
 local function build_params_for_quoted_name_def(client)
   local name = get_fully_qualified_name_under_cursor()
