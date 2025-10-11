@@ -1,50 +1,39 @@
-local function read_file_contents(file)
-  local f = io.open(file, "rb")
-  if f == nil then
-    return nil
-  else
-    local contents = f:read("*all")
-    f:close()
-    return contents
-  end
-end
-
-local function get_instance_script_contents(root_dir)
+local function get_instance_script_source(root_dir)
   -- try some possible instance scripts and return the contents of the first one found
-  for _, script_path in ipairs({ "bin/instance", "bin/client" }) do
-    local contents = read_file_contents(root_dir .. "/" .. script_path)
-    if contents ~= nil then
-      return contents
+  local scripts = { "bin/instance", "bin/restore" }
+  for _, script in ipairs(scripts) do
+    local path = require("plenary.path"):new(root_dir, script)
+    if path:exists() then
+      return path:read()
     end
   end
 end
 
--- splits a path string like "'dir1', 'dir2', 'dir3',"
--- into a list of paths
-local function get_path_list_from_string(path_string)
-  local paths = {}
-  for w in path_string:gmatch("'([^']*)',%s*") do
-    table.insert(paths, w)
-  end
-  return paths
+local function get_paths_from_instance_script(root_dir)
+  local src = get_instance_script_source(root_dir)
+  local ts = vim.treesitter
+  local root = ts.get_string_parser(src, "python"):parse()[1]:root()
+  local query = ts.query.parse(
+    "python",
+    [[
+  (assignment
+    left: (_) @left (#match? @left "^sys\\.path\\[0:0\\]$")
+    right: (list (string (string_content) @content)))
+]]
+  )
+  local paths = vim.iter(query:iter_captures(root, src, 0, -1)):map(function(id, node)
+    if query.captures[id] == "content" then
+      return ts.get_node_text(node, src)
+    end
+  end)
+  return paths:totable()
 end
 
 local M = {}
 
-function M.get_plone_config()
-  -- find the root plone directory looking for the buildout.cfg file
-  local root_dir = vim.fs.dirname(vim.fs.find({ "buildout.cfg" }, { upward = true })[1])
-  if root_dir == nil then
-    return nil -- not at a plone project
-  end
-  local contents = get_instance_script_contents(root_dir)
-  local path_string = string.match(contents, "sys.path%[0:0%] = %[(.-)%]")
-  local extra_paths = get_path_list_from_string(path_string)
-  return { root_dir = root_dir, extra_paths = extra_paths }
-end
-
-function M.is_in_plone_project(bufnr)
-  return string.find(vim.api.nvim_buf_get_name(bufnr), "/plone/")
+function M.get_buildout_paths()
+  local root_dir = vim.fs.root(0, "buildout.cfg")
+  return root_dir and get_paths_from_instance_script(root_dir)
 end
 
 return M

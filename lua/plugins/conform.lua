@@ -55,8 +55,12 @@ return {
       lsp_format = "fallback",
     },
     format_on_save = function(bufnr)
-      -- skip plone, format everything else
-      return not require("plone").is_in_plone_project(bufnr) and {}
+      -- skip plone
+      local bufname = vim.api.nvim_buf_get_name(bufnr)
+      if bufname:match("/plone/") then
+        return
+      end
+      return {}
     end,
   },
 }

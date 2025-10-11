@@ -44,9 +44,9 @@ return {
   filetypes = { "python" },
   root_markers = { "buildout.cfg" }, -- for plone
   before_init = function(params, _)
-    local plone_config = require("plone").get_plone_config()
-    if plone_config ~= nil then
-      params.initializationOptions = { workspace = { extraPaths = plone_config.extra_paths } }
+    local plone_extra_paths = require("plone").get_buildout_paths()
+    if plone_extra_paths then
+      params.initializationOptions = { workspace = { extraPaths = plone_extra_paths } }
     end
   end,
   on_attach = function(client, _)
