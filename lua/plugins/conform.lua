@@ -55,10 +55,12 @@ return {
       lsp_format = "fallback",
     },
     format_on_save = function(bufnr)
-      -- skip plone
       local bufname = vim.api.nvim_buf_get_name(bufnr)
-      if bufname:match("/plone/") then
-        return
+      local skip_patterns = { "/plone/", "/node_modules/", "/lib/python" }
+      for _, pattern in ipairs(skip_patterns) do
+        if bufname:match(pattern) then
+          return
+        end
       end
       return {}
     end,
