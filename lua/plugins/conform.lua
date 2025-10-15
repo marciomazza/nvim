@@ -31,7 +31,7 @@ return {
   opts = {
     formatters_by_ft = {
       lua = { "stylua" },
-      python = { "float_imports_to_top", "ruff_organize_imports", "ruff_format" },
+      python = { "float_imports_to_top", "ruff_fix", "ruff_format" },
       html = html_formatters,
       htmldjango = html_formatters,
       javascript = prettier_formatters,
@@ -49,6 +49,9 @@ return {
           float_imports_to_top(ctx.buf, out_lines)
           callback(nil, out_lines)
         end,
+      },
+      ruff_fix = {
+        append_args = { "--unsafe-fixes" },
       },
     },
     default_format_opts = {
