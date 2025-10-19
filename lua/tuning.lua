@@ -72,3 +72,5 @@ vim.opt.guicursor = {
 }
 
 vim.diagnostic.config({ virtual_text = true })
+
+vim.opt.iskeyword:append("-") -- treat hyphenated words as a single one
