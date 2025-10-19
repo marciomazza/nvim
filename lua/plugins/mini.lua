@@ -104,6 +104,31 @@ local function setup_mini_clue()
   })
 end
 
+local function setup_mini_ai()
+  local spec_treesitter = require("mini.ai").gen_spec.treesitter
+  require("mini.ai").setup({
+    custom_textobjects = {
+      o = spec_treesitter({
+        a = { "@conditional.outer", "@loop.outer" },
+        i = { "@conditional.inner", "@loop.inner" },
+      }),
+    },
+  })
+
+  -- specific for html
+  vim.api.nvim_create_autocmd("Filetype", {
+    pattern = { "html", "htmldjango" },
+    callback = function(args)
+      vim.b[args.buf].miniai_config = {
+        custom_textobjects = {
+          a = spec_treesitter({ a = "@attribute.outer", i = "@attribute.inner" }),
+          A = MiniAi.gen_spec.argument(),
+        },
+      }
+    end,
+  })
+end
+
 local function setup_mini_surround()
   local ts_input = require("mini.surround").gen_spec.input.treesitter
   require("mini.surround").setup({
@@ -118,7 +143,7 @@ return {
   "echasnovski/mini.nvim",
   version = false,
   config = function()
-    require("mini.ai").setup()
+    setup_mini_ai()
     require("mini.align").setup()
     require("mini.operators").setup({ replace = { prefix = "rr" } })
     require("mini.pairs").setup()
