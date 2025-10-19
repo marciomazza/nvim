@@ -27,6 +27,7 @@ return {
           node_decremental = "<M-Down>",
         },
       },
+      textobjects = { select = { enable = true } },
     })
   end,
 }
