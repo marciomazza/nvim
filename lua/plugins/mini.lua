@@ -129,16 +129,6 @@ local function setup_mini_ai()
   })
 end
 
-local function setup_mini_surround()
-  local ts_input = require("mini.surround").gen_spec.input.treesitter
-  require("mini.surround").setup({
-    custom_surroundings = {
-      f = { input = ts_input({ outer = "@call.outer", inner = "@call.inner" }) },
-      t = { input = ts_input({ outer = "@function.outer", inner = "@function.inner" }) },
-    },
-  })
-end
-
 return {
   "echasnovski/mini.nvim",
   version = false,
@@ -147,7 +137,7 @@ return {
     require("mini.align").setup()
     require("mini.operators").setup({ replace = { prefix = "rr" } })
     require("mini.pairs").setup()
-    setup_mini_surround()
+    require("mini.surround").setup()
     require("mini.jump").setup()
     require("mini.splitjoin").setup()
     require("mini.extra").setup()
