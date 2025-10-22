@@ -24,3 +24,9 @@ for lang, key in pairs({ en_us = "<F6>", pt_br = "<F7>" }) do
   local desc = string.format("Toggle spell check (%s)", lang:sub(1, 2):upper())
   vim.keymap.set("n", key, toggle_spell_check, { desc = desc })
 end
+
+-- Ctrl+g: also copy file path
+vim.keymap.set("n", "<C-g>", function()
+  vim.fn.setreg("+", vim.api.nvim_buf_get_name(0))
+  vim.cmd("file")
+end, { desc = "Show file info and copy it's path to clipboard" })
