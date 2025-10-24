@@ -27,5 +27,10 @@ require("lazy").setup({
     { import = "plugins" },
   },
   -- automatically check for plugin updates
-  checker = { enabled = true },
+  checker = {
+    enabled = true,
+    notify = true,
+    frequency = 60 * 60 * 24, -- Check every 24 hours
+    check_pinned = false,
+  },
 })
