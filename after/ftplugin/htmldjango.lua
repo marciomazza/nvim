@@ -14,9 +14,3 @@ vim.b.match_words = "<:>,"
   .. "<\\@<=\\([^/][^ \\t>]*\\)[^>]*\\%(>\\|$\\):<\\@<=/\\1>,"
   .. "{% *if .*%}:{% *else *%}:{% *endif *%},"
   .. "\\%({% *\\)\\@<=\\%(end\\)\\@!\\(\\i\\+\\) .*%}:\\%({% *\\)\\@<=end\\1 .*%}"
-
-vim.b.minisurround_config = {
-  custom_surroundings = {
-    t = { input = require("utils.html_tags").surround_tag_input },
-  },
-}

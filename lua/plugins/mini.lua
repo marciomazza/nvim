@@ -105,35 +105,23 @@ local function setup_mini_clue()
 end
 
 local function setup_mini_ai()
-  local spec_treesitter = require("mini.ai").gen_spec.treesitter
-  require("mini.ai").setup({
+  local MiniAi = require("mini.ai")
+  MiniAi.setup({
     custom_textobjects = {
-      o = spec_treesitter({
+      o = MiniAi.gen_spec.treesitter({
         a = { "@conditional.outer", "@loop.outer" },
         i = { "@conditional.inner", "@loop.inner" },
       }),
     },
   })
-
-  -- specific for html
-  vim.api.nvim_create_autocmd("Filetype", {
-    pattern = { "html", "htmldjango" },
-    callback = function(args)
-      vim.b[args.buf].miniai_config = {
-        custom_textobjects = {
-          a = spec_treesitter({ a = "@attribute.outer", i = "@attribute.inner" }),
-          A = MiniAi.gen_spec.argument(),
-        },
-      }
-    end,
-  })
+  return MiniAi
 end
 
 return {
-  "echasnovski/mini.nvim",
+  "nvim-mini/mini.nvim",
   version = false,
   config = function()
-    setup_mini_ai()
+    MiniAi = setup_mini_ai()
     require("mini.align").setup()
     require("mini.operators").setup({ replace = { prefix = "rr" } })
     require("mini.pairs").setup()
@@ -154,5 +142,23 @@ return {
     setup_mini_hipatterns()
     setup_mini_pick()
     setup_mini_clue()
+
+    -- specific for html / htmldjango
+    vim.api.nvim_create_autocmd("Filetype", {
+      pattern = { "html", "htmldjango" },
+      callback = function(args)
+        vim.b[args.buf].miniai_config = {
+          custom_textobjects = {
+            a = MiniAi.gen_spec.treesitter({ a = "@attribute.outer", i = "@attribute.inner" }),
+            A = MiniAi.gen_spec.argument(),
+          },
+        }
+        vim.b[args.buf].minisurround_config = {
+          custom_surroundings = {
+            t = { input = require("utils.html_tags").surround_tag_input },
+          },
+        }
+      end,
+    })
   end,
 }
