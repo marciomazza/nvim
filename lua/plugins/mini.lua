@@ -150,7 +150,6 @@ return {
         vim.b[args.buf].miniai_config = {
           custom_textobjects = {
             a = MiniAi.gen_spec.treesitter({ a = "@attribute.outer", i = "@attribute.inner" }),
-            A = MiniAi.gen_spec.argument(),
           },
         }
         vim.b[args.buf].minisurround_config = {
