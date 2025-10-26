@@ -14,13 +14,13 @@ return {
       "neovim/nvim-lspconfig",
     },
     opts = {
-      ensure_installed = { "lua_ls", "ruff", "jedi_language_server", "taplo", "django-template-lsp" },
+      ensure_installed = { "stylua", "ruff", "jedi_language_server", "lua_ls", "taplo", "tailwindcss", "htmx" },
     },
   },
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     opts = {
-      ensure_installed = { "prettier", "prettierd", "stylua" },
+      ensure_installed = { "prettier", "prettierd", "django-template-lsp" },
     },
   },
   {
