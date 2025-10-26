@@ -4,18 +4,17 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
-vim.lsp.config("*", {
-  root_markers = { "pyproject.toml", ".git", ".jj" },
-})
-
 vim.lsp.enable("djlsp") -- still not known to mason-lspconfig
 
 return {
   {
     "mason-org/mason-lspconfig.nvim",
-    dependencies = { { "mason-org/mason.nvim", opts = {} }, "neovim/nvim-lspconfig" },
+    dependencies = {
+      { "mason-org/mason.nvim", opts = {} },
+      "neovim/nvim-lspconfig",
+    },
     opts = {
-      ensure_installed = { "lua_ls", "ruff", "jedi_language_server", "taplo" },
+      ensure_installed = { "lua_ls", "ruff", "jedi_language_server", "taplo", "django-template-lsp" },
     },
   },
   {
