@@ -4,6 +4,10 @@ return {
   dependencies = {
     "nvim-treesitter/nvim-treesitter-textobjects",
     "nvim-treesitter/playground",
+    {
+      "nvim-treesitter/nvim-treesitter-context",
+      opts = { max_lines = 1 },
+    },
   },
   config = function()
     require("nvim-treesitter.configs").setup({
