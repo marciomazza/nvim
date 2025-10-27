@@ -55,22 +55,7 @@ vim.opt.path:append(vim.uv.cwd() .. "/**")
 -- TODO: ignore everything that is git ignored
 vim.opt.wildignore:append({ "**/zzz/**", ".git" })
 
--- open splits at the right
-vim.opt.splitright = true
-
--- disable annoying warnings about swap files
-vim.opt.swapfile = false
-
--- stop the block cursor from hiding the character under the cursor
--- TODO: find a better way to do this
-vim.opt.guicursor = {
-  "n-v-c:hor50", -- normal/visual/command → barra vertical grossa
-  "i-ci:ver25", -- insert → barra vertical mais fina
-  "r-cr:hor20", -- replace → underline
-  "o:hor50", -- operator-pending → underline mais grosso
-  "a:blinkwait700-blinkoff400-blinkon250", -- animação opcional
-}
-
+vim.opt.splitright = true -- open splits at the right
+vim.opt.swapfile = false -- disable annoying warnings about swap files
 vim.diagnostic.config({ virtual_text = true })
-
 vim.opt.iskeyword:append("-") -- treat hyphenated words as a single one
