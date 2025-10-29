@@ -8,16 +8,7 @@ return {
   {
     "mason-org/mason-lspconfig.nvim",
     dependencies = {
-      {
-        "mason-org/mason.nvim",
-        opts = {
-          -- for ensure_installed djlsp (wait until PR merged to remove)
-          -- https://github.com/mason-org/mason-registry/pull/12057
-          registries = {
-            "file:~/repos/mason-registry",
-          },
-        },
-      },
+      { "mason-org/mason.nvim", opts = {} },
       "neovim/nvim-lspconfig",
     },
     opts = {
