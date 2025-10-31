@@ -44,9 +44,13 @@ return {
   filetypes = { "python" },
   root_markers = { "buildout.cfg", "pyproject.toml", ".git" },
   before_init = function(params, _)
+    -- snippets are adding a function call (parentheses) on imports
+    -- and they somwhat bother me
+    -- xxx: perhaps reenable later
+    params.initializationOptions = { completion = { disableSnippets = true } }
     local plone_extra_paths = require("utils.plone").get_buildout_paths()
     if plone_extra_paths then
-      params.initializationOptions = { workspace = { extraPaths = plone_extra_paths } }
+      params.initializationOptions.workspace = { extraPaths = plone_extra_paths }
     end
   end,
   on_attach = function(client, _)
