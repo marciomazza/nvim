@@ -27,7 +27,7 @@ return {
       close_on_select = true,
       close_automatic_events = { "unfocus", "switch_buffer", "unsupported" },
       autojump = true,
-      show_guides = true,
+      filter_kind = false,
     },
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
