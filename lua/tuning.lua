@@ -57,5 +57,4 @@ vim.opt.wildignore:append({ "**/zzz/**", ".git" })
 
 vim.opt.splitright = true -- open splits at the right
 vim.opt.swapfile = false -- disable annoying warnings about swap files
-vim.diagnostic.config({ virtual_text = true })
 vim.opt.iskeyword:append("-") -- treat hyphenated words as a single one
