@@ -58,3 +58,11 @@ vim.opt.wildignore:append({ "**/zzz/**", ".git" })
 vim.opt.splitright = true -- open splits at the right
 vim.opt.swapfile = false -- disable annoying warnings about swap files
 vim.opt.iskeyword:append("-") -- treat hyphenated words as a single one
+
+-- Close quickfix list automatically when selecting an item
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    vim.keymap.set("n", "<CR>", "<CR>:cclose<CR>", { buffer = true, silent = true })
+  end,
+})
