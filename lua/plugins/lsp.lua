@@ -21,6 +21,7 @@ return {
         "tailwindcss",
         "djlsp",
         "copilot",
+        "ts_ls",
       },
     },
   },
