@@ -44,4 +44,5 @@ return {
     },
   },
   { "andythigpen/nvim-coverage", dependencies = { "nvim-lua/plenary.nvim" }, opts = { auto_reload = true } },
+  "lewis6991/gitsigns.nvim",
 }
