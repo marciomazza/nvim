@@ -30,7 +30,7 @@ require("lazy").setup({
   checker = {
     enabled = true,
     notify = true,
-    frequency = 60 * 60 * 24, -- Check every 24 hours
+    frequency = 60 * 60 * 24 * 3, -- Check every 3 days
     check_pinned = false,
   },
 })
