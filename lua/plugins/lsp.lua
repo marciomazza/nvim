@@ -20,7 +20,7 @@ return {
         "taplo",
         "tailwindcss",
         "djlsp",
-        "copilot",
+        -- "copilot",
         "ts_ls",
       },
     },
