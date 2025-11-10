@@ -12,7 +12,7 @@ local function setup_mini_files()
     mappings = { go_in_plus = "<Enter>", go_out_plus = "<Esc>" },
     windows = {
       preview = true,
-      width_focus = 20,
+      width_focus = 30,
       width_preview = 80,
     },
     content = {
