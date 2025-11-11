@@ -1,7 +1,11 @@
 return {
   "saghen/blink.cmp",
   version = "1.*",
-  dependencies = { "fang2hou/blink-copilot" },
+  dependencies = {
+    "rafamadriz/friendly-snippets",
+    -- "fang2hou/blink-copilot",
+    "Exafunction/windsurf.nvim",
+  },
 
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
@@ -10,7 +14,14 @@ return {
     keymap = { preset = "super-tab" },
     -- completion = { documentation = { auto_show = true } },
     sources = {
-      default = { "lsp", "path", "snippets", "buffer", "copilot" },
+      default = {
+        "lsp",
+        "path",
+        "snippets",
+        "buffer",
+        -- "copilot",
+        "codeium",
+      },
       per_filetype = { lua = { inherit_defaults = true, "lazydev" } },
       providers = {
         lazydev = {
@@ -19,11 +30,8 @@ return {
           -- make lazydev completions top priority (see `:h blink.cmp`)
           score_offset = 100,
         },
-        copilot = {
-          name = "copilot",
-          module = "blink-copilot",
-          async = true,
-        },
+        codeium = { name = "Codeium", module = "codeium.blink", async = true },
+        -- copilot = { name = "copilot", module = "blink-copilot", async = true },
       },
     },
     fuzzy = { implementation = "rust" },
