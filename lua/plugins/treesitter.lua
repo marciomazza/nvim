@@ -24,6 +24,7 @@ return {
         end,
       },
       matchup = { enable = true }, -- enable andymass/vim-matchup
+      -- autotag = { enable = true }, -- enable windwp/nvim-ts-autotag
       indent = { enable = true },
       incremental_selection = {
         enable = true,

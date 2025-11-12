@@ -6,6 +6,12 @@ return {
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
+  { "windwp/nvim-ts-autotag", config = true },
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    config = true,
+  },
   {
     "stevearc/aerial.nvim",
     opts = {
