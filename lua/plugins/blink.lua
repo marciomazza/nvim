@@ -11,7 +11,11 @@ return {
   ---@type blink.cmp.Config
   opts = {
     -- See :h blink-cmp-config-keymap for defining your own keymap
-    keymap = { preset = "super-tab" },
+    keymap = {
+      preset = "super-tab",
+      ["<Down>"] = { "select_next", "fallback" },
+      ["<Up>"] = { "select_prev", "fallback" },
+    },
     -- completion = { documentation = { auto_show = true } },
     sources = {
       default = {
