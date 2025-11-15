@@ -1,3 +1,4 @@
+local snacks = require("plugins.snacks")
 vim.opt.number = true -- enable line numbers in the editor
 vim.opt.showtabline = 2 -- always show the tab line, even if there's only one tab
 vim.wo.colorcolumn = "100" -- set a visual column marker at the 100th character position
@@ -7,18 +8,20 @@ vim.opt.cursorline = true -- highlight the current line
 
 return {
   {
-    "rebelot/kanagawa.nvim",
-    lazy = false,
+    "catppuccin/nvim",
+    name = "catppuccin",
     priority = 1000,
-    config = function()
-      require("kanagawa").setup({
-        colors = {
-          palette = {
-            fujiGray = "#9a978d",
-          },
-        },
-      })
-      vim.cmd.colorscheme("kanagawa-wave")
+    opts = {
+      transparent_background = false,
+      auto_integrations = true,
+      integrations = {
+        aerial = true,
+        snacks = true,
+        diffview = true,
+      },
+    },
+    init = function()
+      vim.cmd.colorscheme("catppuccin")
     end,
   },
   "HiPhish/rainbow-delimiters.nvim",
