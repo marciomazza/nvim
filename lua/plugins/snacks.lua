@@ -10,7 +10,15 @@ return {
     bigfile = { enabled = true },
     git = { enabled = true },
     gitbrowse = { enabled = true },
-    image = { enabled = true },
+    image = {
+      enabled = true,
+      bo = {
+        buftype = "nofile",
+        bufhidden = "wipe",
+        swapfile = false,
+        modifiable = false,
+      },
+    },
     notifier = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = true },
