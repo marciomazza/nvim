@@ -5,6 +5,9 @@
 -- https://github.com/andymass/vim-matchup/issues/240
 -- https://github.com/tweekmonster/django-plus.vim/blob/master/after/ftplugin/htmldjango.vim#L16
 
+-- In HTML, hyphens are part of words (data-attribute, aria-label, etc.)
+vim.opt_local.iskeyword:append("-")
+
 -- Configure vim-matchup for Django templates
 vim.b.match_ignorecase = 1
 vim.b.match_skip = "s:Comment"
