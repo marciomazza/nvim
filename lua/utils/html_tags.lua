@@ -45,4 +45,10 @@ function M.surround_tag_input()
   }
 end
 
+function M.get_element()
+  local ts = vim.treesitter
+  local node = ts.get_node({ ignore_injections = false })
+  return find_ancestor(node, { "element" })
+end
+
 return M
