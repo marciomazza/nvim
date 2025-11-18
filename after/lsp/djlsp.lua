@@ -26,11 +26,11 @@ end
 return {
   on_attach = function(client, _)
     local base_request = client.request
-    client.request = function(self, method, params, handler, bufnr_req)
+    client.request = function(_, method, ...)
       if method == methods.textDocument_definition and go_to_cotton_definition() then
         return
       end
-      return base_request(self, method, params, handler, bufnr_req)
+      return base_request(_, method, ...)
     end
   end,
 }
