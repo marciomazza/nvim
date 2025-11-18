@@ -1,4 +1,3 @@
-local snacks = require("plugins.snacks")
 vim.opt.number = true -- enable line numbers in the editor
 vim.opt.showtabline = 2 -- always show the tab line, even if there's only one tab
 vim.wo.colorcolumn = "100" -- set a visual column marker at the 100th character position
@@ -18,7 +17,14 @@ return {
         aerial = true,
         snacks = true,
         diffview = true,
+        mini = true,
       },
+      custom_highlights = function(colors)
+        return {
+          MiniTablineCurrent = { fg = colors.mantle, bg = colors.blue, style = { "bold" } },
+          MiniTablineModifiedCurrent = { fg = colors.base, bg = colors.red, style = { "bold" } },
+        }
+      end,
     },
     init = function()
       vim.cmd.colorscheme("catppuccin")
