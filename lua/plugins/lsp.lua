@@ -13,9 +13,10 @@ return {
     },
     opts = {
       ensure_installed = {
+        -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
         "stylua",
         "ruff",
-        "jedi_language_server",
+        "pyrefly",
         "lua_ls",
         "taplo",
         "tailwindcss",

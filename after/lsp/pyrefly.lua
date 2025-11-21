@@ -13,7 +13,7 @@ end
 
 local function build_fake_definition_params(name)
   -- as a trick we prepare a valid python import snippet for the language server
-  local uri = string.format("file://%s.py", vim.fn.tempname())
+  local uri = vim.uri_from_bufnr(0):gsub("%.py$", "_fake.py")
   local module, obj = name:match("^(.*)%.([^%.]+)$")
   local fake_source = string.format("from %s import %s", module, obj)
   local open_params = {
@@ -28,31 +28,20 @@ end
 
 local methods = vim.lsp.protocol.Methods
 
+---@param client vim.lsp.Client
 local function build_params_for_quoted_name_def(client)
   local name = get_fully_qualified_name_under_cursor()
   if not name then
     return
   end
   local open_params, definition_params = build_fake_definition_params(name)
-  client.notify(methods.textDocument_didOpen, open_params)
+  client:notify(methods.textDocument_didOpen, open_params)
   return definition_params
 end
 
+-- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/pyrefly.lua
 ---@type vim.lsp.Config
 return {
-  cmd = { "jedi-language-server" },
-  filetypes = { "python" },
-  root_markers = { "buildout.cfg", "pyproject.toml", ".git" },
-  before_init = function(params, _)
-    -- snippets are adding a function call (parentheses) on imports
-    -- and they somwhat bother me
-    -- xxx: perhaps reenable later
-    params.initializationOptions = { completion = { disableSnippets = true } }
-    local plone_extra_paths = require("utils.plone").get_buildout_paths()
-    if plone_extra_paths then
-      params.initializationOptions.workspace = { extraPaths = plone_extra_paths }
-    end
-  end,
   on_attach = function(client, _)
     local base_request = client.request
     client.request = function(self, method, params, handler, bufnr_req)
