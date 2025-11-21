@@ -34,7 +34,8 @@ return {
           -- make lazydev completions top priority (see `:h blink.cmp`)
           score_offset = 100,
         },
-        codeium = { name = "Codeium", module = "codeium.blink", async = true },
+        lsp = { score_offset = 50 },
+        codeium = { name = "Codeium", module = "codeium.blink", async = true, score_offset = -10 },
         -- copilot = { name = "copilot", module = "blink-copilot", async = true },
       },
     },
