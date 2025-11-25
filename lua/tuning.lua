@@ -42,6 +42,7 @@ vim.filetype.add({
     ["ipython_log%.py.*"] = "python", -- ipython log
     [".envrc"] = "zsh", -- direnv config
     [".*ghostty/config"] = "toml",
+    [".*/templates/.*%.html"] = "htmldjango", -- django-plus.vim is not detecting some templates
   },
   extension = {
     zcml = "xml", -- plone zcml
