@@ -24,7 +24,6 @@ local function float_imports_to_top(bufnr, lines)
 end
 
 local prettier_formatters = { "prettierd", "prettier", stop_after_first = true }
-local html_formatters = { "djlint" } -- TODO: find something better
 
 return {
   "stevearc/conform.nvim",
@@ -32,8 +31,11 @@ return {
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "float_imports_to_top", "ruff_fix", "ruff_format" },
-      html = html_formatters,
-      htmldjango = html_formatters,
+      -- TODO: djlint is too slow...
+      -- wait for version 2.0 (hope it improves enough)
+      -- watch https://github.com/djlint/djLint/issues/168
+      htmldjango = { "djade", "djlint" },
+      html = prettier_formatters,
       javascript = prettier_formatters,
       css = prettier_formatters,
       scss = prettier_formatters,
@@ -53,6 +55,10 @@ return {
       },
       ruff_fix = {
         append_args = { "--unsafe-fixes" },
+      },
+      djade = {
+        command = "djade",
+        args = { "-" }, -- read from stdin
       },
     },
     default_format_opts = {
