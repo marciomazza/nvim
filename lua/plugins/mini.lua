@@ -1,6 +1,6 @@
 local function setup_mini_files()
   local MiniFiles = require("mini.files")
-  local file_explorer_ignored = { ".*\\.pyc", "__pycache__" }
+  local file_explorer_ignored = { ".*\\.pyc", "__pycache__", "ipython_log\\.py.*" }
 
   local function minifiles_toggle()
     if not MiniFiles.close() then
