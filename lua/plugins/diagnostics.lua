@@ -1,7 +1,6 @@
 return {
   "rachartier/tiny-inline-diagnostic.nvim",
-  -- fixme maybe needs to be "LspAttach" for good integration with pyrefly... OBSERVE
-  event = "VeryLazy",
+  event = "LspAttach",
   priority = 1000,
   config = function()
     require("tiny-inline-diagnostic").setup()
