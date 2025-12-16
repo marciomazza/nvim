@@ -1,8 +1,24 @@
 local methods = vim.lsp.protocol.Methods
 
-local function get_cotton_dir()
-  -- todo: improve detection of cotton dir
-  return vim.fs.root(0, "pyproject.toml") .. "/templates/cotton/"
+local function get_cotton_path(cotton_tag_name)
+  local cotton_basename = cotton_tag_name:gsub("%-", "_"):gsub("%.", "/")
+  local cotton_path = "/templates/cotton/" .. cotton_basename .. ".html"
+
+  -- try to find inside the closest templates dir
+  local path = vim.fs.root(0, "templates") .. cotton_path
+  if vim.fn.filereadable(path) == 1 then
+    return path
+  end
+
+  -- fallback to search all project
+  local project_root = vim.fs.root(0, "pyproject.toml")
+  local found_path = vim.fn.glob(project_root .. "/**" .. cotton_path)
+  if found_path ~= "" then
+    return found_path
+  end
+
+  -- nothing found => returns the default path for a new file
+  return path
 end
 
 local function go_to_cotton_definition()
@@ -15,10 +31,7 @@ local function go_to_cotton_definition()
   if not cotton_tag_name then
     return
   end
-  -- Normalize path and open source file
-  local cotton_path = cotton_tag_name:gsub("%-", "_"):gsub("%.", "/")
-  local file_path = get_cotton_dir() .. cotton_path .. ".html"
-  vim.cmd.edit(file_path)
+  vim.cmd.edit(get_cotton_path(cotton_tag_name))
   return true
 end
 
