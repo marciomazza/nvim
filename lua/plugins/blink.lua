@@ -15,8 +15,8 @@ return {
     -- See :h blink-cmp-config-keymap for defining your own keymap
     keymap = {
       preset = "super-tab",
-      ["<Down>"] = { "select_next", "fallback" },
-      ["<Up>"] = { "select_prev", "fallback" },
+      ["<Down>"] = { "select_next" },
+      ["<Up>"] = { "select_prev" },
     },
     -- completion = { documentation = { auto_show = true } },
     sources = {
