@@ -1,9 +1,9 @@
 return {
   "nvim-treesitter/nvim-treesitter",
   build = ":TSUpdate",
+  lazy = false,
   dependencies = {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    "nvim-treesitter/playground",
     {
       -- fixme: didn't really solve my issue:
       -- it's showing just the method context and I wanted the class or both
