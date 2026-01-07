@@ -36,6 +36,7 @@ local function setup_mini_comment()
   local custom_comment_patterns = {
     sql = "-- %s",
     htmldjango = "{# %s #}",
+    kitty = "# %s",
   }
   require("mini.comment").setup({
     options = {
