@@ -66,3 +66,10 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "<CR>", "<CR>:cclose<CR>", { buffer = true, silent = true })
   end,
 })
+
+-- for kitty scrollback
+-- https://www.reddit.com/r/neovim/comments/1nmqjal/comment/nfiif2z/
+-- see https://neovim.io/doc/user/api.html#terminal-scrollback-pager
+vim.api.nvim_create_user_command("TermHl", function()
+  vim.api.nvim_open_term(0, {})
+end, { desc = "Highlights ANSI termcodes in curbuf" })
