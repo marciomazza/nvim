@@ -63,6 +63,7 @@ local function setup_mini_hipatterns()
       todo = words_highlighter({ "TODO", "Todo", "todo" }, "MiniHipatternsTodo"),
       fixme = words_highlighter({ "FIXME", "Fixme", "fixme" }, "MiniHipatternsFixme"),
       xxx = words_highlighter({ "XXX", "xxx" }, "MiniHipatternsHack"),
+      temp = words_highlighter({ "TEMP", "temp" }, "MiniHipatternsHack"),
     },
   })
 end
