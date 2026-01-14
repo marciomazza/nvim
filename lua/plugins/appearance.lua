@@ -6,30 +6,15 @@ vim.o.signcolumn = "auto" -- only show the sign column when there are signs to b
 vim.opt.cursorline = true -- highlight the current line
 
 return {
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
-    priority = 1000,
-    opts = {
-      transparent_background = false,
-      auto_integrations = true,
-      integrations = {
-        aerial = true,
-        snacks = true,
-        diffview = true,
-        mini = true,
-      },
-      custom_highlights = function(colors)
-        return {
-          MiniTablineCurrent = { fg = colors.mantle, bg = colors.blue, style = { "bold" } },
-          MiniTablineModifiedCurrent = { fg = colors.base, bg = colors.red, style = { "bold" } },
-        }
-      end,
-    },
-    init = function()
-      vim.cmd.colorscheme("catppuccin")
-    end,
-  },
   "HiPhish/rainbow-delimiters.nvim",
   { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+    init = function()
+      vim.cmd.colorscheme("tokyonight-night")
+    end,
+  },
 }
