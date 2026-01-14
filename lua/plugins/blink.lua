@@ -5,8 +5,8 @@ return {
     "rafamadriz/friendly-snippets",
 
     -- todo: choose copilot x windosurf x something else
-    -- "fang2hou/blink-copilot",
-    "Exafunction/windsurf.nvim",
+    "fang2hou/blink-copilot",
+    -- "Exafunction/windsurf.nvim",
   },
 
   ---@module 'blink.cmp'
@@ -26,8 +26,8 @@ return {
         "snippets",
         "buffer",
         -- todo: choose copilot x windosurf x something else
-        -- "copilot",
-        "codeium",
+        "copilot",
+        -- "codeium",
       },
       per_filetype = { lua = { inherit_defaults = true, "lazydev" } },
       providers = {
@@ -39,8 +39,8 @@ return {
         },
         lsp = { score_offset = 50 },
         -- todo: choose copilot x windosurf x something else
-        codeium = { name = "Codeium", module = "codeium.blink", async = true, score_offset = -10 },
-        -- copilot = { name = "copilot", module = "blink-copilot", async = true },
+        -- codeium = { name = "Codeium", module = "codeium.blink", async = true, score_offset = -10 },
+        copilot = { name = "copilot", module = "blink-copilot", async = true, score_offset = -10 },
       },
     },
     fuzzy = { implementation = "rust" },
