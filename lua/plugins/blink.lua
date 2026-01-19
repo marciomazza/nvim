@@ -40,7 +40,8 @@ return {
         lsp = { score_offset = 50 },
         -- todo: choose copilot x windosurf x something else
         -- codeium = { name = "Codeium", module = "codeium.blink", async = true, score_offset = -10 },
-        copilot = { name = "copilot", module = "blink-copilot", async = true, score_offset = -10 },
+        -- copilot = { name = "copilot", module = "blink-copilot", async = true, score_offset = -10 },
+        copilot = { name = "copilot", module = "blink-copilot", async = true },
       },
     },
     fuzzy = { implementation = "rust" },
