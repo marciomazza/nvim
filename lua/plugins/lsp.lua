@@ -20,6 +20,7 @@ return {
         "lua_ls",
         "taplo",
         "tailwindcss",
+        "cssls",
         "djlsp",
         -- todo: choose copilot x windosurf x something else
         "copilot", -- github/copilot-language-server-release
