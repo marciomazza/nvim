@@ -5,7 +5,7 @@ return {
     "rafamadriz/friendly-snippets",
 
     -- todo: choose copilot x windosurf x something else
-    "fang2hou/blink-copilot",
+    -- "fang2hou/blink-copilot",
     -- "Exafunction/windsurf.nvim",
   },
 
@@ -14,22 +14,26 @@ return {
   opts = {
     -- See :h blink-cmp-config-keymap for defining your own keymap
     keymap = {
-      preset = "super-tab",
+      preset = "enter",
       ["<Down>"] = { "select_next", "fallback" },
       ["<Up>"] = { "select_prev", "fallback" },
     },
-    -- completion = { documentation = { auto_show = true } },
+
     sources = {
+      completion = {
+        enabled_providers = { "supermaven" },
+      },
       default = {
         "lsp",
         "path",
         "snippets",
         "buffer",
         -- todo: choose copilot x windosurf x something else
-        "copilot",
+        -- "copilot",
         -- "codeium",
       },
       per_filetype = { lua = { inherit_defaults = true, "lazydev" } },
+
       providers = {
         lazydev = {
           name = "LazyDev",
@@ -41,7 +45,12 @@ return {
         -- todo: choose copilot x windosurf x something else
         -- codeium = { name = "Codeium", module = "codeium.blink", async = true, score_offset = -10 },
         -- copilot = { name = "copilot", module = "blink-copilot", async = true, score_offset = -10 },
-        copilot = { name = "copilot", module = "blink-copilot", async = true },
+        -- copilot = { name = "copilot", module = "blink-copilot", async = true },
+        supermaven = {
+          name = "supermaven",
+          module = "blink.compat.source",
+          score_offset = 100,
+        },
       },
     },
     fuzzy = { implementation = "rust" },

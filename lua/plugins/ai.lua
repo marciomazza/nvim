@@ -44,6 +44,12 @@ return {
       end, { desc = "opencode half page down" })
     end,
   },
+  {
+    "supermaven-inc/supermaven-nvim",
+    opts = {
+      -- disable_inline_completion = true,
+    },
+  },
 }
 
 -- return {
