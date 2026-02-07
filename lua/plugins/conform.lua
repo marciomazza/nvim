@@ -42,6 +42,7 @@ return {
       json = prettier_formatters,
       yaml = prettier_formatters,
       toml = { "taplo" },
+      typst = { "typstyle" },
       ["_"] = { "trim_whitespace", "trim_newlines" },
     },
     formatters = {
