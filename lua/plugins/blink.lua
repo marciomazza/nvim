@@ -17,12 +17,11 @@ return {
       preset = "enter",
       ["<Down>"] = { "select_next", "fallback" },
       ["<Up>"] = { "select_prev", "fallback" },
+      ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
     },
 
     sources = {
-      completion = {
-        enabled_providers = { "supermaven" },
-      },
+      -- Remover enabled_providers para permitir todos os sources
       default = {
         "lsp",
         "path",
@@ -46,11 +45,6 @@ return {
         -- codeium = { name = "Codeium", module = "codeium.blink", async = true, score_offset = -10 },
         -- copilot = { name = "copilot", module = "blink-copilot", async = true, score_offset = -10 },
         -- copilot = { name = "copilot", module = "blink-copilot", async = true },
-        supermaven = {
-          name = "supermaven",
-          module = "blink.compat.source",
-          score_offset = 100,
-        },
       },
     },
     fuzzy = { implementation = "rust" },
