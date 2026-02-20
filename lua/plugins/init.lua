@@ -6,4 +6,5 @@ return {
   -- files
   "junegunn/fzf",
   "wsdjeg/vim-fetch",
+  "lark-parser/vim-lark-syntax",
 }
