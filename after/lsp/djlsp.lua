@@ -35,6 +35,7 @@ local function go_to_cotton_definition()
   return true
 end
 
+---https://github.com/neovim/nvim-lspconfig/blob/master/lsp/djlsp.lua
 ---@type vim.lsp.Config
 return {
   on_attach = function(client, _)
