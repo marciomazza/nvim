@@ -31,16 +31,14 @@ return {
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "float_imports_to_top", "ruff_fix", "ruff_format" },
-      -- TODO: djlint is too slow...
-      -- wait for version 2.0 (hope it improves enough)
-      -- watch https://github.com/djlint/djLint/issues/168
-      htmldjango = { "djade", "djlint" },
-      html = prettier_formatters,
-      javascript = prettier_formatters,
-      css = prettier_formatters,
-      scss = prettier_formatters,
-      json = prettier_formatters,
-      yaml = prettier_formatters,
+      htmldjango = { "djhtml", "djade", "oxfmt" },
+      html = { "oxfmt" },
+      javascript = { "oxfmt" },
+      typescript = { "oxfmt" },
+      json = { "oxfmt", "oxlint" },
+      css = { "oxfmt" },
+      scss = { "oxfmt" },
+      yaml = { "oxfmt" },
       toml = { "taplo" },
       typst = { "typstyle" },
       ["_"] = { "trim_whitespace", "trim_newlines" },
@@ -56,6 +54,10 @@ return {
       },
       ruff_fix = {
         append_args = { "--unsafe-fixes" },
+      },
+      djhtml = {
+        command = "djhtml",
+        args = { "-t 2", "-" }, -- read from stdin
       },
       djade = {
         command = "djade",
