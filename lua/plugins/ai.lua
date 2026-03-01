@@ -1,5 +1,3 @@
--- todo: choose copilot x windosurf x something else
-
 return {
   {
     "NickvanDyke/opencode.nvim",
@@ -44,30 +42,4 @@ return {
       end, { desc = "opencode half page down" })
     end,
   },
-  {
-    "supermaven-inc/supermaven-nvim",
-    opts = {
-      keymaps = {
-        accept_suggestion = "<Tab>",
-        clear_suggestion = "<C-]>",
-        accept_word = "<C-j>",
-      },
-    },
-  },
 }
-
--- return {
---   {
---     "Exafunction/windsurf.nvim",
---     dependencies = {
---       "nvim-lua/plenary.nvim",
---       "saghen/blink.cmp",
---     },
---     config = function()
---       require("codeium").setup({
---         enable_cmp_source = false,
---         -- virtual_text = { enabled = true },
---       })
---     end,
---   },
--- }
