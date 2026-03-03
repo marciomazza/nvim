@@ -18,7 +18,7 @@ return {
         "ruff",
         "pyrefly",
         "lua_ls",
-        "taplo",
+        "tombi",
         "tailwindcss",
         "cssls",
         "djlsp",

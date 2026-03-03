@@ -39,7 +39,7 @@ return {
       css = { "oxfmt" },
       scss = { "oxfmt" },
       yaml = { "oxfmt" },
-      toml = { "taplo" },
+      toml = { "tombi" },
       typst = { "typstyle" },
       ["_"] = { "trim_whitespace", "trim_newlines" },
     },
