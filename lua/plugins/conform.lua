@@ -23,7 +23,8 @@ local function float_imports_to_top(bufnr, lines)
   end
 end
 
-local prettier_formatters = { "prettierd", "prettier", stop_after_first = true }
+local oxc = { "oxfmt", "oxlint" }
+local for_htmldjango = { "rustywind", "djangofmt" }
 
 return {
   "stevearc/conform.nvim",
@@ -31,14 +32,14 @@ return {
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "float_imports_to_top", "ruff_fix", "ruff_format" },
-      htmldjango = { "djhtml", "djade", "oxfmt" },
-      html = { "oxfmt" },
-      javascript = { "oxfmt" },
-      typescript = { "oxfmt" },
-      json = { "oxfmt", "oxlint" },
-      css = { "oxfmt" },
-      scss = { "oxfmt" },
-      yaml = { "oxfmt" },
+      htmldjango = for_htmldjango,
+      html = for_htmldjango,
+      javascript = oxc,
+      typescript = oxc,
+      json = oxc,
+      css = oxc,
+      scss = oxc,
+      yaml = oxc,
       toml = { "tombi" },
       typst = { "typstyle" },
       ["_"] = { "trim_whitespace", "trim_newlines" },
@@ -55,13 +56,19 @@ return {
       ruff_fix = {
         append_args = { "--unsafe-fixes" },
       },
-      djhtml = {
-        command = "djhtml",
-        args = { "-t 2", "-" }, -- read from stdin
+      oxfmt = {
+        stdin = false,
       },
-      djade = {
-        command = "djade",
-        args = { "-" }, -- read from stdin
+      oxlint = {
+        append_args = { "--fix", "--fix-suggestions" },
+      },
+      djangofmt = {
+        command = "djangofmt",
+        args = { "--quiet", "$FILENAME" },
+        stdin = false,
+      },
+      rustywind = {
+        append_args = { "--quiet", "--config-file", ".rustywind.json" },
       },
     },
     default_format_opts = {
