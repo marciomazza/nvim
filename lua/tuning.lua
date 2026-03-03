@@ -56,6 +56,14 @@ vim.opt.path:append(vim.uv.cwd() .. "/**")
 -- TODO: ignore everything that is git ignored
 vim.opt.wildignore:append({ "**/zzz/**", ".git" })
 
+-- enable wrap only in diff mode
+vim.api.nvim_create_autocmd({ "BufWinEnter", "DiffUpdated" }, {
+  callback = function()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      vim.wo[win].wrap = vim.wo[win].diff
+    end
+  end,
+})
 vim.opt.splitright = true -- open splits at the right
 vim.opt.swapfile = false -- disable annoying warnings about swap files
 
