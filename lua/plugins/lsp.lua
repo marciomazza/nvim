@@ -25,6 +25,7 @@ return {
         "ts_ls",
         "oxfmt",
         "oxlint",
+        "htmx",
       },
     },
   },
