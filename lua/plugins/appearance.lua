@@ -9,12 +9,10 @@ return {
   "HiPhish/rainbow-delimiters.nvim",
   { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
   {
-    "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
-    opts = {},
+    "kepano/flexoki-neovim",
+    name = "flexoki",
     init = function()
-      vim.cmd.colorscheme("tokyonight-night")
+      vim.cmd.colorscheme("flexoki-light")
     end,
   },
 }
