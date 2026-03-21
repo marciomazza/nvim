@@ -19,14 +19,15 @@ return {
       local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
       local cursorline = vim.api.nvim_get_hl(0, { name = "CursorLine" })
       local comment = vim.api.nvim_get_hl(0, { name = "Comment" })
-      local orange = "#BC5215" -- Specific preference for modified state
+      -- Using Function's foreground color for modified tabs to make them stand out
+      local stand_out = vim.api.nvim_get_hl(0, { name = "Function" }).fg
 
       vim.api.nvim_set_hl(0, "MiniTablineCurrent", { bg = normal.bg, fg = normal.fg, bold = true })
       vim.api.nvim_set_hl(0, "MiniTablineVisible", { bg = cursorline.bg, fg = comment.fg })
       vim.api.nvim_set_hl(0, "MiniTablineHidden", { bg = cursorline.bg, fg = comment.fg })
-      vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = normal.bg, fg = orange, bold = true })
-      vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { bg = cursorline.bg, fg = orange })
-      vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = cursorline.bg, fg = orange })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = normal.bg, fg = stand_out, bold = true })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { bg = cursorline.bg, fg = stand_out })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = cursorline.bg, fg = stand_out })
       vim.api.nvim_set_hl(0, "MiniTablineFill", { bg = cursorline.bg })
     end,
   },
