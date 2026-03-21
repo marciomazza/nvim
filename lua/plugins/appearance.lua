@@ -13,6 +13,25 @@ return {
     name = "flexoki",
     init = function()
       vim.cmd.colorscheme("flexoki-light")
+
+      -- Better visibility for current tab in mini.tabline
+      local colors = {
+        paper = "#FFFCF0",
+        surface = "#F2F0E5",
+        overlay = "#E6E4D9",
+        muted = "#878580",
+        darkest = "#100F0F",
+        cyan = "#24837B",
+        orange = "#BC5215",
+      }
+
+      vim.api.nvim_set_hl(0, "MiniTablineCurrent", { bg = colors.paper, fg = colors.darkest, bold = true })
+      vim.api.nvim_set_hl(0, "MiniTablineVisible", { bg = colors.surface, fg = colors.muted })
+      vim.api.nvim_set_hl(0, "MiniTablineHidden", { bg = colors.overlay, fg = colors.muted })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = colors.paper, fg = colors.orange, bold = true })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { bg = colors.surface, fg = colors.orange })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = colors.overlay, fg = colors.orange })
+      vim.api.nvim_set_hl(0, "MiniTablineFill", { bg = colors.surface })
     end,
   },
 }
