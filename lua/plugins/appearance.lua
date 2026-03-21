@@ -15,23 +15,19 @@ return {
       vim.cmd.colorscheme("flexoki-light")
 
       -- Better visibility for current tab in mini.tabline
-      local colors = {
-        paper = "#FFFCF0",
-        surface = "#F2F0E5",
-        overlay = "#E6E4D9",
-        muted = "#878580",
-        darkest = "#100F0F",
-        cyan = "#24837B",
-        orange = "#BC5215",
-      }
+      -- Fetching colors from standard highlight groups to keep it theme-aware
+      local normal = vim.api.nvim_get_hl(0, { name = "Normal" })
+      local cursorline = vim.api.nvim_get_hl(0, { name = "CursorLine" })
+      local comment = vim.api.nvim_get_hl(0, { name = "Comment" })
+      local orange = "#BC5215" -- Specific preference for modified state
 
-      vim.api.nvim_set_hl(0, "MiniTablineCurrent", { bg = colors.paper, fg = colors.darkest, bold = true })
-      vim.api.nvim_set_hl(0, "MiniTablineVisible", { bg = colors.surface, fg = colors.muted })
-      vim.api.nvim_set_hl(0, "MiniTablineHidden", { bg = colors.overlay, fg = colors.muted })
-      vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = colors.paper, fg = colors.orange, bold = true })
-      vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { bg = colors.surface, fg = colors.orange })
-      vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = colors.overlay, fg = colors.orange })
-      vim.api.nvim_set_hl(0, "MiniTablineFill", { bg = colors.surface })
+      vim.api.nvim_set_hl(0, "MiniTablineCurrent", { bg = normal.bg, fg = normal.fg, bold = true })
+      vim.api.nvim_set_hl(0, "MiniTablineVisible", { bg = cursorline.bg, fg = comment.fg })
+      vim.api.nvim_set_hl(0, "MiniTablineHidden", { bg = cursorline.bg, fg = comment.fg })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedCurrent", { bg = normal.bg, fg = orange, bold = true })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedVisible", { bg = cursorline.bg, fg = orange })
+      vim.api.nvim_set_hl(0, "MiniTablineModifiedHidden", { bg = cursorline.bg, fg = orange })
+      vim.api.nvim_set_hl(0, "MiniTablineFill", { bg = cursorline.bg })
     end,
   },
 }
