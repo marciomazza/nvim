@@ -60,7 +60,7 @@ return {
         stdin = false,
       },
       oxlint = {
-        append_args = { "--fix", "--fix-suggestions" },
+        append_args = { "--fix-suggestions" },
       },
       djangofmt = {
         command = "djangofmt",
