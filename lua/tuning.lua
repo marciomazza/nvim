@@ -50,6 +50,27 @@ vim.filetype.add({
   },
 })
 
+-- gf with file:line support (e.g. `# vendor/htmx/test/hx-get.js:11`)
+vim.keymap.set("n", "gf", function()
+  local line = vim.api.nvim_get_current_line()
+  local col = vim.api.nvim_win_get_cursor(0)[2] + 1 -- 1-indexed
+
+  local pattern = "([%w%./%-_]+):(%d+)"
+  local pos = 1
+  while true do
+    local s, e, file, lnum = line:find(pattern, pos)
+    if not s then break end
+    if col >= s and col <= e then
+      vim.cmd("edit " .. vim.fn.fnameescape(file))
+      vim.api.nvim_win_set_cursor(0, { tonumber(lnum), 0 })
+      return
+    end
+    pos = e + 1
+  end
+
+  vim.cmd("normal! gf")
+end, { desc = "Go to file (supports file:line syntax)" })
+
 -- add project subdirectories to path to find files (with `gf`, for example)
 vim.opt.path:append(vim.uv.cwd() .. "/**")
 -- but ignore the directory `zzz`
