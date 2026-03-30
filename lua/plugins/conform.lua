@@ -56,9 +56,6 @@ return {
       ruff_fix = {
         append_args = { "--unsafe-fixes" },
       },
-      oxfmt = {
-        stdin = false,
-      },
       oxlint = {
         append_args = { "--fix-suggestions" },
       },
