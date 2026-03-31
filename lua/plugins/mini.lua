@@ -72,10 +72,6 @@ local function setup_mini_pick()
   local MiniPick = require("mini.pick")
   MiniPick.setup()
   vim.ui.select = MiniPick.ui_select
-  vim.keymap.set("n", "<leader>f", function()
-    MiniPick.builtin.grep({ pattern = vim.fn.expand("<cword>") })
-  end, { desc = "Find word" })
-  vim.keymap.set("n", "<leader>F", MiniPick.builtin.grep_live, { desc = "Live grep" })
   vim.keymap.set("n", "<leader>e", MiniPick.builtin.files, { desc = "Pick file" })
 end
 
