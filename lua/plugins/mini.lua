@@ -68,13 +68,6 @@ local function setup_mini_hipatterns()
   })
 end
 
-local function setup_mini_pick()
-  local MiniPick = require("mini.pick")
-  MiniPick.setup()
-  vim.ui.select = MiniPick.ui_select
-  vim.keymap.set("n", "<leader>e", MiniPick.builtin.files, { desc = "Pick file" })
-end
-
 local function setup_mini_clue()
   local MiniClue = require("mini.clue")
   local triggers = {
@@ -135,7 +128,6 @@ return {
     setup_mini_files()
     setup_mini_comment()
     setup_mini_hipatterns()
-    setup_mini_pick()
     setup_mini_clue()
 
     -- specific for html / htmldjango

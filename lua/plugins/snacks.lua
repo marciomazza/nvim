@@ -22,5 +22,11 @@ return {
     notifier = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = true },
+    picker = { enabled = true },
+  },
+  keys = {
+    { "<leader>e", function() Snacks.picker.files() end, desc = "Find Files" },
+    { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
+    { "<leader>sb", function() Snacks.picker.buffers() end, desc = "Buffers" },
   },
 }
