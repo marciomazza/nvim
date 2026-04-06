@@ -170,16 +170,15 @@ return {
       if method == methods.textDocument_definition then
         params = build_params_for_quoted_name_def(client) or params
 
-        local orig_handler = handler
-        handler = function(err, result, ctx, config)
-          if not err and (not result or (vim.islist(result) and #result == 0)) then
-            local current = vim.api.nvim_buf_get_name(ctx.bufnr)
-            local fixture_name = get_fixture_at_cursor()
-            if fixture_name then
-              goto_pytest_fixture(fixture_name, current)
+        local fixture_name = get_fixture_at_cursor()
+        if fixture_name then
+          local orig_handler = handler
+          handler = function(err, result, ctx, config)
+            if not err and (not result or #result == 0) then
+              goto_pytest_fixture(fixture_name, vim.api.nvim_buf_get_name(ctx.bufnr))
+            else
+              orig_handler(err, result, ctx, config)
             end
-          else
-            orig_handler(err, result, ctx, config)
           end
         end
       end
