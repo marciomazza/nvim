@@ -108,12 +108,12 @@ local function build_cache_for_file(filepath)
   end)
 end
 
-local function goto_fixture(fixture_name, filepath)
+local function goto_pytest_fixture(fixture_name, filepath)
   local cached = fixture_cache[filepath]
   if not cached then
     vim.defer_fn(function()
-      goto_fixture(fixture_name, filepath)
-    end, 500)
+      goto_pytest_fixture(fixture_name, filepath)
+    end, 300)
     return
   end
   local def = cached[fixture_name]
@@ -151,15 +151,15 @@ return {
       if method == methods.textDocument_definition then
         params = build_params_for_quoted_name_def(client) or params
 
-        local fixture_name = get_fixture_at_cursor()
-        if fixture_name then
-          local orig_handler = handler
-          handler = function(err, result, ctx, config)
-            if not err and (not result or #result == 0) then
-              goto_fixture(fixture_name, filename)
-            else
-              orig_handler(err, result, ctx, config)
+        local orig_handler = handler
+        handler = function(err, result, ctx, config)
+          if not err and (not result or #result == 0) then
+            local fixture_name = get_fixture_at_cursor()
+            if fixture_name then
+              goto_pytest_fixture(fixture_name, filename)
             end
+          else
+            orig_handler(err, result, ctx, config)
           end
         end
       end
