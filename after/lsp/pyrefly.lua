@@ -41,13 +41,16 @@ end
 
 -- Pytest fixture support
 
+-- { filepath = { fixture_name = { abs_path, lnum } } }
+local fixture_cache = {}
+
 local function find_pytest(dir)
   local venv = vim.fs.find(".venv/bin/pytest", { path = dir, upward = true, type = "file" })
   return venv[1] or "pytest"
 end
 
--- Returns func_name, fixture_name if cursor is on a parameter of a test_* function.
-local function get_fixture_and_test_at_cursor()
+-- Returns fixture_name if cursor is on a parameter of a test_* function.
+local function get_fixture_at_cursor()
   local node = vim.treesitter.get_node()
   if not node or node:type() ~= "identifier" then
     return
@@ -72,54 +75,58 @@ local function get_fixture_and_test_at_cursor()
   for i = 0, func:child_count() - 1 do
     local child = func:child(i)
     if child:type() == "identifier" then
-      local func_name = vim.treesitter.get_node_text(child, 0)
-      if func_name:match("^test_") then
-        return func_name, fixture_name
+      if vim.treesitter.get_node_text(child, 0):match("^test_") then
+        return fixture_name
       end
       break
     end
   end
 end
 
-local function parse_fixtures_output(lines, cwd)
+local function parse_fixtures_output(stdout, cwd)
   local fixtures = {}
-  for _, line in ipairs(lines) do
+  for _, line in ipairs(vim.split(stdout, "\n")) do
     local name, path, lnum = line:match("^(%w+) %-%- (.+):(%d+)$")
-    if name then
-      local abs = vim.fn.fnamemodify(cwd .. "/" .. path, ":p")
-      fixtures[name] = { abs, tonumber(lnum) }
+    if name and not fixtures[name] then
+      fixtures[name] = { vim.fn.fnamemodify(cwd .. "/" .. path, ":p"), tonumber(lnum) }
     end
   end
   return fixtures
 end
 
-local function goto_fixture(fixture_name, filepath, func_name)
+local function get_cwd(filepath)
   local dir = vim.fn.fnamemodify(filepath, ":h")
-  local pytest = find_pytest(dir)
-  local cwd = vim.fs.root(dir, { "pyproject.toml", "setup.py", "setup.cfg" }) or dir
-  local node_id = filepath .. "::" .. func_name
+  return vim.fs.root(dir, { "pyproject.toml", "setup.py", "setup.cfg" }) or dir
+end
 
-  vim.system(
-    { pytest, "--fixtures-per-test", "--no-header", "-q", node_id },
-    { text = true, cwd = cwd },
-    function(result)
-      local lines = vim.split(result.stdout or "", "\n")
-      local fixtures = parse_fixtures_output(lines, cwd)
-      local def = fixtures[fixture_name]
-      if not def then
-        return
-      end
-      vim.schedule(function()
-        vim.lsp.util.show_document({
-          uri = vim.uri_from_fname(def[1]),
-          range = {
-            start = { line = def[2] - 1, character = 0 },
-            ["end"] = { line = def[2] - 1, character = 0 },
-          },
-        }, "utf-8", { focus = true })
-      end)
-    end
-  )
+local function build_cache_for_file(filepath)
+  local cwd = get_cwd(filepath)
+  local pytest = find_pytest(cwd)
+  local cmd = string.format("%s --fixtures-per-test --no-header -q %s | grep ' -- ' | sort | uniq", pytest, filepath)
+  vim.system({ "sh", "-c", cmd }, { text = true, cwd = cwd }, function(result)
+    fixture_cache[filepath] = parse_fixtures_output(result.stdout or "", cwd)
+  end)
+end
+
+local function goto_fixture(fixture_name, filepath)
+  local cached = fixture_cache[filepath]
+  if not cached then
+    vim.defer_fn(function()
+      goto_fixture(fixture_name, filepath)
+    end, 500)
+    return
+  end
+  local def = cached[fixture_name]
+  if not def then
+    return
+  end
+  vim.lsp.util.show_document({
+    uri = vim.uri_from_fname(def[1]),
+    range = {
+      start = { line = def[2] - 1, character = 0 },
+      ["end"] = { line = def[2] - 1, character = 0 },
+    },
+  }, "utf-8", { focus = true })
 end
 
 -- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/pyrefly.lua
@@ -128,17 +135,28 @@ return {
   on_attach = function(client, bufnr)
     local filename = vim.api.nvim_buf_get_name(bufnr)
 
+    if filename:match("/test_[^/]+%.py$") or filename:match("/[^/]+_test%.py$") then
+      build_cache_for_file(filename)
+
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        buffer = bufnr,
+        callback = function()
+          build_cache_for_file(filename)
+        end,
+      })
+    end
+
     local base_request = client.request
     client.request = function(self, method, params, handler, bufnr_req)
       if method == methods.textDocument_definition then
         params = build_params_for_quoted_name_def(client) or params
 
-        local func_name, fixture_name = get_fixture_and_test_at_cursor()
-        if fixture_name and func_name then
+        local fixture_name = get_fixture_at_cursor()
+        if fixture_name then
           local orig_handler = handler
           handler = function(err, result, ctx, config)
             if not err and (not result or #result == 0) then
-              goto_fixture(fixture_name, filename, func_name)
+              goto_fixture(fixture_name, filename)
             else
               orig_handler(err, result, ctx, config)
             end
