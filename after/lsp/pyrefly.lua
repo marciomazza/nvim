@@ -172,7 +172,7 @@ return {
 
         local orig_handler = handler
         handler = function(err, result, ctx, config)
-          if not err and (not result or #result == 0) then
+          if not err and (not result or (vim.islist(result) and #result == 0)) then
             local current = vim.api.nvim_buf_get_name(ctx.bufnr)
             local fixture_name = get_fixture_at_cursor()
             if fixture_name then
