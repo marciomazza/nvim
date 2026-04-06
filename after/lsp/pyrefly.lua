@@ -110,6 +110,8 @@ local function get_cwd(filepath)
 end
 
 local function build_cache_for_file(filepath)
+  if fixture_cache[filepath] ~= nil then return end
+  fixture_cache[filepath] = "loading"
   local cwd = get_cwd(filepath)
   local pytest = find_pytest(cwd)
   local flag = filepath:match("/conftest%.py$") and "--fixtures" or "--fixtures-per-test"
@@ -123,14 +125,14 @@ local function build_cache_for_file(filepath)
 end
 
 local function goto_pytest_fixture(fixture_name, filepath)
-  local cached = fixture_cache[filepath]
-  if not cached then
+  build_cache_for_file(filepath)
+  if type(fixture_cache[filepath]) ~= "table" then
     vim.defer_fn(function()
       goto_pytest_fixture(fixture_name, filepath)
     end, 300)
     return
   end
-  local def = cached[fixture_name]
+  local def = fixture_cache[filepath][fixture_name]
   if not def then
     return
   end
@@ -155,6 +157,7 @@ return {
       vim.api.nvim_create_autocmd("BufWritePost", {
         buffer = bufnr,
         callback = function()
+          fixture_cache[filename] = nil
           build_cache_for_file(filename)
         end,
       })
@@ -168,9 +171,10 @@ return {
         local orig_handler = handler
         handler = function(err, result, ctx, config)
           if not err and (not result or #result == 0) then
-            local fixture_name = get_fixture_at_cursor(filename:match("/conftest%.py$") ~= nil)
+            local current = vim.api.nvim_buf_get_name(ctx.bufnr)
+            local fixture_name = get_fixture_at_cursor(current:match("/conftest%.py$") ~= nil)
             if fixture_name then
-              goto_pytest_fixture(fixture_name, filename)
+              goto_pytest_fixture(fixture_name, current)
             end
           else
             orig_handler(err, result, ctx, config)
