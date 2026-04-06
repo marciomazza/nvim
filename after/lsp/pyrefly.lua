@@ -50,7 +50,8 @@ local function find_pytest(dir)
 end
 
 -- Returns fixture_name if cursor is on a parameter of a test_* function.
-local function get_fixture_at_cursor()
+-- If any_func=true, accepts parameters of any function (for conftest.py).
+local function get_fixture_at_cursor(any_func)
   local node = vim.treesitter.get_node()
   if not node or node:type() ~= "identifier" then
     return
@@ -72,6 +73,10 @@ local function get_fixture_at_cursor()
     return
   end
 
+  if any_func then
+    return fixture_name
+  end
+
   for i = 0, func:child_count() - 1 do
     local child = func:child(i)
     if child:type() == "identifier" then
@@ -86,9 +91,14 @@ end
 local function parse_fixtures_output(stdout, cwd)
   local fixtures = {}
   for _, line in ipairs(vim.split(stdout, "\n")) do
-    local name, path, lnum = line:match("^(%w+) %-%- (.+):(%d+)$")
-    if name and not fixtures[name] then
-      fixtures[name] = { vim.fn.fnamemodify(cwd .. "/" .. path, ":p"), tonumber(lnum) }
+    -- handles both "name -- path:line" and "name [scope] -- path:line"
+    local parts = vim.split(line, " -- ", { plain = true })
+    if #parts == 2 then
+      local name = parts[1]:match("^([%w_]+)")
+      local path, lnum = parts[2]:match("^(.+):(%d+)$")
+      if name and path and not fixtures[name] then
+        fixtures[name] = { vim.fn.fnamemodify(cwd .. "/" .. path, ":p"), tonumber(lnum) }
+      end
     end
   end
   return fixtures
@@ -102,10 +112,14 @@ end
 local function build_cache_for_file(filepath)
   local cwd = get_cwd(filepath)
   local pytest = find_pytest(cwd)
-  local cmd = string.format("%s --fixtures-per-test --no-header -q %s | grep ' -- ' | sort | uniq", pytest, filepath)
-  vim.system({ "sh", "-c", cmd }, { text = true, cwd = cwd }, function(result)
-    fixture_cache[filepath] = parse_fixtures_output(result.stdout or "", cwd)
-  end)
+  local flag = filepath:match("/conftest%.py$") and "--fixtures" or "--fixtures-per-test"
+  vim.system(
+    { pytest, flag, "--no-header", "-q", filepath },
+    { text = true, cwd = cwd },
+    function(result)
+      fixture_cache[filepath] = parse_fixtures_output(result.stdout or "", cwd)
+    end
+  )
 end
 
 local function goto_pytest_fixture(fixture_name, filepath)
@@ -135,7 +149,7 @@ return {
   on_attach = function(client, bufnr)
     local filename = vim.api.nvim_buf_get_name(bufnr)
 
-    if filename:match("/test_[^/]+%.py$") or filename:match("/[^/]+_test%.py$") then
+    if filename:match("/test_[^/]+%.py$") or filename:match("/[^/]+_test%.py$") or filename:match("/conftest%.py$") then
       build_cache_for_file(filename)
 
       vim.api.nvim_create_autocmd("BufWritePost", {
@@ -154,7 +168,7 @@ return {
         local orig_handler = handler
         handler = function(err, result, ctx, config)
           if not err and (not result or #result == 0) then
-            local fixture_name = get_fixture_at_cursor()
+            local fixture_name = get_fixture_at_cursor(filename:match("/conftest%.py$") ~= nil)
             if fixture_name then
               goto_pytest_fixture(fixture_name, filename)
             end
