@@ -59,7 +59,9 @@ vim.keymap.set("n", "gf", function()
   local pos = 1
   while true do
     local s, e, file, lnum = line:find(pattern, pos)
-    if not s then break end
+    if not s then
+      break
+    end
     if col >= s and col <= e then
       vim.cmd("edit " .. vim.fn.fnameescape(file))
       vim.api.nvim_win_set_cursor(0, { tonumber(lnum), 0 })
@@ -80,6 +82,7 @@ vim.opt.wildignore:append({ "**/zzz/**", ".git" })
 vim.opt.wrap = true -- enable line wrap by default
 vim.opt.splitright = true -- open splits at the right
 vim.opt.swapfile = false -- disable annoying warnings about swap files
+vim.opt.autoread = true -- automatically reload files changed on disk
 
 -- Close quickfix list automatically when selecting an item
 vim.api.nvim_create_autocmd("FileType", {
