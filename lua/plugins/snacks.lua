@@ -22,7 +22,12 @@ return {
     notifier = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = true },
-    picker = { enabled = true },
+    picker = {
+      enabled = true,
+      sources = {
+        files = { hidden = true },
+      },
+    },
   },
   keys = {
     { "<leader>e", function() Snacks.picker.files() end, desc = "Find Files" },
