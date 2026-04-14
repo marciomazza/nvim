@@ -110,7 +110,7 @@ end
 
 local function get_cwd(filepath)
   local dir = vim.fn.fnamemodify(filepath, ":h")
-  return vim.fs.root(dir, { "pyproject.toml", "setup.py", "setup.cfg" }) or dir
+  return vim.fs.root(dir, { "pyproject.toml", "setup.py", "setup.cfg", "pyrefly.toml", ".git" }) or dir
 end
 
 local function build_cache_for_file(filepath)
@@ -150,6 +150,13 @@ end
 -- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/pyrefly.lua
 ---@type vim.lsp.Config
 return {
+
+  -- fixme: this was necessary for pyrefly lsp to recognise the workspace
+  -- revisit this  later, it should not be necessary!!!
+  root_dir = function(fname)
+    return vim.fs.root(fname, { "pyproject.toml", "setup.py", "setup.cfg", "pyrefly.toml", ".git" })
+  end,
+
   on_attach = function(client, bufnr)
     local filename = vim.api.nvim_buf_get_name(bufnr)
 
