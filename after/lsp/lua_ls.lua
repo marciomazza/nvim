@@ -21,7 +21,7 @@ return {
           -- vim.fn.stdpath("data") .. "/lazy",
         },
       },
-      diagnostics = { globals = { "vim" } },
+      diagnostics = { globals = { "vim", "Snacks" } },
     },
   },
 }
