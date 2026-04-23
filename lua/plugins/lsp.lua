@@ -1,6 +1,25 @@
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(ev)
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = ev.buf, desc = "Go to definition" })
+		vim.keymap.set("n", "gd", function()
+			local pytest_clients = vim.lsp.get_clients({ bufnr = 0, name = "pytest_lsp" })
+			if #pytest_clients == 0 then
+				vim.lsp.buf.definition()
+				return
+			end
+			local client = pytest_clients[1]
+			local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
+			client:request("textDocument/definition", params, function(err, result, ctx)
+				local has_result = not err
+					and result
+					and type(result) == "table"
+					and (result.uri ~= nil or #result > 0)
+				if has_result then
+					vim.lsp.handlers["textDocument/definition"](err, result, ctx)
+				else
+					vim.lsp.buf.definition({ filter = function(c) return c.name ~= "pytest_lsp" end })
+				end
+			end, 0)
+		end, { buffer = ev.buf, desc = "Go to definition" })
 	end,
 })
 
