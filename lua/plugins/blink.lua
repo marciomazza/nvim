@@ -3,7 +3,6 @@ return {
 	version = "1.*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
-		"giuxtaposition/blink-cmp-copilot",
 	},
 
 	---@module 'blink.cmp'
@@ -29,9 +28,6 @@ return {
 		},
 		appearance = {
 			use_nvim_cmp_as_default = true,
-			kind_icons = {
-				Copilot = "",
-			},
 		},
 		sources = {
 			-- Remover enabled_providers para permitir todos os sources
@@ -40,23 +36,16 @@ return {
 				"path",
 				"snippets",
 				"buffer",
-				"copilot",
 			},
 			per_filetype = { lua = { inherit_defaults = true, "lazydev" } },
 			providers = {
-				copilot = {
-					name = "copilot",
-					module = "blink-cmp-copilot",
-					score_offset = 100,
-					async = true,
-				},
 				lazydev = {
 					name = "LazyDev",
 					module = "lazydev.integrations.blink",
 					-- make lazydev completions top priority (see `:h blink.cmp`)
 					score_offset = 100,
 				},
-				lsp = { score_offset = 50, min_keyword_length = 2 },
+				lsp = { score_offset = 100, min_keyword_length = 1 },
 				snippets = { score_offset = 40 },
 				buffer = { score_offset = 30, min_keyword_length = 2 },
 			},
