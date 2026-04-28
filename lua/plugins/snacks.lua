@@ -10,6 +10,8 @@ return {
 		bigfile = { enabled = true },
 		git = { enabled = true },
 		gitbrowse = { enabled = true },
+		lazygit = { enabled = true, win = { width = 0, height = 0, border = "none" } },
+		terminal = { enabled = true },
 		image = {
 			enabled = true,
 			bo = {
@@ -33,6 +35,8 @@ return {
 		{ "<leader>e", function() Snacks.picker.files() end, desc = "Find Files" },
 		{ "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
 		{ "<leader>sb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+
+		{ "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
 
 		-- git
 		{ "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
