@@ -8,13 +8,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			end
 			local client = pytest_clients[1]
 			local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
-			client:request("textDocument/definition", params, function(err, result, ctx)
+			client:request("textDocument/definition", params, function(err, result)
 				local has_result = not err
 					and result
 					and type(result) == "table"
 					and (result.uri ~= nil or #result > 0)
 				if has_result then
-					vim.lsp.handlers["textDocument/definition"](err, result, ctx)
+					local loc = vim.islist(result) and result[1] or result
+					vim.lsp.util.show_document(loc, client.offset_encoding, { focus = true })
 				else
 					vim.lsp.buf.definition({ filter = function(c) return c.name ~= "pytest_lsp" end })
 				end
