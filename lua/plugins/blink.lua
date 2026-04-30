@@ -3,18 +3,22 @@ return {
 	version = "1.*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
+		"L3MON4D3/LuaSnip",
+		"molleweide/LuaSnip-snippets.nvim",
 	},
 
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
+		snippets = { preset = "luasnip" },
+
 		-- See :h blink-cmp-config-keymap for defining your own keymap
 		keymap = { preset = "super-tab" },
 		completion = {
 			list = {
-				selection = { auto_insert = false },
+				selection = { auto_insert = true },
 			},
-			menu = { border = "rounded" },
+			menu = { border = "rounded", auto_show = true },
 			documentation = {
 				auto_show = true,
 				auto_show_delay_ms = 200,
