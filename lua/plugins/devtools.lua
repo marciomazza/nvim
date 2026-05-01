@@ -57,7 +57,15 @@ return {
 	"tweekmonster/django-plus.vim",
 
 	-- testing
-	{ "andythigpen/nvim-coverage", dependencies = { "nvim-lua/plenary.nvim" }, opts = { auto_reload = true } },
+	{
+		"andythigpen/nvim-coverage",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		opts = { auto_reload = true },
+		keys = {
+			{ "<leader>tc", "<cmd>CoverageToggle<cr>", desc = "Toggle coverage signs" },
+			{ "<leader>tC", "<cmd>CoverageSummary<cr>", desc = "Coverage summary" },
+		},
+	},
 	{
 		"nvim-neotest/neotest",
 		dependencies = {
@@ -91,8 +99,9 @@ return {
 			"molleweide/LuaSnip-snippets.nvim",
 		},
 		config = function()
-			local luasnip = require("luasnip")
-			luasnip.snippets = require("luasnip_snippets").load_snippets()
+			require("luasnip.loaders.from_vscode").lazy_load()
+			require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./snippets" } })
+			require("luasnip_snippets").load_snippets()
 		end,
 	},
 }

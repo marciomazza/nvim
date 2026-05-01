@@ -1,0 +1,12 @@
+{
+  "pragma no cover": {
+    "prefix": "pragma",
+    "body": "# pragma: no cover",
+    "description": "Exclude line from coverage"
+  },
+  "pyrefly ignore": {
+    "prefix": "pyre",
+    "body": "# pyrefly: ignore[missing-attribute]",
+    "description": "Suppress Pyrefly error"
+  }
+}
