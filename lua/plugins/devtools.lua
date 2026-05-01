@@ -4,20 +4,6 @@ return {
 		"andymass/vim-matchup",
 		config = function() vim.g.matchup_matchparen_offscreen = { method = "popup" } end,
 	},
-	{
-		"NeogitOrg/neogit",
-		lazy = true,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"sindrets/diffview.nvim",
-			"folke/snacks.nvim",
-		},
-		cmd = "Neogit",
-		keys = {
-			{ "<leader>gg", "<cmd>Neogit<cr>", desc = "Show Neogit UI" },
-		},
-	},
-
 	{ "windwp/nvim-ts-autotag", config = true },
 	{
 		"windwp/nvim-autopairs",
