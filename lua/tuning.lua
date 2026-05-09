@@ -1,16 +1,16 @@
 -- tolerate some typos on file related commands
 local abbreviations = {
-  e = { "E" },
-  w = { "W" },
-  qa = { "q", "Q", "QA" },
-  wq = { "Wq", "WQ", "qw", "QW" },
-  wa = { "WA" },
+	e = { "E" },
+	w = { "W" },
+	qa = { "q", "Q", "QA" },
+	wq = { "Wq", "WQ", "qw", "QW" },
+	wa = { "WA" },
 }
 for target, sources in pairs(abbreviations) do
-  for _, source in ipairs(sources) do
-    vim.cmd.cnoreabbrev(source, target)
-    vim.cmd.cnoreabbrev(source .. "!", target .. "!")
-  end
+	for _, source in ipairs(sources) do
+		vim.cmd.cnoreabbrev(source, target)
+		vim.cmd.cnoreabbrev(source .. "!", target .. "!")
+	end
 end
 
 vim.opt.clipboard = "unnamedplus" -- use standard clipboard
@@ -38,39 +38,39 @@ vim.keymap.set("v", ">", ">gv")
 
 -- configure extra file types
 vim.filetype.add({
-  pattern = {
-    ["ipython_log%.py.*"] = "python", -- ipython log
-    [".envrc"] = "zsh", -- direnv config
-    [".*ghostty/config"] = "toml",
-    [".*/templates/.*%.html"] = "htmldjango", -- django-plus.vim is not detecting some templates
-  },
-  extension = {
-    zcml = "xml", -- plone zcml
-    dconf = "dosini",
-  },
+	pattern = {
+		["ipython_log%.py.*"] = "python", -- ipython log
+		[".envrc"] = "zsh", -- direnv config
+		[".*ghostty/config"] = "toml",
+		[".*/templates/.*%.html"] = "htmldjango", -- django-plus.vim is not detecting some templates
+	},
+	extension = {
+		zcml = "xml", -- plone zcml
+		dconf = "dosini",
+	},
 })
 
 -- gf with file:line support (e.g. `# vendor/htmx/test/hx-get.js:11`)
 vim.keymap.set("n", "gf", function()
-  local line = vim.api.nvim_get_current_line()
-  local col = vim.api.nvim_win_get_cursor(0)[2] + 1 -- 1-indexed
+	local line = vim.api.nvim_get_current_line()
+	local col = vim.api.nvim_win_get_cursor(0)[2] + 1 -- 1-indexed
 
-  local pattern = "([%w%./%-_]+):(%d+)"
-  local pos = 1
-  while true do
-    local s, e, file, lnum = line:find(pattern, pos)
-    if not s then
-      break
-    end
-    if col >= s and col <= e then
-      vim.cmd("edit " .. vim.fn.fnameescape(file))
-      vim.api.nvim_win_set_cursor(0, { tonumber(lnum), 0 })
-      return
-    end
-    pos = e + 1
-  end
+	local pattern = "([%w%./%-_]+):(%d+)"
+	local pos = 1
+	while true do
+		local s, e, file, lnum = line:find(pattern, pos)
+		if not s then
+			break
+		end
+		if col >= s and col <= e then
+			vim.cmd("edit " .. vim.fn.fnameescape(file))
+			vim.api.nvim_win_set_cursor(0, { tonumber(lnum), 0 })
+			return
+		end
+		pos = e + 1
+	end
 
-  vim.cmd("normal! gf")
+	vim.cmd("normal! gf")
 end, { desc = "Go to file (supports file:line syntax)" })
 
 -- add project subdirectories to path to find files (with `gf`, for example)
@@ -86,15 +86,42 @@ vim.opt.autoread = true -- automatically reload files changed on disk
 
 -- Close quickfix list automatically when selecting an item
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "qf",
-  callback = function()
-    vim.keymap.set("n", "<CR>", "<CR>:cclose<CR>", { buffer = true, silent = true })
-  end,
+	pattern = "qf",
+	callback = function() vim.keymap.set("n", "<CR>", "<CR>:cclose<CR>", { buffer = true, silent = true }) end,
+})
+
+-- Jump to first conflict marker when opening conflicted files (jj/git)
+local function goto_conflict_and_mute(buf)
+	if vim.fn.search("^<<<<<<< ", "nw") == 0 then
+		return
+	end
+	vim.fn.search("^<<<<<<< ", "w")
+	vim.cmd.normal({ "zz", bang = true })
+
+	for _, c in ipairs(vim.lsp.get_clients({ bufnr = buf })) do
+		vim.lsp.buf_detach_client(buf, c.id)
+	end
+	vim.diagnostic.enable(false, { bufnr = buf })
+
+	vim.schedule(function()
+		local ok, ac = pcall(require, "tiny-inline-diagnostic.autocmds")
+		if not ok or not ac.is_attached(buf) then
+			return
+		end
+		local ex = require("tiny-inline-diagnostic.extmarks")
+		ac.detach(buf, function(b) ex.clear(b) end)
+	end)
+end
+
+vim.api.nvim_create_autocmd("BufReadPost", {
+	callback = function(args) goto_conflict_and_mute(args.buf) end,
 })
 
 -- for kitty scrollback
 -- https://www.reddit.com/r/neovim/comments/1nmqjal/comment/nfiif2z/
 -- see https://neovim.io/doc/user/api.html#terminal-scrollback-pager
-vim.api.nvim_create_user_command("TermHl", function()
-  vim.api.nvim_open_term(0, {})
-end, { desc = "Highlights ANSI termcodes in curbuf" })
+vim.api.nvim_create_user_command(
+	"TermHl",
+	function() vim.api.nvim_open_term(0, {}) end,
+	{ desc = "Highlights ANSI termcodes in curbuf" }
+)
