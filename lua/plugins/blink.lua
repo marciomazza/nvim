@@ -28,7 +28,7 @@ return {
 					score_offset = 100,
 				},
 				lsp = { score_offset = 100, min_keyword_length = 1 },
-				snippets = { score_offset = 80 },
+				snippets = { score_offset = 200 },
 				buffer = { score_offset = 30, min_keyword_length = 2 },
 			},
 		},
