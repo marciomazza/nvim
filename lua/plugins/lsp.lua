@@ -9,10 +9,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			local client = pytest_clients[1]
 			local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
 			client:request("textDocument/definition", params, function(err, result)
-				local has_result = not err
-					and result
-					and type(result) == "table"
-					and (result.uri ~= nil or #result > 0)
+				local has_result = not err and result and type(result) == "table" and (result.uri ~= nil or #result > 0)
 				if has_result then
 					local loc = vim.islist(result) and result[1] or result
 					vim.lsp.util.show_document(loc, client.offset_encoding, { focus = true })
@@ -48,6 +45,7 @@ return {
 				"oxfmt",
 				"oxlint",
 				"htmx",
+				"bashls",
 			},
 		},
 	},
