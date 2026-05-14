@@ -125,3 +125,5 @@ vim.api.nvim_create_user_command(
 	function() vim.api.nvim_open_term(0, {}) end,
 	{ desc = "Highlights ANSI termcodes in curbuf" }
 )
+
+require("vim._core.ui2").enable()
