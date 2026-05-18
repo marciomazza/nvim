@@ -37,12 +37,6 @@ return {
 		},
 	},
 	keys = {
-		{ "<leader>e", function() Snacks.picker.files() end, desc = "Find Files" },
-		{ "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
-		{ "<leader>sb", function() Snacks.picker.buffers() end, desc = "Buffers" },
-
-		{ "<leader>lg", function() Snacks.lazygit() end, desc = "Lazygit" },
-
 		-- git
 		{ "<leader>gb", function() Snacks.picker.git_branches() end, desc = "Git Branches" },
 		{ "<leader>gl", function() Snacks.picker.git_log() end, desc = "Git Log" },
