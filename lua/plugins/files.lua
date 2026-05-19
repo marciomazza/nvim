@@ -12,6 +12,11 @@ return {
 				enabled = true,
 				show_scores = true,
 			},
+			layout = {
+				height = 1,
+				width = 1,
+				preview_size = 0.7,
+			},
 		},
 		lazy = false, -- the plugin lazy-initialises itself
 		keys = {
@@ -20,7 +25,7 @@ return {
 				"<leader>f",
 				function()
 					require("fff").live_grep({
-						grep = { modes = { "fuzzy", "plain" } },
+						grep = { modes = { "plain", "fuzzy" } },
 						query = vim.fn.expand("<cword>"),
 					})
 				end,
