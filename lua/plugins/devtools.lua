@@ -94,9 +94,25 @@ return {
 	},
 	{
 		"nicolasgb/jj.nvim",
-		version = "*", -- Use latest stable release
-		-- Or from the main branch (uncomment the branch line and comment the version line)
-		-- branch = "main",
-		config = function() require("jj").setup({}) end,
+		dependencies = {
+			"folke/snacks.nvim", -- Optional, only needed if you use pickers
+			"esmuellert/codediff.nvim",
+		},
+		config = function()
+			require("jj").setup({
+				diff = {
+					backend = "codediff",
+				},
+			})
+			local diff = require("jj.diff")
+			vim.keymap.set("n", "<leader>d", function() diff.open_vdiff() end, { desc = "JJ diff current buffer" })
+		end,
+	},
+	{
+		"esmuellert/codediff.nvim",
+		cmd = "CodeDiff",
+		opts = {
+			diff = { compute_moves = true },
+		},
 	},
 }

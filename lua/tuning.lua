@@ -31,6 +31,7 @@ vim.keymap.set("n", "<leader><space>", vim.cmd.nohl, { desc = "Clear highlights"
 vim.keymap.set("n", "<Tab>", vim.cmd.bnext, { desc = "Next buffer" })
 vim.keymap.set("n", "<S-Tab>", vim.cmd.bprevious, { desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>c", vim.cmd.bdelete, { desc = "Close buffer" })
+vim.keymap.set("n", "<f12>", vim.cmd.restart, { desc = "Restart Neovim" })
 
 -- maintain Visual Mode after shifting > and <
 vim.keymap.set("v", "<", "<gv")
