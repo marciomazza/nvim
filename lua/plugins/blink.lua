@@ -12,8 +12,9 @@ return {
 		keymap = { preset = "super-tab" },
 		completion = {
 			menu = { border = "rounded" },
+			list = { max_items = 100 },
 			documentation = {
-				auto_show_delay_ms = 200,
+				auto_show = false,
 				window = { border = "rounded" },
 			},
 		},
@@ -27,7 +28,7 @@ return {
 					module = "lazydev.integrations.blink",
 					score_offset = 100,
 				},
-				lsp = { score_offset = 100, min_keyword_length = 1 },
+				lsp = { score_offset = 100, min_keyword_length = 2 },
 				snippets = { score_offset = 120 },
 				buffer = { score_offset = 80, min_keyword_length = 2 },
 			},
