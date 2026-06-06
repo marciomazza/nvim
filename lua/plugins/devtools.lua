@@ -101,11 +101,14 @@ return {
 		config = function()
 			require("jj").setup({
 				diff = {
-					backend = "codediff",
+					backend = vim.fn.system("jj log -r @ --no-graph"):match("default@") and "codediff" or "native",
 				},
 			})
 			local diff = require("jj.diff")
-			vim.keymap.set("n", "<leader>d", function() diff.open_vdiff() end, { desc = "JJ diff current buffer" })
+			vim.keymap.set("n", "<leader>d", function()
+				local is_empty = vim.fn.system("jj log -r @ --no-graph -T 'empty'"):match("true")
+				diff.open_vdiff(is_empty and { rev = "@--" } or nil)
+			end, { desc = "JJ diff current buffer" })
 		end,
 	},
 	{
