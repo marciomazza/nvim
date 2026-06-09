@@ -1,4 +1,6 @@
 return {
+
+	"wsdjeg/vim-fetch",
 	{
 		"dmtrKovalenko/fff.nvim",
 		build = function()

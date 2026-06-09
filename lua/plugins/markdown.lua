@@ -4,9 +4,7 @@ return {
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     keys = { { "<leader>mp", vim.cmd.MarkdownPreview, desc = "Markdown Preview" } },
     build = "cd app && npm install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-    end,
+		init = function() vim.g.mkdp_filetypes = { "markdown" } end,
     ft = { "markdown" },
   },
   {
