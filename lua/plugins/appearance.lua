@@ -34,16 +34,14 @@ local stand_out = vim.api.nvim_get_hl(0, { name = "Function" }).fg
 -- vim.api.nvim_set_hl(0, "NeogitHunkHeaderHighlight", { bg = "#ccc6b8", fg = "#2a2018", bold = true })
 
 return {
-  "HiPhish/rainbow-delimiters.nvim",
-  { "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = true },
-  {
-    "kepano/flexoki-neovim",
-    name = "flexoki",
-  },
-  {
-    "EdenEast/nightfox.nvim",
-    init = function()
-      vim.cmd.colorscheme("dayfox")
-    end,
-  },
+	"HiPhish/rainbow-delimiters.nvim",
+	{ "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = { filetypes = { "*", "!markdown" } } },
+	{
+		"kepano/flexoki-neovim",
+		name = "flexoki",
+	},
+	{
+		"EdenEast/nightfox.nvim",
+		init = function() vim.cmd.colorscheme("dayfox") end,
+	},
 }
