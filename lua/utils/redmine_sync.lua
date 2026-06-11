@@ -17,7 +17,7 @@ end
 --- Make a GET request to a Redmine JSON endpoint and return the decoded table.
 ---@param url string
 ---@param token string
----@return table|nil, string|nil  decoded body or nil, error message
+---@return table|nil, string|nil
 local function redmine_get(url, token)
 	local result = vim.system(
 		{ "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. token, "-H", "Accept: application/json", url },
@@ -33,6 +33,33 @@ local function redmine_get(url, token)
 		return nil, "JSON decode error: " .. tostring(decoded)
 	end
 	return decoded, nil
+end
+
+--- Make a PUT request to a Redmine JSON endpoint.
+---@param url string
+---@param token string
+---@param body table  will be JSON-encoded
+---@return nil, string|nil
+local function redmine_put(url, token, body)
+	local result = vim.system({
+		"curl",
+		"-sf",
+		"-k",
+		"-X",
+		"PUT",
+		"-H",
+		"X-Redmine-API-Key: " .. token,
+		"-H",
+		"Content-Type: application/json",
+		"-d",
+		vim.json.encode(body),
+		url,
+	}, { text = true }):wait()
+
+	if result.code ~= 0 then
+		return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
+	end
+	return nil, nil
 end
 
 --- Return all versions for the configured Redmine project, sorted by name.
@@ -219,10 +246,10 @@ local function context_for_row(headings, target_row)
 	local version, status = nil, nil
 	for _, h in ipairs(headings) do
 		if h.row <= target_row then
-			if h.level == 1 then
+			if h.level == 2 then
 				version = h.text
 				status = nil
-			elseif h.level == 2 then
+			elseif h.level == 3 then
 				status = h.text
 			end
 		else
@@ -271,29 +298,79 @@ function M.enumerate_issues(filepath)
 	local todo_map = parser.discover_todos(bufnr)
 	local headings = get_headings(bufnr)
 
-	local archive_title = (cfg.options.archive and cfg.options.archive.heading and cfg.options.archive.heading.title)
-		or "Archive"
-
 	local results = {}
 	for _, item in pairs(todo_map) do
 		local version, status = context_for_row(headings, item.range.start.row)
 		version = version or "(no section)"
 		status = status or state_to_redmine_status[item.state]
-		if version ~= archive_title then
-			local issue_meta = item.metadata.by_tag["issue"]
-			results[#results + 1] = {
-				version = version,
-				status = status,
-				issue = issue_meta and issue_meta.value or nil,
-				title = todo_title(item),
-				row = item.range.start.row,
-				state = item.state,
-			}
-		end
+		local issue_meta = item.metadata.by_tag["issue"]
+		results[#results + 1] = {
+			version = version,
+			status = status,
+			issue = issue_meta and issue_meta.value or nil,
+			title = todo_title(item),
+			row = item.range.start.row,
+			state = item.state,
+		}
 	end
 
 	table.sort(results, function(a, b) return a.row < b.row end)
 	return results
+end
+
+--- Update a Redmine issue's subject, status and version from a todo item.
+--- Skips items whose version is "Archive".
+---@param item {issue: string, title: string, version: string, status: string|nil}
+---@return nil, string|nil
+function M.update_issue(item)
+	local issue_id = item.issue and item.issue:match("%d+")
+	if not issue_id then
+		return nil, "missing issue id"
+	end
+
+	local env = load_env()
+	local token = env.token or error("TOKEN not found in .env")
+	local base_url = env.base_url or error("BASE_URL not found in .env")
+
+	-- Build status_id lookup from env
+	local status_id_by_name = {}
+	for _, s in ipairs(env.open_statuses or {}) do
+		status_id_by_name[s.name] = s.id
+	end
+	for _, s in ipairs(env.closed_statuses or {}) do
+		status_id_by_name[s.name] = s.id
+	end
+
+	-- Build version_id lookup from API
+	local versions, err = M.versions()
+	if not versions then
+		return nil, err
+	end
+	local version_id_by_name = {}
+	for _, v in ipairs(versions) do
+		version_id_by_name[v.name] = v.id
+	end
+
+	local payload = { issue = { subject = item.title } }
+	payload.issue.status_id = status_id_by_name[item.status]
+	if item.version ~= "Archive" then
+		payload.issue.fixed_version_id = version_id_by_name[item.version]
+	end
+
+	return redmine_put(base_url .. "issues/" .. issue_id .. ".json", token, payload)
+end
+
+--- Update the Redmine issue for the todo item on the current cursor line.
+---@return nil, string|nil
+function M.update_issue_under_cursor()
+	local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+	local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
+	for _, item in ipairs(items) do
+		if item.row == row then
+			return M.update_issue(item)
+		end
+	end
+	return nil, "no issue found on current line"
 end
 
 return M
