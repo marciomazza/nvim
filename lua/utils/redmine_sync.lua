@@ -124,36 +124,18 @@ function M.open_issues()
 	local project_url = env.project_url or error("PROJECT_URL not found in .env")
 	local token = env.token or error("TOKEN not found in .env")
 
+	local data, err = redmine_get(project_url .. "issues.json?status_id=open&assigned_to_id=me", token)
+	if not data then return nil, err end
+
 	local all_issues = {}
-	local offset = 0
-	local limit = 100
-
-	while true do
-		local url = project_url
-			.. "issues.json?status_id=open&assigned_to_id=me&limit="
-			.. limit
-			.. "&offset="
-			.. offset
-		local data, err = redmine_get(url, token)
-		if not data then
-			return nil, err
-		end
-
-		local issues = data.issues or {}
-		for _, iss in ipairs(issues) do
-			all_issues[#all_issues + 1] = {
-				id = iss.id,
-				subject = iss.subject,
-				status = iss.status and iss.status.name or nil,
-				version = iss.fixed_version and iss.fixed_version.name or nil,
-				assigned_to = iss.assigned_to and iss.assigned_to.name or nil,
-			}
-		end
-
-		if offset + #issues >= (data.total_count or 0) then
-			break
-		end
-		offset = offset + limit
+	for _, iss in ipairs(data.issues or {}) do
+		all_issues[#all_issues + 1] = {
+			id = iss.id,
+			subject = iss.subject,
+			status = iss.status and iss.status.name or nil,
+			version = iss.fixed_version and iss.fixed_version.name or nil,
+			assigned_to = iss.assigned_to and iss.assigned_to.name or nil,
+		}
 	end
 
 	return all_issues, nil
