@@ -51,35 +51,31 @@ function M.versions()
 	return versions, nil
 end
 
---- Build a sorted list of {row, version} from ATX headings in the buffer using treesitter
+--- Build a sorted list of ATX headings with their level and text.
 ---@param bufnr integer
----@return {row: integer, version: string}[]
+---@return {row: integer, level: integer, text: string}[]
 local function get_headings(bufnr)
 	local ts_parser = vim.treesitter.get_parser(bufnr, "markdown")
-	if not ts_parser then
-		return {}
-	end
-
+	if not ts_parser then return {} end
 	local tree = ts_parser:parse()[1]
-	if not tree then
-		return {}
-	end
+	if not tree then return {} end
 
 	local query = vim.treesitter.query.parse("markdown", "(atx_heading) @h")
 	local headings = {}
 
 	for _, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
 		local row = node:range()
-		-- Extract heading text: get the inline child (the title text)
-		local text = ""
+		local level, text = 0, ""
 		for child in node:iter_children() do
-			if child:type() == "inline" then
-				text = vim.treesitter.get_node_text(child, bufnr)
-				break
+			local t = child:type()
+			if t:match("^atx_h%d_marker$") then
+				level = tonumber(t:match("%d"))
+			elseif t == "inline" then
+				text = vim.trim(vim.treesitter.get_node_text(child, bufnr))
 			end
 		end
 		if text ~= "" then
-			headings[#headings + 1] = { row = row, version = vim.trim(text) }
+			headings[#headings + 1] = { row = row, level = level, text = text }
 		end
 	end
 
@@ -87,20 +83,25 @@ local function get_headings(bufnr)
 	return headings
 end
 
---- Return the version (heading text) for the heading immediately above `target_row`
----@param headings {row: integer, version: string}[]
+--- Return the version (h1) and status (h2) for the headings immediately above `target_row`.
+---@param headings {row: integer, level: integer, text: string}[]
 ---@param target_row integer 0-indexed
----@return string|nil
-local function version_for_row(headings, target_row)
-	local result = nil
+---@return string|nil, string|nil  version, status
+local function context_for_row(headings, target_row)
+	local version, status = nil, nil
 	for _, h in ipairs(headings) do
 		if h.row <= target_row then
-			result = h.version
+			if h.level == 1 then
+				version = h.text
+				status = nil
+			elseif h.level == 2 then
+				status = h.text
+			end
 		else
 			break
 		end
 	end
-	return result
+	return version, status
 end
 
 --- Extract a clean title from a TodoItem's first line.
@@ -171,11 +172,13 @@ function M.enumerate_issues(filepath)
 
 	local results = {}
 	for _, item in pairs(todo_map) do
-		local version = version_for_row(headings, item.range.start.row) or "(no section)"
+		local version, status = context_for_row(headings, item.range.start.row)
+		version = version or "(no section)"
 		if version ~= archive_title then
 			local issue_meta = item.metadata.by_tag["issue"]
 			results[#results + 1] = {
 				version = version,
+				status = status,
 				issue = issue_meta and issue_meta.value or nil,
 				title = todo_title(item),
 				row = item.range.start.row,
