@@ -1,5 +1,9 @@
 local M = {}
 
+---------------------------------------------------------------------------------
+-- REDMINE -> TODO.MD
+---------------------------------------------------------------------------------
+
 --- Load configuration from .env.json in the current working directory (project root)
 ---@return table
 local function load_env()
@@ -51,14 +55,138 @@ function M.versions()
 	return versions, nil
 end
 
+--- Return all open issues for the configured Redmine project.
+---@return {id: integer, subject: string, status: string|nil, version: string|nil, assigned_to: string|nil}[]|nil, string|nil
+function M.open_issues()
+	local env = load_env()
+	local project_url = env.project_url or error("PROJECT_URL not found in .env")
+	local token = env.token or error("TOKEN not found in .env")
+
+	local data, err = redmine_get(project_url .. "issues.json?status_id=open&assigned_to_id=me", token)
+	if not data then
+		return nil, err
+	end
+
+	local all_issues = {}
+	for _, iss in ipairs(data.issues or {}) do
+		all_issues[#all_issues + 1] = {
+			id = iss.id,
+			subject = iss.subject,
+			status = iss.status and iss.status.name or nil,
+			version = iss.fixed_version and iss.fixed_version.name or nil,
+			assigned_to = iss.assigned_to and iss.assigned_to.name or nil,
+		}
+	end
+
+	return all_issues, nil
+end
+
+--- Maps checkmate todo states to Redmine status names.
+local state_to_redmine_status = {
+	in_progress = "In Progress",
+	checked = "Resolved",
+	cancelled = "Rejected",
+}
+
+--- Generate a markdown report of all open Redmine issues grouped by version then status.
+---@return string|nil, string|nil
+function M.open_issues_report()
+	local env = load_env()
+	local issues, err = M.open_issues()
+	if not issues then
+		return nil, err
+	end
+
+	local status_rank = {}
+	for i, s in ipairs(env.open_statuses or {}) do
+		status_rank[s.name] = i
+	end
+
+	local todo_states = require("checkmate.config").options.todo_states or {}
+	local default_md = { unchecked = " ", checked = "x" }
+	local status_marker = {}
+	for state, redmine_status in pairs(state_to_redmine_status) do
+		local md = (todo_states[state] and todo_states[state].markdown) or default_md[state] or " "
+		status_marker[redmine_status] = "[" .. md .. "]"
+	end
+
+	local by_version = {}
+	local version_list = {}
+	for _, iss in ipairs(issues) do
+		local ver = iss.version or "(no version)"
+		local st = iss.status or "Unknown"
+		if not by_version[ver] then
+			by_version[ver] = {}
+			version_list[#version_list + 1] = ver
+		end
+		if not by_version[ver][st] then
+			by_version[ver][st] = {}
+		end
+		table.insert(by_version[ver][st], iss)
+	end
+
+	table.sort(version_list)
+
+	local lines = { "# Tarefas" }
+	for _, ver in ipairs(version_list) do
+		lines[#lines + 1] = ""
+		lines[#lines + 1] = "## " .. ver
+		local statuses = vim.tbl_keys(by_version[ver])
+		table.sort(statuses, function(a, b) return (status_rank[a] or 999) < (status_rank[b] or 999) end)
+		for _, st in ipairs(statuses) do
+			lines[#lines + 1] = ""
+			if st ~= "In Progress" then
+				lines[#lines + 1] = "### " .. st
+				lines[#lines + 1] = ""
+			end
+			local marker = status_marker[st] or "[ ]"
+			for _, iss in ipairs(by_version[ver][st]) do
+				lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. " @issue(#" .. iss.id .. ")"
+			end
+		end
+	end
+
+	return table.concat(lines, "\n"), nil
+end
+
+--- Sync open issues to todo.md in the project root.
+--- Creates a new jj change, then overwrites todo.md with the report.
+---@return nil, string|nil
+function M.populate_todo()
+	local report, err = M.open_issues_report()
+	if not report then
+		return nil, err
+	end
+
+	local root = vim.fn.getcwd()
+	local jj = vim.system({ "jj", "new" }, { text = true, cwd = root }):wait()
+	if jj.code ~= 0 then
+		return nil, "jj new failed: " .. (jj.stderr or "")
+	end
+
+	local path = root .. "/todo.md"
+	local f = assert(io.open(path, "w"), "Could not write " .. path)
+	f:write(report .. "\n")
+	f:close()
+	return nil, nil
+end
+
+---------------------------------------------------------------------------------
+-- TODO.MD -> REDMINE
+---------------------------------------------------------------------------------
+
 --- Build a sorted list of ATX headings with their level and text.
 ---@param bufnr integer
 ---@return {row: integer, level: integer, text: string}[]
 local function get_headings(bufnr)
 	local ts_parser = vim.treesitter.get_parser(bufnr, "markdown")
-	if not ts_parser then return {} end
+	if not ts_parser then
+		return {}
+	end
 	local tree = ts_parser:parse()[1]
-	if not tree then return {} end
+	if not tree then
+		return {}
+	end
 
 	local query = vim.treesitter.query.parse("markdown", "(atx_heading) @h")
 	local headings = {}
@@ -118,34 +246,10 @@ local function todo_title(item)
 	return vim.trim(title)
 end
 
---- Return all open issues for the configured Redmine project.
----@return {id: integer, subject: string, status: string|nil, version: string|nil, assigned_to: string|nil}[]|nil, string|nil
-function M.open_issues()
-	local env = load_env()
-	local project_url = env.project_url or error("PROJECT_URL not found in .env")
-	local token = env.token or error("TOKEN not found in .env")
-
-	local data, err = redmine_get(project_url .. "issues.json?status_id=open&assigned_to_id=me", token)
-	if not data then return nil, err end
-
-	local all_issues = {}
-	for _, iss in ipairs(data.issues or {}) do
-		all_issues[#all_issues + 1] = {
-			id = iss.id,
-			subject = iss.subject,
-			status = iss.status and iss.status.name or nil,
-			version = iss.fixed_version and iss.fixed_version.name or nil,
-			assigned_to = iss.assigned_to and iss.assigned_to.name or nil,
-		}
-	end
-
-	return all_issues, nil
-end
-
 --- Enumerate all todo items that have an @issue tag, with their version (section heading).
 --- Loads the file, uses checkmate's parser + treesitter.
 ---@param filepath string
----@return {version: string, issue: string, title: string, row: integer, state: string}[]
+---@return {version: string, status: string|nil, issue: string, title: string, row: integer, state: string}[]
 function M.enumerate_issues(filepath)
 	-- Initialize checkmate config with defaults if not already done
 	local cfg = require("checkmate.config")
@@ -174,6 +278,7 @@ function M.enumerate_issues(filepath)
 	for _, item in pairs(todo_map) do
 		local version, status = context_for_row(headings, item.range.start.row)
 		version = version or "(no section)"
+		status = status or state_to_redmine_status[item.state]
 		if version ~= archive_title then
 			local issue_meta = item.metadata.by_tag["issue"]
 			results[#results + 1] = {
@@ -189,85 +294,6 @@ function M.enumerate_issues(filepath)
 
 	table.sort(results, function(a, b) return a.row < b.row end)
 	return results
-end
-
---- Generate a markdown report of all open Redmine issues grouped by version then status.
----@return string|nil, string|nil
-function M.open_issues_report()
-	local env = load_env()
-	local issues, err = M.open_issues()
-	if not issues then
-		return nil, err
-	end
-
-	local status_rank = {}
-	for i, s in ipairs(env.open_statuses or {}) do
-		status_rank[s.name] = i
-	end
-
-	local status_marker = {
-		["In Progress"] = "[.]",
-	}
-
-	local by_version = {}
-	local version_list = {}
-	for _, iss in ipairs(issues) do
-		local ver = iss.version or "(no version)"
-		local st = iss.status or "Unknown"
-		if not by_version[ver] then
-			by_version[ver] = {}
-			version_list[#version_list + 1] = ver
-		end
-		if not by_version[ver][st] then
-			by_version[ver][st] = {}
-		end
-		table.insert(by_version[ver][st], iss)
-	end
-
-	table.sort(version_list)
-
-	local lines = { "# Tarefas" }
-	for _, ver in ipairs(version_list) do
-		lines[#lines + 1] = ""
-		lines[#lines + 1] = "## " .. ver
-		local statuses = vim.tbl_keys(by_version[ver])
-		table.sort(statuses, function(a, b) return (status_rank[a] or 999) < (status_rank[b] or 999) end)
-		for _, st in ipairs(statuses) do
-			lines[#lines + 1] = ""
-			if st ~= "In Progress" then
-				lines[#lines + 1] = "### " .. st
-				lines[#lines + 1] = ""
-			end
-			local marker = status_marker[st] or "[ ]"
-			for _, iss in ipairs(by_version[ver][st]) do
-				lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. " @issue(#" .. iss.id .. ")"
-			end
-		end
-	end
-
-	return table.concat(lines, "\n"), nil
-end
-
---- Sync open issues to todo.md in the nvim config root.
---- Creates a new jj change, then overwrites todo.md with the report.
----@return nil, string|nil
-function M.load_todo()
-	local report, err = M.open_issues_report()
-	if not report then
-		return nil, err
-	end
-
-	local root = vim.fn.getcwd()
-	local jj = vim.system({ "jj", "new" }, { text = true, cwd = root }):wait()
-	if jj.code ~= 0 then
-		return nil, "jj new failed: " .. (jj.stderr or "")
-	end
-
-	local path = root .. "/todo.md"
-	local f = assert(io.open(path, "w"), "Could not write " .. path)
-	f:write(report .. "\n")
-	f:close()
-	return nil, nil
 end
 
 return M
