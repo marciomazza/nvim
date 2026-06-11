@@ -1,5 +1,57 @@
 local M = {}
 
+--- Load configuration from .env.json in the nvim config root
+---@return table
+local function load_env()
+  local path = vim.fn.stdpath("config") .. "/.env.json"
+  local f = assert(io.open(path, "r"), "Could not open " .. path)
+  local raw = f:read("*a")
+  f:close()
+  return vim.json.decode(raw)
+end
+
+--- Make a GET request to a Redmine JSON endpoint and return the decoded table.
+---@param url string
+---@param token string
+---@return table|nil, string|nil  decoded body or nil, error message
+local function redmine_get(url, token)
+  local result = vim.system(
+    { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. token, "-H", "Accept: application/json", url },
+    { text = true }
+  ):wait()
+
+  if result.code ~= 0 then
+    return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
+  end
+
+  local ok, decoded = pcall(vim.json.decode, result.stdout)
+  if not ok then
+    return nil, "JSON decode error: " .. tostring(decoded)
+  end
+  return decoded, nil
+end
+
+--- Return open versions for the configured Redmine project.
+---@return {id: integer, name: string}[]|nil, string|nil
+function M.open_versions()
+  local env = load_env()
+  local project_url = env.PROJECT_URL or error("PROJECT_URL not found in .env")
+  local token = env.TOKEN or error("TOKEN not found in .env")
+
+  local data, err = redmine_get(project_url .. "versions.json", token)
+  if not data then return nil, err end
+
+  local open = {}
+  for _, v in ipairs(data.versions or {}) do
+    if v.status == "open" then
+      open[#open + 1] = { id = v.id, name = v.name }
+    end
+  end
+
+  table.sort(open, function(a, b) return a.name < b.name end)
+  return open, nil
+end
+
 --- Build a sorted list of {row, version} from ATX headings in the buffer using treesitter
 ---@param bufnr integer
 ---@return {row: integer, version: string}[]
