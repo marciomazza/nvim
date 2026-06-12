@@ -4,10 +4,10 @@ local M = {}
 -- REDMINE -> TODO.MD
 ---------------------------------------------------------------------------------
 
---- Load configuration from .env.json in the current working directory (project root)
+--- Load configuration from .redmine.env.json in the current working directory (project root)
 ---@return table
 local function load_env()
-	local path = vim.fn.getcwd() .. "/.env.json"
+	local path = vim.fn.getcwd() .. "/.redmine.env.json"
 	local f = assert(io.open(path, "r"), "Could not open " .. path)
 	local raw = f:read("*a")
 	f:close()
@@ -42,10 +42,17 @@ end
 ---@return nil, string|nil
 local function redmine_put(url, token, body)
 	local result = vim.system({
-		"curl", "-sf", "-k", "-X", "PUT",
-		"-H", "X-Redmine-API-Key: " .. token,
-		"-H", "Content-Type: application/json",
-		"-d", vim.json.encode(body),
+		"curl",
+		"-sf",
+		"-k",
+		"-X",
+		"PUT",
+		"-H",
+		"X-Redmine-API-Key: " .. token,
+		"-H",
+		"Content-Type: application/json",
+		"-d",
+		vim.json.encode(body),
 		url,
 	}, { text = true }):wait()
 
@@ -62,10 +69,17 @@ end
 ---@return table|nil, string|nil
 local function redmine_post(url, token, body)
 	local result = vim.system({
-		"curl", "-sf", "-k", "-X", "POST",
-		"-H", "X-Redmine-API-Key: " .. token,
-		"-H", "Content-Type: application/json",
-		"-d", vim.json.encode(body),
+		"curl",
+		"-sf",
+		"-k",
+		"-X",
+		"POST",
+		"-H",
+		"X-Redmine-API-Key: " .. token,
+		"-H",
+		"Content-Type: application/json",
+		"-d",
+		vim.json.encode(body),
 		url,
 	}, { text = true }):wait()
 
