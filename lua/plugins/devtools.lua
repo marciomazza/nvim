@@ -44,8 +44,8 @@ return {
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = { auto_reload = true },
 		keys = {
-			{ "<leader>tc", "<cmd>CoverageToggle<cr>", desc = "Toggle coverage signs" },
-			{ "<leader>tC", "<cmd>CoverageSummary<cr>", desc = "Coverage summary" },
+			-- { "<leader>tc", "<cmd>CoverageToggle<cr>", desc = "Toggle coverage signs" },
+			-- { "<leader>tC", "<cmd>CoverageSummary<cr>", desc = "Coverage summary" },
 		},
 	},
 	{
