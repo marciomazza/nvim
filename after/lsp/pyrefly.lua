@@ -1,69 +1,70 @@
 local fully_qualified_name_regex = vim.regex([[^\h\w*\(\.\h\w*\)\+$]])
 
 local function get_fully_qualified_name_under_cursor()
-	local node = vim.treesitter.get_node():parent():child(1)
-	if not (node and node:type() == "string_content") then
-		return
-	end
-	local text = vim.treesitter.get_node_text(node, 0)
-	if fully_qualified_name_regex:match_str(text) then
-		return text
-	end
+  local node = vim.treesitter.get_node():parent():child(1)
+  if not (node and node:type() == "string_content") then
+    return
+  end
+  local text = vim.treesitter.get_node_text(node, 0)
+  if fully_qualified_name_regex:match_str(text) then
+    return text
+  end
 end
 
 local function build_fake_definition_params(name)
-	-- as a trick we prepare a valid python import snippet for the language server
-	local uri = vim.uri_from_bufnr(0):gsub("%.py$", "_fake.py")
-	local module, obj = name:match("^(.*)%.([^%.]+)$")
-	local fake_source = string.format("from %s import %s", module, obj)
-	local open_params = {
-		textDocument = { uri = uri, languageId = "python", version = 0, text = fake_source },
-	}
-	local definition_params = {
-		textDocument = { uri = uri },
-		position = { line = 0, character = #fake_source },
-	}
-	return open_params, definition_params
+  -- as a trick we prepare a valid python import snippet for the language server
+  local uri = vim.uri_from_bufnr(0):gsub("%.py$", "_fake.py")
+  local module, obj = name:match("^(.*)%.([^%.]+)$")
+  local fake_source = string.format("from %s import %s", module, obj)
+  local open_params = {
+    textDocument = { uri = uri, languageId = "python", version = 0, text = fake_source },
+  }
+  local definition_params = {
+    textDocument = { uri = uri },
+    position = { line = 0, character = #fake_source },
+  }
+  return open_params, definition_params
 end
 
 local methods = vim.lsp.protocol.Methods
 
 ---@param client vim.lsp.Client
 local function build_params_for_quoted_name_def(client)
-	local name = get_fully_qualified_name_under_cursor()
-	if not name then
-		return
-	end
-	local open_params, definition_params = build_fake_definition_params(name)
-	client:notify(methods.textDocument_didOpen, open_params)
-	return definition_params
+  local name = get_fully_qualified_name_under_cursor()
+  if not name then
+    return
+  end
+  local open_params, definition_params = build_fake_definition_params(name)
+  client:notify(methods.textDocument_didOpen, open_params)
+  return definition_params
 end
 
 -- https://github.com/neovim/nvim-lspconfig/blob/master/lsp/pyrefly.lua
 ---@type vim.lsp.Config
 return {
-	on_attach = function(client, _)
-		-- Filter false warnings about unused-parameter in tests (fixtures trigger it)
-		local orig_handler = vim.lsp.handlers["textDocument/publishDiagnostics"]
-		client.handlers = client.handlers or {}
-		client.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
-			if result and result.diagnostics and result.uri then
-				local bufname = vim.uri_to_fname(result.uri)
-				if bufname:match("/tests/") then
-					result.diagnostics = vim.tbl_filter(function(diag)
-						return diag.code ~= "unused-parameter"
-					end, result.diagnostics)
-				end
-			end
-			orig_handler(err, result, ctx, config)
-		end
+  on_attach = function(client, _)
+    -- Filter false warnings about unused-parameter in tests (fixtures trigger it)
+    local orig_handler = vim.lsp.handlers["textDocument/publishDiagnostics"]
+    client.handlers = client.handlers or {}
+    client.handlers["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+      if result and result.diagnostics and result.uri then
+        local bufname = vim.uri_to_fname(result.uri)
+        if bufname:match("/tests/") then
+          result.diagnostics = vim.tbl_filter(
+            function(diag) return diag.code ~= "unused-parameter" end,
+            result.diagnostics
+          )
+        end
+      end
+      orig_handler(err, result, ctx, config)
+    end
 
-		local base_request = client.request
-		client.request = function(self, method, params, handler, bufnr_req)
-			if method == methods.textDocument_definition then
-				params = build_params_for_quoted_name_def(client) or params
-			end
-			return base_request(self, method, params, handler, bufnr_req)
-		end
-	end,
+    local base_request = client.request
+    client.request = function(self, method, params, handler, bufnr_req)
+      if method == methods.textDocument_definition then
+        params = build_params_for_quoted_name_def(client) or params
+      end
+      return base_request(self, method, params, handler, bufnr_req)
+    end
+  end,
 }

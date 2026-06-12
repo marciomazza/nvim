@@ -6,10 +6,14 @@ vim.o.signcolumn = "auto" -- only show the sign column when there are signs to b
 vim.opt.cursorline = true -- highlight the current line
 
 return {
-	"HiPhish/rainbow-delimiters.nvim",
-	{ "catgoose/nvim-colorizer.lua", event = "BufReadPre", opts = { filetypes = { "*", "!markdown" } } },
-	{
-		"EdenEast/nightfox.nvim",
-		init = function() vim.cmd.colorscheme("dayfox") end,
-	},
+  "HiPhish/rainbow-delimiters.nvim",
+  {
+    "catgoose/nvim-colorizer.lua",
+    event = "BufReadPre",
+    opts = { filetypes = { "*", "!markdown" } },
+  },
+  {
+    "EdenEast/nightfox.nvim",
+    init = function() vim.cmd.colorscheme("dayfox") end,
+  },
 }

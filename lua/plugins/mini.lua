@@ -40,9 +40,7 @@ local function setup_mini_comment()
   }
   require("mini.comment").setup({
     options = {
-      custom_commentstring = function()
-        return custom_comment_patterns[vim.bo.filetype]
-      end,
+      custom_commentstring = function() return custom_comment_patterns[vim.bo.filetype] end,
     },
   })
 end
