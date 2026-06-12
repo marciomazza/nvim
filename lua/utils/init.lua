@@ -9,6 +9,8 @@ local extended_ui_open = function()
 end
 vim.keymap.set("n", "go", extended_ui_open, { desc = "Open URL under cursor" })
 
+local M = { open_url = extended_ui_open }
+
 local source_current_lua_file = function()
   vim.cmd.write()
   vim.cmd.luafile("%")
@@ -30,3 +32,5 @@ vim.keymap.set("n", "<C-g>", function()
   vim.fn.setreg("+", vim.api.nvim_buf_get_name(0))
   vim.cmd("file")
 end, { desc = "Show file info and copy it's path to clipboard" })
+
+return M
