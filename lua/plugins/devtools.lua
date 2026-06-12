@@ -38,26 +38,6 @@ return {
 	-- django
 	"tweekmonster/django-plus.vim",
 
-	-- testing
-	{
-		"andythigpen/nvim-coverage",
-		dependencies = { "nvim-lua/plenary.nvim" },
-		opts = { auto_reload = true },
-		keys = {
-			-- { "<leader>tc", "<cmd>CoverageToggle<cr>", desc = "Toggle coverage signs" },
-			-- { "<leader>tC", "<cmd>CoverageSummary<cr>", desc = "Coverage summary" },
-		},
-	},
-	{
-		"nvim-neotest/neotest",
-		dependencies = {
-			"nvim-neotest/nvim-nio",
-			"antoinemadec/FixCursorHold.nvim",
-			"nvim-neotest/neotest-python",
-		},
-		opts = function() return { adapters = { require("neotest-python") } } end,
-	},
-
 	-- lua + neovim
 	{
 		"folke/lazydev.nvim",
@@ -87,11 +67,6 @@ return {
 		end,
 	},
 
-	{
-		"julienvincent/hunk.nvim",
-		cmd = { "DiffEditor" },
-		config = function() require("hunk").setup() end,
-	},
 	{
 		"nicolasgb/jj.nvim",
 		dependencies = {
