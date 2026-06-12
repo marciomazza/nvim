@@ -216,6 +216,11 @@ function M.populate_todo()
 	local f = assert(io.open(path, "w"), "Could not write " .. path)
 	f:write(report .. "\n")
 	f:close()
+
+	local bufnr = vim.fn.bufnr(path)
+	if bufnr ~= -1 then
+		vim.api.nvim_buf_call(bufnr, function() vim.cmd("edit") end)
+	end
 	return nil, nil
 end
 
