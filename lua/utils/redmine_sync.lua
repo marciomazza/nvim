@@ -457,4 +457,23 @@ function M.update_issue_under_cursor()
 	return nil, "no issue found on current line"
 end
 
+--- Open the Redmine issue URL for the todo item on the current cursor line.
+---@return nil, string|nil
+function M.open_issue_under_cursor()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local cursor = vim.api.nvim_win_get_cursor(0)
+	local item = require("checkmate.parser").get_todo_item_at_position(bufnr, cursor[1] - 1, cursor[2])
+	if not item then
+		return nil, "no todo item on current line"
+	end
+	local issue_meta = item.metadata.by_tag["issue"]
+	if not issue_meta then
+		return nil, "no @issue tag on current line"
+	end
+	local env = load_env()
+	local base_url = env.base_url or error("BASE_URL not found in .env")
+	vim.ui.open(base_url .. "issues/" .. issue_meta.value:gsub("^#", ""))
+	return nil, nil
+end
+
 return M

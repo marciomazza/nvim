@@ -23,6 +23,10 @@ vim.api.nvim_create_autocmd("FileType", {
 				end
 			end
 		end
+		vim.keymap.set("n", "go", function()
+			local _, err = require("utils.redmine_sync").open_issue_under_cursor()
+			if err then vim.notify(err, vim.log.levels.WARN) end
+		end, { buffer = ev.buf, desc = "Open Redmine issue under cursor", silent = true })
 	end,
 })
 
