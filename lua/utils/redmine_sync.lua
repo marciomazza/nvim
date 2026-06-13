@@ -102,10 +102,9 @@ end
 ---@return RedmineVersion[]
 function M.versions()
   local data = redmine_get(env.project_url .. "versions.json")
-  local versions = vim.tbl_map(
-    function(v) return { id = v.id, name = v.name, status = v.status } end,
-    data.versions or {}
-  )
+  local versions = vim.iter(data.versions or {})
+    :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
+    :totable()
   table.sort(versions, function(a, b) return a.name < b.name end)
   return versions
 end
@@ -114,17 +113,20 @@ end
 ---@return RedmineIssue[]
 function M.open_issues()
   local data = redmine_get(env.project_url .. "issues.json?status_id=open&assigned_to_id=me")
-  local all_issues = {}
-  for _, iss in ipairs(data.issues or {}) do
-    all_issues[#all_issues + 1] = {
-      id = iss.id,
-      subject = iss.subject,
-      status = iss.status and iss.status.name or nil,
-      version = iss.fixed_version and iss.fixed_version.name or nil,
-      assigned_to = iss.assigned_to and iss.assigned_to.name or nil,
-    }
-  end
-  return all_issues
+  return vim
+    .iter(data.issues or {})
+    :map(
+      function(issue)
+        return {
+          id = issue.id,
+          subject = issue.subject,
+          status = issue.status and issue.status.name or nil,
+          version = issue.fixed_version and issue.fixed_version.name or nil,
+          assigned_to = issue.assigned_to and issue.assigned_to.name or nil,
+        }
+      end
+    )
+    :totable()
 end
 
 --- Maps checkmate todo states to Redmine status names.
@@ -285,7 +287,7 @@ end
 --- Strips the list marker and todo unicode marker; stops before any @tag.
 ---@param item {todo_text: string|nil}
 ---@return string
-local function todo_title(item)
+local function todo_subject(item)
   local text = item.todo_text or ""
   -- Remove leading indent + list marker (-, *, +) + todo marker (unicode char) and space
   -- Pattern: optional spaces, list marker, whitespace, non-space (unicode marker), whitespace, rest
@@ -320,21 +322,20 @@ function M.enumerate_issues(filepath)
   local todo_map = parser.discover_todos(bufnr)
   local headings = get_headings(bufnr)
 
-  local results = {}
-  for _, item in pairs(todo_map) do
-    local version, status = context_for_row(headings, item.range.start.row)
-    version = version or "(no section)"
-    status = status or state_to_redmine_status[item.state]
-    local issue_meta = item.metadata.by_tag["issue"]
-    results[#results + 1] = {
-      version = version,
-      status = status,
-      id = issue_meta and issue_meta.value or nil,
-      subject = todo_title(item),
-      row = item.range.start.row,
-      state = item.state,
-    }
-  end
+  local results = vim.iter(todo_map)
+    :map(function(item)
+      local version, status = context_for_row(headings, item.range.start.row)
+      local issue_meta = item.metadata.by_tag["issue"]
+      return {
+        version = version or "(no section)",
+        status = status or state_to_redmine_status[item.state],
+        id = issue_meta and issue_meta.value or nil,
+        subject = todo_subject(item),
+        row = item.range.start.row,
+        state = item.state,
+      }
+    end)
+    :totable()
 
   table.sort(results, function(a, b) return a.row < b.row end)
   return results
@@ -416,22 +417,19 @@ end
 function M.update_issue_under_cursor()
   local row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
-  for _, item in ipairs(items) do
-    if item.row == row then
-      if item.id == nil then
-        local response = M.create_issue(item)
-        local new_id = response.issue and response.issue.id
-        if new_id then
-          require("checkmate").add_metadata("issue", "#" .. new_id)
-        end
-        return
-      else
-        M.update_issue(item)
-        return
-      end
-    end
+  local item = vim.iter(items):find(function(i) return i.row == row end)
+  if not item then
+    error("no issue found on current line")
   end
-  error("no issue found on current line")
+  if item.id == nil then
+    local response = M.create_issue(item)
+    local new_id = response.issue and response.issue.id
+    if new_id then
+      require("checkmate").add_metadata("issue", "#" .. new_id)
+    end
+  else
+    M.update_issue(item)
+  end
 end
 
 --- Open the Redmine issue URL for the todo item on the current cursor line.
