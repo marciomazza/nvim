@@ -48,16 +48,23 @@ require("luasnip.loaders.from_vscode").lazy_load({
 })
 require("luasnip_snippets").load_snippets()
 
-require("codediff").setup({
-  diff = { compute_moves = true },
-})
+local jj_log_current = "jj log -r @ --no-graph"
 
-require("jj").setup({
-  diff = {
-    backend = vim.fn.system("jj log -r @ --no-graph"):match("default@") and "codediff" or "native",
-  },
-})
-vim.keymap.set("n", "<leader>d", function()
-  local is_empty = vim.fn.system("jj log -r @ --no-graph -T 'empty'"):match("true")
+local function jj_diff()
+  local is_empty = vim.fn.system(jj_log_current .. " -T 'empty'"):match("true")
   require("jj.diff").open_vdiff(is_empty and { rev = "@--" } or nil)
-end, { desc = "JJ diff current buffer" })
+end
+
+local function setup_and_jj_diff()
+  -- lazy setup
+  require("codediff").setup({ diff = { compute_moves = true } })
+  require("jj").setup({
+    diff = {
+      backend = vim.fn.system(jj_log_current):match("default@") and "codediff" or "native",
+    },
+  })
+  -- update the keymap for the next calls
+  vim.keymap.set("n", "<leader>d", jj_diff, { desc = "JJ diff current buffer" })
+  jj_diff()
+end
+vim.keymap.set("n", "<leader>d", setup_and_jj_diff, { desc = "JJ diff current buffer" })
