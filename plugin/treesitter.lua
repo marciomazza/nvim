@@ -25,13 +25,19 @@ require("treesitter-modules").setup({
   matchup = { enable = true }, -- enable andymass/vim-matchup
   -- autotag = { enable = true }, -- enable windwp/nvim-ts-autotag
   indent = { enable = true },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = "<M-Up>",
-      node_incremental = "<M-Up>",
-      node_decremental = "<M-Down>",
-    },
-  },
-  textobjects = { select = { enable = true } },
+  -- textobjects = { select = { enable = true } },
 })
+
+local ts_select = require("vim.treesitter._select")
+vim.keymap.set(
+  { "n", "x" },
+  "<M-Up>",
+  function() ts_select.select_parent(vim.v.count1) end,
+  { desc = "Expand selection" }
+)
+vim.keymap.set(
+  "x",
+  "<M-Down>",
+  function() ts_select.select_child(vim.v.count1) end,
+  { desc = "Shrink selection" }
+)

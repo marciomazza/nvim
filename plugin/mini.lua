@@ -95,20 +95,9 @@ local function setup_mini_clue()
   })
 end
 
-local function setup_mini_ai()
-  local MiniAi = require("mini.ai")
-  MiniAi.setup({
-    custom_textobjects = {
-      o = MiniAi.gen_spec.treesitter({
-        a = { "@conditional.outer", "@loop.outer" },
-        i = { "@conditional.inner", "@loop.inner" },
-      }),
-    },
-  })
-  return MiniAi
-end
+local MiniAi = require("mini.ai")
+MiniAi.setup()
 
-MiniAi = setup_mini_ai()
 require("mini.align").setup()
 require("mini.operators").setup({ replace = { prefix = "rr" } })
 require("mini.pairs").setup()
@@ -127,7 +116,7 @@ setup_mini_hipatterns()
 setup_mini_clue()
 
 -- specific for html / htmldjango
-vim.api.nvim_create_autocmd("Filetype", {
+vim.api.nvim_create_autocmd("FileType", {
   pattern = { "html", "htmldjango" },
   callback = function(args)
     vim.b[args.buf].miniai_config = {
