@@ -1,117 +1,119 @@
 local M = {}
 
+---@class RedmineVersion
+---@field id integer
+---@field name string
+---@field status string
+
+---@class RedmineIssue
+---@field id integer
+---@field subject string
+---@field status string|nil
+---@field version string|nil
+---@field assigned_to string|nil
+
+---@class IssueFields
+---@field subject string
+---@field status string|nil
+---@field version string|nil
+
+---@class TodoIssue : IssueFields
+---@field id string|nil
+---@field row integer
+---@field state string
+
 ---------------------------------------------------------------------------------
 -- REDMINE -> TODO.MD
 ---------------------------------------------------------------------------------
 
 --- Load configuration from .redmine.env.json in the current working directory (project root)
+--- Validates required fields: project_url, base_url, token.
 ---@return table
 local function load_env()
   local path = vim.fn.getcwd() .. "/.redmine.env.json"
   local f = assert(io.open(path, "r"), "Could not open " .. path)
   local raw = f:read("*a")
   f:close()
-  return vim.json.decode(raw)
+  local env = vim.json.decode(raw)
+
+  for _, field in ipairs({ "project_url", "base_url", "token" }) do
+    if not env[field] or env[field] == "" then
+      error(field .. " not found or empty in .redmine.env.json")
+    end
+  end
+
+  return env
 end
 
+local env = load_env()
+
 ---@param url string
----@param token string
 ---@param extra_args string[]
----@return string|nil, string|nil
-local function redmine_request(url, token, extra_args)
-  local cmd = { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. token }
+---@return string
+local function redmine_request(url, extra_args)
+  local cmd = { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. env.token }
   vim.list_extend(cmd, extra_args)
   cmd[#cmd + 1] = url
   local result = vim.system(cmd, { text = true }):wait()
   if result.code ~= 0 then
-    return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
+    error("curl failed (exit " .. result.code .. "): " .. (result.stderr or ""))
   end
-  return result.stdout, nil
+  return result.stdout
 end
 
 ---@param stdout string
----@return table|nil, string|nil
+---@return table
 local function json_decode(stdout)
   local ok, decoded = pcall(vim.json.decode, stdout)
   if not ok then
-    return nil, "JSON decode error: " .. tostring(decoded)
+    error("JSON decode error: " .. tostring(decoded))
   end
-  return decoded, nil
+  return decoded
 end
 
 ---@param url string
----@param token string
----@return table|nil, string|nil
-local function redmine_get(url, token)
-  local out, err = redmine_request(url, token, { "-H", "Accept: application/json" })
-  if not out then
-    return nil, err
-  end
-  return json_decode(out)
+---@return table
+local function redmine_get(url)
+  return json_decode(redmine_request(url, { "-H", "Accept: application/json" }))
 end
 
 ---@param url string
----@param token string
 ---@param body table
----@return nil, string|nil
-local function redmine_put(url, token, body)
-  local _, err = redmine_request(
+local function redmine_put(url, body)
+  redmine_request(
     url,
-    token,
     { "-X", "PUT", "-H", "Content-Type: application/json", "-d", vim.json.encode(body) }
   )
-  return nil, err
 end
 
 ---@param url string
----@param token string
 ---@param body table
----@return table|nil, string|nil
-local function redmine_post(url, token, body)
-  local out, err = redmine_request(
-    url,
-    token,
-    { "-X", "POST", "-H", "Content-Type: application/json", "-d", vim.json.encode(body) }
+---@return table
+local function redmine_post(url, body)
+  return json_decode(
+    redmine_request(
+      url,
+      { "-X", "POST", "-H", "Content-Type: application/json", "-d", vim.json.encode(body) }
+    )
   )
-  if not out then
-    return nil, err
-  end
-  return json_decode(out)
 end
 
 --- Return all versions for the configured Redmine project, sorted by name.
----@return {id: integer, name: string, status: string}[]|nil, string|nil
+---@return RedmineVersion[]
 function M.versions()
-  local env = load_env()
-  local data, err = redmine_get(
-    (env.project_url or error("PROJECT_URL not found in .env")) .. "versions.json",
-    env.token or error("TOKEN not found in .env")
-  )
-  if not data then
-    return nil, err
-  end
-
+  local data = redmine_get(env.project_url .. "versions.json")
   local versions = vim.tbl_map(
     function(v) return { id = v.id, name = v.name, status = v.status } end,
     data.versions or {}
   )
   table.sort(versions, function(a, b) return a.name < b.name end)
-  return versions, nil
+  return versions
 end
 
 --- Return all open issues for the configured Redmine project.
----@return {id: integer, subject: string, status: string|nil, version: string|nil, assigned_to: string|nil}[]|nil, string|nil
+---@return RedmineIssue[]
 function M.open_issues()
-  local env = load_env()
-  local project_url = env.project_url or error("PROJECT_URL not found in .env")
-  local token = env.token or error("TOKEN not found in .env")
-
-  local data, err =
-    redmine_get(project_url .. "issues.json?status_id=open&assigned_to_id=me", token)
-  if not data then
-    return nil, err
-  end
-
+  local data = redmine_get(env.project_url .. "issues.json?status_id=open&assigned_to_id=me")
   local all_issues = {}
   for _, iss in ipairs(data.issues or {}) do
     all_issues[#all_issues + 1] = {
@@ -122,8 +124,7 @@ function M.open_issues()
       assigned_to = iss.assigned_to and iss.assigned_to.name or nil,
     }
   end
-
-  return all_issues, nil
+  return all_issues
 end
 
 --- Maps checkmate todo states to Redmine status names.
@@ -134,13 +135,9 @@ local state_to_redmine_status = {
 }
 
 --- Generate a markdown report of all open Redmine issues grouped by version then status.
----@return string|nil, string|nil
+---@return string
 function M.open_issues_report()
-  local env = load_env()
-  local issues, err = M.open_issues()
-  if not issues then
-    return nil, err
-  end
+  local issues = M.open_issues()
 
   local status_rank = {}
   for i, s in ipairs(env.open_statuses or {}) do
@@ -198,22 +195,18 @@ function M.open_issues_report()
     end
   end
 
-  return table.concat(lines, "\n"), nil
+  return table.concat(lines, "\n")
 end
 
 --- Sync open issues to todo.md in the project root.
 --- Creates a new jj change, then overwrites todo.md with the report.
----@return nil, string|nil
 function M.populate_todo()
-  local report, err = M.open_issues_report()
-  if not report then
-    return nil, err
-  end
+  local report = M.open_issues_report()
 
   local root = vim.fn.getcwd()
   local jj = vim.system({ "jj", "new" }, { text = true, cwd = root }):wait()
   if jj.code ~= 0 then
-    return nil, "jj new failed: " .. (jj.stderr or "")
+    error("jj new failed: " .. (jj.stderr or ""))
   end
 
   local path = root .. "/todo.md"
@@ -225,7 +218,6 @@ function M.populate_todo()
   if bufnr ~= -1 then
     vim.api.nvim_buf_call(bufnr, function() vim.cmd("edit") end)
   end
-  return nil, nil
 end
 
 ---------------------------------------------------------------------------------
@@ -306,7 +298,7 @@ end
 --- Enumerate all todo items that have an @issue tag, with their version (section heading).
 --- Loads the file, uses checkmate's parser + treesitter.
 ---@param filepath string
----@return {version: string, status: string|nil, issue: string, title: string, row: integer, state: string}[]
+---@return TodoIssue[]
 function M.enumerate_issues(filepath)
   -- Initialize checkmate config with defaults if not already done
   local cfg = require("checkmate.config")
@@ -337,8 +329,8 @@ function M.enumerate_issues(filepath)
     results[#results + 1] = {
       version = version,
       status = status,
-      issue = issue_meta and issue_meta.value or nil,
-      title = todo_title(item),
+      id = issue_meta and issue_meta.value or nil,
+      subject = todo_title(item),
       row = item.range.start.row,
       state = item.state,
     }
@@ -349,10 +341,8 @@ function M.enumerate_issues(filepath)
 end
 
 --- Load env, build status_id and version_id lookup tables.
----@return table|nil env, table|nil status_id_by_name, table|nil version_id_by_name, string|nil err
+---@return table status_id_by_name, table version_id_by_name
 local function prepare_issue_context()
-  local env = load_env()
-
   local status_id_by_name = {}
   for _, s in ipairs(env.open_statuses or {}) do
     status_id_by_name[s.name] = s.id
@@ -361,25 +351,22 @@ local function prepare_issue_context()
     status_id_by_name[s.name] = s.id
   end
 
-  local versions, err = M.versions()
-  if not versions then
-    return nil, nil, nil, err
-  end
+  local versions = M.versions()
   local version_id_by_name = {}
   for _, v in ipairs(versions) do
     version_id_by_name[v.name] = v.id
   end
 
-  return env, status_id_by_name, version_id_by_name, nil
+  return status_id_by_name, version_id_by_name
 end
 
 --- Build common issue payload fields (subject, status_id, fixed_version_id).
----@param item {title: string, status: string|nil, version: string|nil}
+---@param item IssueFields
 ---@param status_id_by_name table
 ---@param version_id_by_name table
 ---@return table
 local function build_issue_fields(item, status_id_by_name, version_id_by_name)
-  local fields = { subject = item.title }
+  local fields = { subject = item.subject }
   fields.status_id = status_id_by_name[item.status]
   if item.version ~= "Archive" then
     fields.fixed_version_id = version_id_by_name[item.version]
@@ -389,42 +376,31 @@ end
 
 --- Update a Redmine issue's subject, status and version from a todo item.
 --- Skips fixed_version_id when version is "Archive".
----@param item {issue: string, title: string, version: string, status: string|nil}
----@return nil, string|nil
+---@param item TodoIssue
 function M.update_issue(item)
-  local issue_id = item.issue and item.issue:match("%d+")
+  local issue_id = item.id and item.id:match("%d+")
   if not issue_id then
-    return nil, "missing issue id"
+    error("missing issue id")
   end
 
-  local env, status_id_by_name, version_id_by_name, err = prepare_issue_context()
-  if not env or not status_id_by_name or not version_id_by_name then
-    return nil, err
-  end
-
-  local base_url = env.base_url or error("BASE_URL not found in .env")
+  local status_id_by_name, version_id_by_name = prepare_issue_context()
   local payload = { issue = build_issue_fields(item, status_id_by_name, version_id_by_name) }
-  return redmine_put(base_url .. "issues/" .. issue_id .. ".json", env.token, payload)
+  redmine_put(env.base_url .. "issues/" .. issue_id .. ".json", payload)
 end
 
 --- Create a new Redmine issue from a todo item that has no @issue tag yet.
 --- item.issue must be nil; item.version must match a known version.
----@param item {title: string, version: string, status: string|nil, issue: string|nil}
----@return table|nil, string|nil  decoded response, err
+---@param item TodoIssue
+---@return table decoded response
 function M.create_issue(item)
-  if item.issue ~= nil then
-    return nil, "item already has an issue id: " .. tostring(item.issue)
+  if item.id ~= nil then
+    error("item already has an issue id: " .. tostring(item.id))
   end
 
-  local env, status_id_by_name, version_id_by_name, err = prepare_issue_context()
-  if not env or not status_id_by_name or not version_id_by_name then
-    return nil, err
-  end
-
-  local project_url = env.project_url or error("PROJECT_URL not found in .env")
+  local status_id_by_name, version_id_by_name = prepare_issue_context()
 
   if not version_id_by_name[item.version] then
-    return nil, "unknown version: " .. tostring(item.version)
+    error("unknown version: " .. tostring(item.version))
   end
 
   local fields = build_issue_fields(item, status_id_by_name, version_id_by_name)
@@ -432,53 +408,46 @@ function M.create_issue(item)
   fields.tracker = { id = 2, name = "Tarefa" }
   fields.custom_fields = { { id = 31, name = "Tipo de manutenção", value = "Projeto" } }
 
-  return redmine_post(project_url .. "issues.json", env.token, { issue = fields })
+  return redmine_post(env.project_url .. "issues.json", { issue = fields })
 end
 
 --- Update or create the Redmine issue for the todo item on the current cursor line.
 --- Creates a new issue when the item has no @issue tag and adds @issue(#id) to the buffer.
----@return nil, string|nil
 function M.update_issue_under_cursor()
   local row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
   for _, item in ipairs(items) do
     if item.row == row then
-      if item.issue == nil then
-        local response, err = M.create_issue(item)
-        if not response then
-          return nil, err
-        end
+      if item.id == nil then
+        local response = M.create_issue(item)
         local new_id = response.issue and response.issue.id
         if new_id then
           require("checkmate").add_metadata("issue", "#" .. new_id)
         end
-        return nil, nil
+        return
       else
-        return M.update_issue(item)
+        M.update_issue(item)
+        return
       end
     end
   end
-  return nil, "no issue found on current line"
+  error("no issue found on current line")
 end
 
 --- Open the Redmine issue URL for the todo item on the current cursor line.
----@return nil, string|nil
 function M.open_issue_under_cursor()
   local bufnr = vim.api.nvim_get_current_buf()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local item =
     require("checkmate.parser").get_todo_item_at_position(bufnr, cursor[1] - 1, cursor[2])
   if not item then
-    return nil, "no todo item on current line"
+    error("no todo item on current line")
   end
   local issue_meta = item.metadata.by_tag["issue"]
   if not issue_meta then
-    return nil, "no @issue tag on current line"
+    error("no @issue tag on current line")
   end
-  local env = load_env()
-  local base_url = env.base_url or error("BASE_URL not found in .env")
-  vim.ui.open(base_url .. "issues/" .. issue_meta.value:gsub("^#", ""))
-  return nil, nil
+  vim.ui.open(env.base_url .. "issues/" .. issue_meta.value:gsub("^#", ""))
 end
 
 return M
