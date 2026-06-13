@@ -1,3 +1,9 @@
+vim.pack.add({
+  "https://github.com/neovim/nvim-lspconfig",
+  "https://github.com/mason-org/mason.nvim",
+  "https://github.com/mason-org/mason-lspconfig.nvim",
+})
+
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     vim.keymap.set("n", "gd", function()
@@ -25,12 +31,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.lsp.enable("pytest_lsp")
-
-vim.pack.add({
-  "https://github.com/neovim/nvim-lspconfig",
-  "https://github.com/mason-org/mason.nvim",
-  "https://github.com/mason-org/mason-lspconfig.nvim",
-})
 
 require("mason").setup()
 require("mason-lspconfig").setup({

@@ -1,3 +1,7 @@
+vim.pack.add({
+  "https://github.com/stevearc/conform.nvim",
+})
+
 local function find_import_insertion_line_number(bufnr)
   local root = vim.treesitter.get_parser(bufnr):trees()[1]:root()
   for node in root:iter_children() do
@@ -25,10 +29,6 @@ end
 
 local oxc = { "oxfmt", "oxlint" }
 local for_htmldjango = { "rustywind", "djangofmt" }
-
-vim.pack.add({
-  "https://github.com/stevearc/conform.nvim",
-})
 
 require("conform").setup({
   formatters_by_ft = {
