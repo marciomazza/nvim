@@ -1,5 +1,11 @@
 vim.pack.add({ "https://github.com/nvim-mini/mini.nvim" })
 
+local function setup(mini_module, opts)
+  local module = require(mini_module)
+  module.setup(opts or {})
+  return module
+end
+
 local function setup_mini_files()
   local MiniFiles = require("mini.files")
   local file_explorer_ignored = { ".*\\.pyc", "__pycache__", "ipython_log\\.py.*" }
@@ -95,25 +101,49 @@ local function setup_mini_clue()
   })
 end
 
-local MiniAi = require("mini.ai")
-MiniAi.setup()
-
-require("mini.align").setup()
-require("mini.operators").setup({ replace = { prefix = "rr" } })
-require("mini.pairs").setup()
-require("mini.surround").setup()
-require("mini.jump").setup()
-require("mini.splitjoin").setup()
-require("mini.extra").setup()
-require("mini.icons").setup()
-require("mini.cursorword").setup()
-require("mini.diff").setup()
-require("mini.statusline").setup()
-require("mini.tabline").setup()
+setup("mini.align")
+setup("mini.operators", { replace = { prefix = "rr" } })
+setup("mini.pairs")
+setup("mini.surround")
+setup("mini.jump")
+setup("mini.splitjoin")
+setup("mini.extra")
+setup("mini.cursorword")
+setup("mini.diff")
+setup("mini.statusline")
+setup("mini.tabline")
 setup_mini_files()
 setup_mini_comment()
 setup_mini_hipatterns()
 setup_mini_clue()
+
+local MiniMisc = setup("mini.misc")
+local later = function(f) MiniMisc.safely("later", f) end
+
+local MiniIcons = setup("mini.icons")
+later(MiniIcons.tweak_lsp_kind)
+
+-----------------------------------------------------------------
+--- completion
+-----------------------------------------------------------------
+setup("mini.completion")
+setup("mini.snippets")
+
+local MiniKeymap = setup("mini.keymap")
+-- NOTE: this will never insert tab, press <C-v><Tab> for that
+local tab_steps = {
+  "minisnippets_next",
+  "minisnippets_expand",
+  "pmenu_next",
+  "jump_after_tsnode",
+  "jump_after_close",
+}
+MiniKeymap.map_multistep("i", "<Tab>", tab_steps)
+local shifttab_steps =
+  { "minisnippets_prev", "pmenu_prev", "jump_before_tsnode", "jump_before_open" }
+MiniKeymap.map_multistep("i", "<S-Tab>", shifttab_steps)
+
+local MiniAi = setup("mini.ai")
 
 -- specific for html / htmldjango
 vim.api.nvim_create_autocmd("FileType", {

@@ -16,6 +16,7 @@ return {
         checkThirdParty = false,
         library = {
           vim.env.VIMRUNTIME,
+          vim.fn.stdpath("data") .. "/site/pack/core/opt",
         },
       },
       diagnostics = { globals = { "vim", "Snacks" } },
