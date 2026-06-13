@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VIMRUNTIME=$(nvim --headless -c 'echo $VIMRUNTIME' -c 'q' 2>&1 | tail -1 | tr -d '%')
+export VIMRUNTIME
+
+exec ~/.local/share/nvim/mason/bin/lua-language-server --check .

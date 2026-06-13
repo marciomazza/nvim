@@ -35,7 +35,7 @@ vim.keymap.set("n", "<leader>l", source_current_lua_file, { desc = "Source curre
 -- toggle spell check
 for lang, key in pairs({ en_us = "<F6>", pt_br = "<F7>" }) do
   local toggle_spell_check = function()
-    vim.opt_local.spell = not vim.opt_local.spell:get()
+    vim.wo.spell = not vim.wo.spell
     vim.opt_local.spelllang = lang
   end
   local desc = string.format("Toggle spell check (%s)", lang:sub(1, 2):upper())

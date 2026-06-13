@@ -14,95 +14,69 @@ local function load_env()
   return vim.json.decode(raw)
 end
 
---- Make a GET request to a Redmine JSON endpoint and return the decoded table.
+---@param url string
+---@param token string
+---@param extra_args string[]
+---@return string|nil, string|nil
+local function redmine_request(url, token, extra_args)
+  local cmd = { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. token }
+  vim.list_extend(cmd, extra_args)
+  cmd[#cmd + 1] = url
+  local result = vim.system(cmd, { text = true }):wait()
+  if result.code ~= 0 then
+    return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
+  end
+  return result.stdout, nil
+end
+
+---@param stdout string
+---@return table|nil, string|nil
+local function json_decode(stdout)
+  local ok, decoded = pcall(vim.json.decode, stdout)
+  if not ok then
+    return nil, "JSON decode error: " .. tostring(decoded)
+  end
+  return decoded, nil
+end
+
 ---@param url string
 ---@param token string
 ---@return table|nil, string|nil
 local function redmine_get(url, token)
-  local result = vim
-    .system({
-      "curl",
-      "-sf",
-      "-k",
-      "-H",
-      "X-Redmine-API-Key: " .. token,
-      "-H",
-      "Accept: application/json",
-      url,
-    }, { text = true })
-    :wait()
-
-  if result.code ~= 0 then
-    return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
+  local out, err = redmine_request(url, token, { "-H", "Accept: application/json" })
+  if not out then
+    return nil, err
   end
-
-  local ok, decoded = pcall(vim.json.decode, result.stdout)
-  if not ok then
-    return nil, "JSON decode error: " .. tostring(decoded)
-  end
-  return decoded, nil
+  return json_decode(out)
 end
 
---- Make a PUT request to a Redmine JSON endpoint.
 ---@param url string
 ---@param token string
----@param body table  will be JSON-encoded
+---@param body table
 ---@return nil, string|nil
 local function redmine_put(url, token, body)
-  local result = vim
-    .system({
-      "curl",
-      "-sf",
-      "-k",
-      "-X",
-      "PUT",
-      "-H",
-      "X-Redmine-API-Key: " .. token,
-      "-H",
-      "Content-Type: application/json",
-      "-d",
-      vim.json.encode(body),
-      url,
-    }, { text = true })
-    :wait()
-
-  if result.code ~= 0 then
-    return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
-  end
-  return nil, nil
+  local _, err = redmine_request(
+    url,
+    token,
+    { "-X", "PUT", "-H", "Content-Type: application/json", "-d", vim.json.encode(body) }
+  )
+  return nil, err
 end
 
---- Make a POST request to a Redmine JSON endpoint and return the decoded response.
 ---@param url string
 ---@param token string
----@param body table  will be JSON-encoded
+---@param body table
 ---@return table|nil, string|nil
 local function redmine_post(url, token, body)
-  local result = vim
-    .system({
-      "curl",
-      "-sf",
-      "-k",
-      "-X",
-      "POST",
-      "-H",
-      "X-Redmine-API-Key: " .. token,
-      "-H",
-      "Content-Type: application/json",
-      "-d",
-      vim.json.encode(body),
-      url,
-    }, { text = true })
-    :wait()
-
-  if result.code ~= 0 then
-    return nil, "curl failed (exit " .. result.code .. "): " .. (result.stderr or "")
+  local out, err = redmine_request(
+    url,
+    token,
+    { "-X", "POST", "-H", "Content-Type: application/json", "-d", vim.json.encode(body) }
+  )
+  if not out then
+    return nil, err
   end
-  local ok, decoded = pcall(vim.json.decode, result.stdout)
-  if not ok then
-    return nil, "JSON decode error: " .. tostring(decoded)
-  end
-  return decoded, nil
+  return json_decode(out)
 end
 
 --- Return all versions for the configured Redmine project, sorted by name.
@@ -280,7 +254,7 @@ local function get_headings(bufnr)
     for child in node:iter_children() do
       local t = child:type()
       if t:match("^atx_h%d_marker$") then
-        level = tonumber(t:match("%d"))
+        level = tonumber(t:match("%d")) or 0
       elseif t == "inline" then
         text = vim.trim(vim.treesitter.get_node_text(child, bufnr))
       end
@@ -297,7 +271,7 @@ end
 --- Return the version (h1) and status (h2) for the headings immediately above `target_row`.
 ---@param headings {row: integer, level: integer, text: string}[]
 ---@param target_row integer 0-indexed
----@return string|nil, string|nil  version, status
+---@return string|nil version, string|nil status
 local function context_for_row(headings, target_row)
   local version, status = nil, nil
   for _, h in ipairs(headings) do
@@ -317,7 +291,7 @@ end
 
 --- Extract a clean title from a TodoItem's first line.
 --- Strips the list marker and todo unicode marker; stops before any @tag.
----@param item checkmate.TodoItem
+---@param item {todo_text: string|nil}
 ---@return string
 local function todo_title(item)
   local text = item.todo_text or ""
@@ -375,7 +349,7 @@ function M.enumerate_issues(filepath)
 end
 
 --- Load env, build status_id and version_id lookup tables.
----@return table|nil, table|nil, table|nil, string|nil  env, status_id_by_name, version_id_by_name, err
+---@return table|nil env, table|nil status_id_by_name, table|nil version_id_by_name, string|nil err
 local function prepare_issue_context()
   local env = load_env()
 
@@ -424,7 +398,7 @@ function M.update_issue(item)
   end
 
   local env, status_id_by_name, version_id_by_name, err = prepare_issue_context()
-  if not env then
+  if not env or not status_id_by_name or not version_id_by_name then
     return nil, err
   end
 
@@ -435,7 +409,7 @@ end
 
 --- Create a new Redmine issue from a todo item that has no @issue tag yet.
 --- item.issue must be nil; item.version must match a known version.
----@param item {title: string, version: string, status: string|nil, issue: nil}
+---@param item {title: string, version: string, status: string|nil, issue: string|nil}
 ---@return table|nil, string|nil  decoded response, err
 function M.create_issue(item)
   if item.issue ~= nil then
@@ -443,7 +417,7 @@ function M.create_issue(item)
   end
 
   local env, status_id_by_name, version_id_by_name, err = prepare_issue_context()
-  if not env then
+  if not env or not status_id_by_name or not version_id_by_name then
     return nil, err
   end
 

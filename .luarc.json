@@ -1,0 +1,20 @@
+{
+  "runtime": {
+    "version": "LuaJIT",
+    "path": ["lua/?.lua", "lua/?/init.lua"]
+  },
+  "workspace": {
+    "checkThirdParty": false,
+    "library": [
+      "${env:VIMRUNTIME}",
+      "~/.local/share/nvim/site/pack/core/opt/blink.cmp",
+      "~/.local/share/nvim/site/pack/core/opt/snacks.nvim",
+      "~/.local/share/nvim/site/pack/core/opt/nvim-treesitter",
+      "~/.local/share/nvim/site/pack/core/opt/treesitter-modules.nvim"
+    ],
+    "ignoreDir": ["zzz"]
+  },
+  "diagnostics": {
+    "globals": ["vim", "Snacks"]
+  }
+}
