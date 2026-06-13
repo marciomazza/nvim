@@ -1,3 +1,5 @@
+vim.pack.add({ "https://github.com/nvim-mini/mini.nvim" })
+
 local function setup_mini_files()
   local MiniFiles = require("mini.files")
   local file_explorer_ignored = { ".*\\.pyc", "__pycache__", "ipython_log\\.py.*" }
@@ -106,43 +108,37 @@ local function setup_mini_ai()
   return MiniAi
 end
 
-return {
-  "nvim-mini/mini.nvim",
-  version = false,
-  config = function()
-    MiniAi = setup_mini_ai()
-    require("mini.align").setup()
-    require("mini.operators").setup({ replace = { prefix = "rr" } })
-    require("mini.pairs").setup()
-    require("mini.surround").setup()
-    require("mini.jump").setup()
-    require("mini.splitjoin").setup()
-    require("mini.extra").setup()
-    require("mini.icons").setup()
-    require("mini.cursorword").setup()
-    require("mini.diff").setup()
-    require("mini.statusline").setup()
-    require("mini.tabline").setup()
-    setup_mini_files()
-    setup_mini_comment()
-    setup_mini_hipatterns()
-    setup_mini_clue()
+MiniAi = setup_mini_ai()
+require("mini.align").setup()
+require("mini.operators").setup({ replace = { prefix = "rr" } })
+require("mini.pairs").setup()
+require("mini.surround").setup()
+require("mini.jump").setup()
+require("mini.splitjoin").setup()
+require("mini.extra").setup()
+require("mini.icons").setup()
+require("mini.cursorword").setup()
+require("mini.diff").setup()
+require("mini.statusline").setup()
+require("mini.tabline").setup()
+setup_mini_files()
+setup_mini_comment()
+setup_mini_hipatterns()
+setup_mini_clue()
 
-    -- specific for html / htmldjango
-    vim.api.nvim_create_autocmd("Filetype", {
-      pattern = { "html", "htmldjango" },
-      callback = function(args)
-        vim.b[args.buf].miniai_config = {
-          custom_textobjects = {
-            a = MiniAi.gen_spec.treesitter({ a = "@attribute.outer", i = "@attribute.inner" }),
-          },
-        }
-        vim.b[args.buf].minisurround_config = {
-          custom_surroundings = {
-            t = { input = require("utils.html_tags").surround_tag_input },
-          },
-        }
-      end,
-    })
+-- specific for html / htmldjango
+vim.api.nvim_create_autocmd("Filetype", {
+  pattern = { "html", "htmldjango" },
+  callback = function(args)
+    vim.b[args.buf].miniai_config = {
+      custom_textobjects = {
+        a = MiniAi.gen_spec.treesitter({ a = "@attribute.outer", i = "@attribute.inner" }),
+      },
+    }
+    vim.b[args.buf].minisurround_config = {
+      custom_surroundings = {
+        t = { input = require("utils.html_tags").surround_tag_input },
+      },
+    }
   end,
-}
+})

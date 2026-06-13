@@ -9,6 +9,21 @@ local extended_ui_open = function()
 end
 vim.keymap.set("n", "go", extended_ui_open, { desc = "Open URL under cursor" })
 
+---@param spec_name string
+---@param callback fun(ev: { data: vim.event.packchanged.data })
+local function pack_changed_hook(spec_name, callback)
+  vim.api.nvim_create_autocmd("PackChanged", {
+    callback = function(ev)
+      local name, kind = ev.data.spec.name, ev.data.kind
+      if spec_name == name and (kind == "install" or kind == "update") then
+        callback(ev)
+      end
+    end,
+  })
+end
+
+_G.pack_changed_hook = pack_changed_hook
+
 local M = { open_url = extended_ui_open }
 
 local source_current_lua_file = function()

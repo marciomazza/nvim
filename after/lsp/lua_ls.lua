@@ -16,9 +16,6 @@ return {
         checkThirdParty = false,
         library = {
           vim.env.VIMRUNTIME,
-          -- commented out plugins dir to reduce latency of "gd"
-          -- (possibly add specific plugins, when needed)
-          -- vim.fn.stdpath("data") .. "/lazy",
         },
       },
       diagnostics = { globals = { "vim", "Snacks" } },

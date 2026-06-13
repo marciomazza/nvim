@@ -1,3 +1,33 @@
+vim.pack.add({
+  "https://github.com/bngarren/checkmate.nvim",
+})
+
+require("checkmate").setup({
+  todo_states = {
+    unchecked = { marker = "□" },
+    checked = { marker = "✓" },
+    in_progress = {
+      marker = "▶",
+      markdown = ".",
+      type = "incomplete",
+      order = 50,
+    },
+    cancelled = {
+      marker = "✗",
+      markdown = "c",
+      type = "complete",
+      order = 2,
+    },
+  },
+})
+
+vim.api.nvim_set_hl(0, "CheckmateMeta_started", { fg = "#1565c0" })
+vim.api.nvim_set_hl(0, "CheckmateMeta_done", { fg = "#1b7a1b" })
+vim.api.nvim_set_hl(0, "CheckmateCheckedMarker", { bold = true })
+local color_progress = "#cc7a00"
+vim.api.nvim_set_hl(0, "CheckmateInProgressMarker", { fg = color_progress })
+vim.api.nvim_set_hl(0, "CheckmateInProgressMainContent", { fg = color_progress })
+
 -- Remap all default <leader>T... keymaps to <leader>t... .
 -- checkmate registers its FileType autocmd inside setup(); registering ours
 -- afterwards guarantees ours fires second, after checkmate's keymaps are set.
@@ -35,39 +65,3 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { buffer = ev.buf, desc = "Open Redmine issue or URL under cursor", silent = true })
   end,
 })
-
-return {
-  {
-    "bngarren/checkmate.nvim",
-    ft = "markdown", -- Lazy loads for Markdown files matching patterns in 'files'
-    config = function(_, opts)
-      require("checkmate").setup(opts)
-      vim.api.nvim_set_hl(0, "CheckmateMeta_started", { fg = "#1565c0" })
-      vim.api.nvim_set_hl(0, "CheckmateMeta_done", { fg = "#1b7a1b" })
-      vim.api.nvim_set_hl(0, "CheckmateCheckedMarker", { bold = true })
-      local color_progress = "#cc7a00"
-      vim.api.nvim_set_hl(0, "CheckmateInProgressMarker", { fg = color_progress })
-      vim.api.nvim_set_hl(0, "CheckmateInProgressMainContent", { fg = color_progress })
-    end,
-    opts = {
-      todo_states = {
-        -- Built-in states (cannot change markdown or type)
-        unchecked = { marker = "□" },
-        checked = { marker = "✓" },
-        -- Custom states
-        in_progress = {
-          marker = "▶",
-          markdown = ".", -- Saved as `- [.]`
-          type = "incomplete", -- Counts as "not done"
-          order = 50,
-        },
-        cancelled = {
-          marker = "✗",
-          markdown = "c", -- Saved as `- [c]`
-          type = "complete", -- Counts as "done"
-          order = 2,
-        },
-      },
-    },
-  },
-}

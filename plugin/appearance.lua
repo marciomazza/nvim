@@ -5,15 +5,12 @@ vim.o.scrolloff = 999 -- keep the cursor centered when scrolling
 vim.o.signcolumn = "auto" -- only show the sign column when there are signs to be displayed
 vim.opt.cursorline = true -- highlight the current line
 
-return {
-  "HiPhish/rainbow-delimiters.nvim",
-  {
-    "catgoose/nvim-colorizer.lua",
-    event = "BufReadPre",
-    opts = { filetypes = { "*", "!markdown" } },
-  },
-  {
-    "EdenEast/nightfox.nvim",
-    init = function() vim.cmd.colorscheme("dayfox") end,
-  },
-}
+vim.pack.add({
+  "https://github.com/HiPhish/rainbow-delimiters.nvim",
+  "https://github.com/catgoose/nvim-colorizer.lua",
+  "https://github.com/EdenEast/nightfox.nvim",
+})
+
+vim.opt.termguicolors = true -- required for colorizer and true color support
+require("colorizer").setup({ filetypes = { "*", "!markdown" } })
+vim.cmd.colorscheme("dayfox")
