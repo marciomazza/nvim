@@ -21,12 +21,10 @@ local function get_paths_from_instance_script(root_dir)
     right: (list (string (string_content) @content)))
 ]]
   )
-  local paths = vim.iter(query:iter_captures(root, src, 0, -1)):map(function(id, node)
-    if query.captures[id] == "content" then
-      return ts.get_node_text(node, src)
-    end
-  end)
-  return paths:totable()
+  return vim.iter(query:iter_captures(root, src, 0, -1))
+    :filter(function(id) return query.captures[id] == "content" end)
+    :map(function(_, node) return ts.get_node_text(node, src) end)
+    :totable()
 end
 
 local M = {}
