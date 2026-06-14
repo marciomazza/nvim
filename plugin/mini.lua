@@ -153,6 +153,11 @@ later(MiniIcons.tweak_lsp_kind)
 --- completion & snippets
 ------------------------------------------------------------------------------------------
 setup("mini.completion")
+-- disable completion in fff's input buffer to avoid conflict with the picker
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "fff_input",
+  callback = function() vim.b.minicompletion_disable = true end,
+})
 setup("mini.snippets")
 
 local MiniKeymap = setup("mini.keymap")
