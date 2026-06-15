@@ -433,6 +433,7 @@ end
 function M.create_or_update_all()
   local start_row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
+  local do_all = false
   for _, item in ipairs(items) do
     if item.row < start_row then
       goto continue
@@ -441,14 +442,19 @@ function M.create_or_update_all()
       goto continue
     end
     vim.api.nvim_win_set_cursor(0, { item.row + 1, 0 })
-    local action = item.id and "Update" or "Create"
-    local label = item.subject .. (item.id and (" (" .. item.id .. ")") or " [new]")
-    local choice = vim.fn.confirm(action .. ": " .. label, "&Yes\n&Skip\n&Stop", 1)
-    if choice == 0 or choice == 3 then
-      break
-    elseif choice == 1 then
-      create_or_update_issue(item)
+    if not do_all then
+      local action = item.id and "Update" or "Create"
+      local label = item.subject .. (item.id and (" (" .. item.id .. ")") or " [new]")
+      local choice = vim.fn.confirm(action .. ": " .. label, "&Yes\n&All\n&Skip\n&Quit", 1)
+      if choice == 0 or choice == 4 then
+        break
+      elseif choice == 3 then
+        goto continue
+      elseif choice == 2 then
+        do_all = true
+      end
     end
+    create_or_update_issue(item)
     ::continue::
   end
 end
