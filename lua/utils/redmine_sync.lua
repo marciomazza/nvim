@@ -12,12 +12,14 @@ local M = {}
 ---@field version string|nil
 ---@field assigned_to string|nil
 ---@field description string|nil
+---@field priority string|nil
 
 ---@class IssueFields
 ---@field subject string
 ---@field status string|nil
 ---@field version string|nil
 ---@field description string|nil
+---@field priority string|nil
 
 ---@class TodoIssue : IssueFields
 ---@field id string|nil
@@ -147,6 +149,7 @@ function M.open_issues()
           version = issue.fixed_version and issue.fixed_version.name or nil,
           assigned_to = issue.assigned_to and issue.assigned_to.name or nil,
           description = issue.description ~= "" and issue.description or nil,
+          priority = issue.priority and issue.priority.name:lower() or nil,
         }
       end
     )
@@ -216,7 +219,11 @@ function M.open_issues_report()
       end
       local marker = status_marker[st] or "[ ]"
       for _, iss in ipairs(by_version[ver][st]) do
-        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. " @issue(#" .. iss.id .. ")"
+        local default_priority = vim.iter(env.priorities):find(function(p) return p.is_default end)
+        local priority_tag = (iss.priority and iss.priority ~= (default_priority and default_priority.name))
+          and (" @priority(" .. iss.priority .. ")")
+          or ""
+        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. " @issue(#" .. iss.id .. ")" .. priority_tag
         if iss.description then
           for _, dl in ipairs(vim.split(iss.description, "\n")) do
             lines[#lines + 1] = "  " .. dl
@@ -375,12 +382,14 @@ function M.enumerate_issues(filepath)
         if trimmed ~= "" then description = trimmed end
       end
 
+      local priority_meta = item.metadata.by_tag["priority"]
       return {
         version = version or "(no section)",
         status = status or state_to_redmine_status[item.state],
         id = issue_meta and issue_meta.value or nil,
         subject = todo_subject(item),
         description = description,
+        priority = priority_meta and priority_meta.value or nil,
         row = item.range.start.row,
         state = item.state,
       }
@@ -424,6 +433,10 @@ local function build_issue_fields(item, status_id_by_name, version_id_by_name)
   end
   if item.description then
     fields.description = item.description
+  end
+  if item.priority then
+    local p = vim.iter(env.priorities):find(function(p) return p.name == item.priority end)
+    if p then fields.priority_id = p.id end
   end
   return fields
 end
