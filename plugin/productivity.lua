@@ -80,6 +80,11 @@ vim.api.nvim_create_autocmd("FileType", {
         end
       end
     end
+    local rs = require("utils.redmine_sync")
+    vim.keymap.set("n", "<leader>tP", rs.populate_todo,            { buffer = ev.buf, desc = "Populate todo from Redmine", silent = true })
+    vim.keymap.set("n", "<leader>tU", rs.update_issue_under_cursor, { buffer = ev.buf, desc = "Update Redmine issue under cursor", silent = true })
+    vim.keymap.set("n", "<leader>tC", rs.create_or_update_all,     { buffer = ev.buf, desc = "Create/update all Redmine issues", silent = true })
+
     vim.keymap.set("n", "go", function()
       if vim.api.nvim_get_current_line():match("@issue%(%#%d+%)") then
         local _, err = require("utils.redmine_sync").open_issue_under_cursor()
