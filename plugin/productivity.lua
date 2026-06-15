@@ -19,6 +19,27 @@ require("checkmate").setup({
       order = 2,
     },
   },
+  metadata = {
+    -- Example: A @priority tag that has dynamic color based on the priority value
+    priority = {
+      style = function(context)
+        local value = context.value:lower()
+        if value == "high" then
+          return { fg = "#ff5555", bold = true }
+        elseif value == "medium" then
+          return { fg = "#ffb86c" }
+        elseif value == "low" then
+          return { fg = "#8be9fd" }
+        else -- fallback
+          return { fg = "#8be9fd" }
+        end
+      end,
+      get_value = function()
+        return "medium" -- Default priority
+      end,
+      choices = function() return { "low", "medium", "high" } end,
+    },
+  },
 })
 
 vim.api.nvim_set_hl(0, "CheckmateMeta_started", { fg = "#1565c0" })
