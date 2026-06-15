@@ -47,8 +47,16 @@ local function load_env()
     end
   end
 
-  local cmd = { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. env.token, "-H", "Accept: application/json",
-    env.base_url .. "enumerations/issue_priorities.json" }
+  local cmd = {
+    "curl",
+    "-sf",
+    "-k",
+    "-H",
+    "X-Redmine-API-Key: " .. env.token,
+    "-H",
+    "Accept: application/json",
+    env.base_url .. "enumerations/issue_priorities.json",
+  }
   local result = vim.system(cmd, { text = true }):wait()
   if result.code ~= 0 then
     error("Failed to fetch issue priorities: " .. (result.stderr or ""))
@@ -57,13 +65,51 @@ local function load_env()
   if not ok then
     error("Failed to parse issue priorities: " .. tostring(decoded))
   end
-  env.priorities = vim.iter(decoded.issue_priorities or {})
+  env.priorities = vim
+    .iter(decoded.issue_priorities or {})
     :filter(function(p) return p.name:lower() ~= "immediate" end)
     :map(function(p)
       p.name = p.name:lower()
       return p
     end)
     :totable()
+
+  local vcmd = {
+    "curl",
+    "-sf",
+    "-k",
+    "-H",
+    "X-Redmine-API-Key: " .. env.token,
+    "-H",
+    "Accept: application/json",
+    env.project_url .. "versions.json",
+  }
+  local vresult = vim.system(vcmd, { text = true }):wait()
+  if vresult.code ~= 0 then
+    error("Failed to fetch versions: " .. (vresult.stderr or ""))
+  end
+  local vok, vdecoded = pcall(vim.json.decode, vresult.stdout)
+  if not vok then
+    error("Failed to parse versions: " .. tostring(vdecoded))
+  end
+  env.versions = vim
+    .iter(vdecoded.versions or {})
+    :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
+    :totable()
+  table.sort(env.versions, function(a, b) return a.name < b.name end)
+
+  env.version_id_by_name = {}
+  for _, v in ipairs(env.versions) do
+    env.version_id_by_name[v.name] = v.id
+  end
+
+  env.status_id_by_name = {}
+  for _, s in ipairs(env.open_statuses or {}) do
+    env.status_id_by_name[s.name] = s.id
+  end
+  for _, s in ipairs(env.closed_statuses or {}) do
+    env.status_id_by_name[s.name] = s.id
+  end
 
   return env
 end
@@ -119,18 +165,6 @@ local function redmine_post(url, body)
       { "-X", "POST", "-H", "Content-Type: application/json", "-d", vim.json.encode(body) }
     )
   )
-end
-
---- Return all versions for the configured Redmine project, sorted by name.
----@return RedmineVersion[]
-function M.versions()
-  local data = redmine_get(env.project_url .. "versions.json")
-  local versions = vim
-    .iter(data.versions or {})
-    :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
-    :totable()
-  table.sort(versions, function(a, b) return a.name < b.name end)
-  return versions
 end
 
 --- Return all open issues for the configured Redmine project.
@@ -220,10 +254,19 @@ function M.open_issues_report()
       local marker = status_marker[st] or "[ ]"
       for _, iss in ipairs(by_version[ver][st]) do
         local default_priority = vim.iter(env.priorities):find(function(p) return p.is_default end)
-        local priority_tag = (iss.priority and iss.priority ~= (default_priority and default_priority.name))
-          and (" @priority(" .. iss.priority .. ")")
+        local priority_tag = (
+          iss.priority and iss.priority ~= (default_priority and default_priority.name)
+        )
+            and (" @priority(" .. iss.priority .. ")")
           or ""
-        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. priority_tag .. " @issue(#" .. iss.id .. ")"
+        lines[#lines + 1] = "- "
+          .. marker
+          .. " "
+          .. iss.subject
+          .. priority_tag
+          .. " @issue(#"
+          .. iss.id
+          .. ")"
         if iss.description then
           for _, dl in ipairs(vim.split(iss.description, "\n")) do
             lines[#lines + 1] = "  " .. dl
@@ -373,13 +416,19 @@ function M.enumerate_issues(filepath)
         for _, line in ipairs(lines) do
           if not line:match("^%s*$") then
             local indent = #(line:match("^%s*"))
-            if indent < min_indent then min_indent = indent end
+            if indent < min_indent then
+              min_indent = indent
+            end
           end
         end
-        if min_indent == math.huge then min_indent = 0 end
+        if min_indent == math.huge then
+          min_indent = 0
+        end
         local dedented = vim.iter(lines):map(function(l) return l:sub(min_indent + 1) end):totable()
         local trimmed = vim.trim(table.concat(dedented, "\n"))
-        if trimmed ~= "" then description = trimmed end
+        if trimmed ~= "" then
+          description = trimmed
+        end
       end
 
       local priority_meta = item.metadata.by_tag["priority"]
@@ -400,43 +449,23 @@ function M.enumerate_issues(filepath)
   return results
 end
 
---- Load env, build status_id and version_id lookup tables.
----@return table status_id_by_name, table version_id_by_name
-local function prepare_issue_context()
-  local status_id_by_name = {}
-  for _, s in ipairs(env.open_statuses or {}) do
-    status_id_by_name[s.name] = s.id
-  end
-  for _, s in ipairs(env.closed_statuses or {}) do
-    status_id_by_name[s.name] = s.id
-  end
-
-  local versions = M.versions()
-  local version_id_by_name = {}
-  for _, v in ipairs(versions) do
-    version_id_by_name[v.name] = v.id
-  end
-
-  return status_id_by_name, version_id_by_name
-end
-
 --- Build common issue payload fields (subject, status_id, fixed_version_id).
 ---@param item IssueFields
----@param status_id_by_name table
----@param version_id_by_name table
 ---@return table
-local function build_issue_fields(item, status_id_by_name, version_id_by_name)
+local function build_issue_fields(item)
   local fields = { subject = item.subject }
-  fields.status_id = status_id_by_name[item.status]
+  fields.status_id = env.status_id_by_name[item.status]
   if item.version ~= "Archive" then
-    fields.fixed_version_id = version_id_by_name[item.version]
+    fields.fixed_version_id = env.version_id_by_name[item.version]
   end
   if item.description then
     fields.description = item.description
   end
   if item.priority then
     local p = vim.iter(env.priorities):find(function(p) return p.name == item.priority end)
-    if p then fields.priority_id = p.id end
+    if p then
+      fields.priority_id = p.id
+    end
   end
   return fields
 end
@@ -449,10 +478,10 @@ function M.update_issue(item)
   if not issue_id then
     error("missing issue id")
   end
-
-  local status_id_by_name, version_id_by_name = prepare_issue_context()
-  local payload = { issue = build_issue_fields(item, status_id_by_name, version_id_by_name) }
-  redmine_put(env.base_url .. "issues/" .. issue_id .. ".json", payload)
+  redmine_put(
+    env.base_url .. "issues/" .. issue_id .. ".json",
+    { issue = build_issue_fields(item) }
+  )
 end
 
 --- Create a new Redmine issue from a todo item that has no @issue tag yet.
@@ -463,18 +492,13 @@ function M.create_issue(item)
   if item.id ~= nil then
     error("item already has an issue id: " .. tostring(item.id))
   end
-
-  local status_id_by_name, version_id_by_name = prepare_issue_context()
-
-  if not version_id_by_name[item.version] then
+  if not env.version_id_by_name[item.version] then
     error("unknown version: " .. tostring(item.version))
   end
-
-  local fields = build_issue_fields(item, status_id_by_name, version_id_by_name)
+  local fields = build_issue_fields(item)
   fields.assigned_to_id = "me"
   fields.tracker = { id = 2, name = "Tarefa" }
   fields.custom_fields = { { id = 31, name = "Tipo de manutenção", value = "Projeto" } }
-
   return redmine_post(env.project_url .. "issues.json", { issue = fields })
 end
 
@@ -493,28 +517,64 @@ local function create_or_update_issue(item)
   end
 end
 
+local function issues_differ(item, remote)
+  if remote.subject ~= item.subject then
+    return true
+  end
+  if remote.status ~= item.status then
+    return true
+  end
+  if item.version ~= "Archive" then
+    local local_ver = env.version_id_by_name[item.version] and item.version or nil
+    if local_ver ~= remote.version then
+      return true
+    end
+  end
+  if (item.priority or nil) ~= (remote.priority or nil) then
+    return true
+  end
+  if (item.description or nil) ~= (remote.description or nil) then
+    return true
+  end
+  return false
+end
+
 function M.create_or_update_all()
   local start_row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
+
+  local redmine_by_id = {}
+  for _, iss in ipairs(M.open_issues()) do
+    redmine_by_id[tostring(iss.id)] = iss
+  end
+
   local do_all = false
-  local counts = { updated = 0, created = 0, errors = 0 }
+  local counts = { updated = 0, created = 0, skipped = 0, errors = 0 }
   for _, item in ipairs(items) do
-    if item.row < start_row then
+    if item.row < start_row then -- skip the rows before the current one (todo: perhaps remove)
       goto continue
     end
     if vim.trim(item.subject) == "" then
       goto continue
     end
+    if item.id ~= nil then
+      local remote = redmine_by_id[item.id:match("%d+") or ""]
+      if remote and not issues_differ(item, remote) then
+        counts.skipped = counts.skipped + 1
+        goto continue
+      end
+    end
     vim.api.nvim_win_set_cursor(0, { item.row + 1, 0 })
+    -- ask for confirmation
     if not do_all then
       local action = item.id and "Update" or "Create"
       local label = item.subject .. (item.id and (" (" .. item.id .. ")") or " [new]")
       local choice = vim.fn.confirm(action .. ": " .. label, "&Yes\n&All\n&Skip\n&Quit", 1)
-      if choice == 0 or choice == 4 then
+      if choice == 0 or choice == 4 then -- ESC or Q -> quit
         break
-      elseif choice == 3 then
+      elseif choice == 3 then -- S -> Skip
         goto continue
-      elseif choice == 2 then
+      elseif choice == 2 then -- A -> switch to All
         do_all = true
       end
     end
@@ -531,9 +591,11 @@ function M.create_or_update_all()
     ::continue::
   end
   local parts = {}
-  if counts.updated > 0 then parts[#parts + 1] = counts.updated .. " updated" end
-  if counts.created > 0 then parts[#parts + 1] = counts.created .. " created" end
-  if counts.errors > 0 then parts[#parts + 1] = counts.errors .. " errors" end
+  for _, key in ipairs({ "updated", "created", "skipped", "errors" }) do
+    if counts[key] > 0 then
+      parts[#parts + 1] = counts[key] .. " " .. key
+    end
+  end
   if #parts > 0 then
     vim.notify("Done: " .. table.concat(parts, ", "), vim.log.levels.INFO)
   end

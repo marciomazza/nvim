@@ -62,6 +62,9 @@ vim.api.nvim_set_hl(0, "CheckmateInProgressMainContent", { fg = color_progress }
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function(ev)
+    if not require("checkmate.buffer").is_active(ev.buf) then
+      return
+    end
     local leader = vim.api.nvim_replace_termcodes("<leader>", true, false, true)
     local prefix = leader .. "T"
     for _, mode in ipairs({ "n", "v" }) do
@@ -81,10 +84,24 @@ vim.api.nvim_create_autocmd("FileType", {
       end
     end
     local rs = require("utils.redmine_sync")
-    vim.keymap.set("n", "<leader>tP", rs.populate_todo,            { buffer = ev.buf, desc = "Populate todo from Redmine", silent = true })
-    vim.keymap.set("n", "<leader>tU", rs.update_issue_under_cursor, { buffer = ev.buf, desc = "Update Redmine issue under cursor", silent = true })
-    vim.keymap.set("n", "<leader>tC", rs.create_or_update_all,     { buffer = ev.buf, desc = "Create/update all Redmine issues", silent = true })
-
+    vim.keymap.set(
+      "n",
+      "<leader>tP",
+      rs.populate_todo,
+      { buffer = ev.buf, desc = "Populate all todo's from Redmine", silent = true }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>tU",
+      rs.update_issue_under_cursor,
+      { buffer = ev.buf, desc = "Update Redmine issue under cursor", silent = true }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>tC",
+      rs.create_or_update_all,
+      { buffer = ev.buf, desc = "Create/update all Redmine issues", silent = true }
+    )
     vim.keymap.set("n", "go", function()
       if vim.api.nvim_get_current_line():match("@issue%(%#%d+%)") then
         local _, err = require("utils.redmine_sync").open_issue_under_cursor()
@@ -94,6 +111,6 @@ vim.api.nvim_create_autocmd("FileType", {
       else
         require("utils").open_url()
       end
-    end, { buffer = ev.buf, desc = "Open Redmine issue or URL under cursor", silent = true })
+    end, { buffer = ev.buf, desc = "Open Redmine issue or URL under cursor" })
   end,
 })
