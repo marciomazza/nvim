@@ -24,20 +24,22 @@ require("checkmate").setup({
     priority = {
       style = function(context)
         local value = context.value:lower()
-        if value == "high" then
-          return { fg = "#ff5555", bold = true }
-        elseif value == "medium" then
-          return { fg = "#ffb86c" }
+        if value == "urgent" then
+          return { fg = "#c62828", bold = true }
+        elseif value == "high" then
+          return { fg = "#e65100", bold = true }
+        elseif value == "normal" then
+          return { fg = "#2e7d32" }
         elseif value == "low" then
-          return { fg = "#8be9fd" }
+          return { fg = "#1565c0" }
         else -- fallback
-          return { fg = "#8be9fd" }
+          return { fg = "#1565c0" }
         end
       end,
       get_value = function()
-        return "medium" -- Default priority
+        return "high" -- Default priority
       end,
-      choices = function() return { "low", "medium", "high" } end,
+      choices = function() return { "low", "normal", "high", "urgent" } end,
     },
   },
 })

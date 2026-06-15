@@ -45,6 +45,18 @@ local function load_env()
     end
   end
 
+  local cmd = { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. env.token, "-H", "Accept: application/json",
+    env.base_url .. "enumerations/issue_priorities.json" }
+  local result = vim.system(cmd, { text = true }):wait()
+  if result.code ~= 0 then
+    error("Failed to fetch issue priorities: " .. (result.stderr or ""))
+  end
+  local ok, decoded = pcall(vim.json.decode, result.stdout)
+  if not ok then
+    error("Failed to parse issue priorities: " .. tostring(decoded))
+  end
+  env.priorities = decoded.issue_priorities or {}
+
   return env
 end
 
