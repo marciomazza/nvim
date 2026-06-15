@@ -431,8 +431,12 @@ local function create_or_update_issue(item)
 end
 
 function M.create_or_update_all()
+  local start_row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
   for _, item in ipairs(items) do
+    if item.row < start_row then
+      goto continue
+    end
     if vim.trim(item.subject) == "" then
       goto continue
     end
