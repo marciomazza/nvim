@@ -497,6 +497,7 @@ function M.create_or_update_all()
   local start_row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
   local do_all = false
+  local counts = { updated = 0, created = 0, errors = 0 }
   for _, item in ipairs(items) do
     if item.row < start_row then
       goto continue
@@ -517,14 +518,24 @@ function M.create_or_update_all()
         do_all = true
       end
     end
+    local action = item.id and "Updating" or "Creating"
+    vim.api.nvim_echo({ { action .. ": " .. item.subject } }, false, {})
+    vim.cmd("redraw")
     local ok, err = pcall(create_or_update_issue, item)
     if ok then
-      local action = item.id and "Updated" or "Created"
-      vim.notify(action .. ": " .. item.subject, vim.log.levels.INFO)
+      counts[item.id and "updated" or "created"] = counts[item.id and "updated" or "created"] + 1
     else
+      counts.errors = counts.errors + 1
       vim.notify("Error on: " .. item.subject .. "\n" .. tostring(err), vim.log.levels.ERROR)
     end
     ::continue::
+  end
+  local parts = {}
+  if counts.updated > 0 then parts[#parts + 1] = counts.updated .. " updated" end
+  if counts.created > 0 then parts[#parts + 1] = counts.created .. " created" end
+  if counts.errors > 0 then parts[#parts + 1] = counts.errors .. " errors" end
+  if #parts > 0 then
+    vim.notify("Done: " .. table.concat(parts, ", "), vim.log.levels.INFO)
   end
 end
 
