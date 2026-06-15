@@ -55,10 +55,13 @@ local function load_env()
   if not ok then
     error("Failed to parse issue priorities: " .. tostring(decoded))
   end
-  env.priorities = vim.iter(decoded.issue_priorities or {}):map(function(p)
-    p.name = p.name:lower()
-    return p
-  end):totable()
+  env.priorities = vim.iter(decoded.issue_priorities or {})
+    :filter(function(p) return p.name:lower() ~= "immediate" end)
+    :map(function(p)
+      p.name = p.name:lower()
+      return p
+    end)
+    :totable()
 
   return env
 end
