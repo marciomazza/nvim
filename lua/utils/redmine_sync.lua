@@ -517,7 +517,13 @@ function M.create_or_update_all()
         do_all = true
       end
     end
-    create_or_update_issue(item)
+    local ok, err = pcall(create_or_update_issue, item)
+    if ok then
+      local action = item.id and "Updated" or "Created"
+      vim.notify(action .. ": " .. item.subject, vim.log.levels.INFO)
+    else
+      vim.notify("Error on: " .. item.subject .. "\n" .. tostring(err), vim.log.levels.ERROR)
+    end
     ::continue::
   end
 end
