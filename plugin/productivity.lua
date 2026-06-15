@@ -37,7 +37,7 @@ require("checkmate").setup({
         end
       end,
       get_value = function()
-        return "high" -- Default priority
+        return "high" -- Default priority when set (actual default is normal)
       end,
       choices = function() return { "low", "normal", "high", "urgent" } end,
     },
