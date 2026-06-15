@@ -433,6 +433,7 @@ end
 function M.create_or_update_all()
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
   for _, item in ipairs(items) do
+    vim.api.nvim_win_set_cursor(0, { item.row + 1, 0 })
     create_or_update_issue(item)
   end
 end
