@@ -11,6 +11,7 @@ local M = {}
 ---@field status string|nil
 ---@field version string|nil
 ---@field assigned_to string|nil
+---@field description string|nil
 
 ---@class IssueFields
 ---@field subject string
@@ -127,6 +128,7 @@ function M.open_issues()
           status = issue.status and issue.status.name or nil,
           version = issue.fixed_version and issue.fixed_version.name or nil,
           assigned_to = issue.assigned_to and issue.assigned_to.name or nil,
+          description = issue.description ~= "" and issue.description or nil,
         }
       end
     )
@@ -197,6 +199,11 @@ function M.open_issues_report()
       local marker = status_marker[st] or "[ ]"
       for _, iss in ipairs(by_version[ver][st]) do
         lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. " @issue(#" .. iss.id .. ")"
+        if iss.description then
+          for _, dl in ipairs(vim.split(iss.description, "\n")) do
+            lines[#lines + 1] = "  " .. dl
+          end
+        end
       end
     end
   end
