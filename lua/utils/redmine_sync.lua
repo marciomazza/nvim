@@ -16,6 +16,7 @@ local M = {}
 ---@field subject string
 ---@field status string|nil
 ---@field version string|nil
+---@field description string|nil
 
 ---@class TodoIssue : IssueFields
 ---@field id string|nil
@@ -330,11 +331,31 @@ function M.enumerate_issues(filepath)
     :map(function(item)
       local version, status = context_for_row(headings, item.range.start.row)
       local issue_meta = item.metadata.by_tag["issue"]
+
+      local description = nil
+      local desc_start = item.range.start.row + 1
+      local desc_end = item.range["end"].row
+      if desc_end >= desc_start then
+        local lines = vim.api.nvim_buf_get_lines(bufnr, desc_start, desc_end + 1, false)
+        local min_indent = math.huge
+        for _, line in ipairs(lines) do
+          if not line:match("^%s*$") then
+            local indent = #(line:match("^%s*"))
+            if indent < min_indent then min_indent = indent end
+          end
+        end
+        if min_indent == math.huge then min_indent = 0 end
+        local dedented = vim.iter(lines):map(function(l) return l:sub(min_indent + 1) end):totable()
+        local trimmed = vim.trim(table.concat(dedented, "\n"))
+        if trimmed ~= "" then description = trimmed end
+      end
+
       return {
         version = version or "(no section)",
         status = status or state_to_redmine_status[item.state],
         id = issue_meta and issue_meta.value or nil,
         subject = todo_subject(item),
+        description = description,
         row = item.range.start.row,
         state = item.state,
       }
@@ -375,6 +396,9 @@ local function build_issue_fields(item, status_id_by_name, version_id_by_name)
   fields.status_id = status_id_by_name[item.status]
   if item.version ~= "Archive" then
     fields.fixed_version_id = version_id_by_name[item.version]
+  end
+  if item.description then
+    fields.description = item.description
   end
   return fields
 end
