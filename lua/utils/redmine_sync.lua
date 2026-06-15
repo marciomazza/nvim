@@ -36,7 +36,8 @@ local function load_env()
   f:close()
   local env = vim.json.decode(raw)
 
-  for _, field in ipairs({ "project_url", "base_url", "token" }) do
+  local keys = { "project_url", "base_url", "token", "open_statuses", "closed_statuses" }
+  for _, field in ipairs(keys) do
     if not env[field] or env[field] == "" then
       error(field .. " not found or empty in .redmine.env.json")
     end
@@ -102,7 +103,8 @@ end
 ---@return RedmineVersion[]
 function M.versions()
   local data = redmine_get(env.project_url .. "versions.json")
-  local versions = vim.iter(data.versions or {})
+  local versions = vim
+    .iter(data.versions or {})
     :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
     :totable()
   table.sort(versions, function(a, b) return a.name < b.name end)
@@ -322,7 +324,8 @@ function M.enumerate_issues(filepath)
   local todo_map = parser.discover_todos(bufnr)
   local headings = get_headings(bufnr)
 
-  local results = vim.iter(todo_map)
+  local results = vim
+    .iter(todo_map)
     :map(function(item)
       local version, status = context_for_row(headings, item.range.start.row)
       local issue_meta = item.metadata.by_tag["issue"]
@@ -412,14 +415,9 @@ function M.create_issue(item)
   return redmine_post(env.project_url .. "issues.json", { issue = fields })
 end
 
---- Update or create the Redmine issue for the todo item on the current cursor line.
---- Creates a new issue when the item has no @issue tag and adds @issue(#id) to the buffer.
-function M.update_issue_under_cursor()
-  local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-  local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
-  local item = vim.iter(items):find(function(i) return i.row == row end)
-  if not item then
-    error("no issue found on current line")
+local function create_or_update_issue(item)
+  if vim.trim(item.subject) == "" then
+    return
   end
   if item.id == nil then
     local response = M.create_issue(item)
@@ -430,6 +428,25 @@ function M.update_issue_under_cursor()
   else
     M.update_issue(item)
   end
+end
+
+function M.create_or_update_all()
+  local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
+  for _, item in ipairs(items) do
+    create_or_update_issue(item)
+  end
+end
+
+--- Update or create the Redmine issue for the todo item on the current cursor line.
+--- Creates a new issue when the item has no @issue tag and adds @issue(#id) to the buffer.
+function M.update_issue_under_cursor()
+  local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
+  local item = vim.iter(items):find(function(i) return i.row == row end)
+  if not item then
+    error("no issue found on current line")
+  end
+  create_or_update_issue(item)
 end
 
 --- Open the Redmine issue URL for the todo item on the current cursor line.
