@@ -114,7 +114,8 @@ end
 --- Return all open issues for the configured Redmine project.
 ---@return RedmineIssue[]
 function M.open_issues()
-  local data = redmine_get(env.project_url .. "issues.json?status_id=open&assigned_to_id=me")
+  local data =
+    redmine_get(env.project_url .. "issues.json?status_id=open&assigned_to_id=me&limit=100")
   return vim
     .iter(data.issues or {})
     :map(
