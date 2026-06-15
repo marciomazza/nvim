@@ -223,7 +223,7 @@ function M.open_issues_report()
         local priority_tag = (iss.priority and iss.priority ~= (default_priority and default_priority.name))
           and (" @priority(" .. iss.priority .. ")")
           or ""
-        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. " @issue(#" .. iss.id .. ")" .. priority_tag
+        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. priority_tag .. " @issue(#" .. iss.id .. ")"
         if iss.description then
           for _, dl in ipairs(vim.split(iss.description, "\n")) do
             lines[#lines + 1] = "  " .. dl

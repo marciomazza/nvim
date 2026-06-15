@@ -40,6 +40,10 @@ require("checkmate").setup({
         return "high" -- Default priority when set (actual default is normal)
       end,
       choices = function() return { "low", "normal", "high", "urgent" } end,
+      key = "<leader>Tp",
+      sort_order = 10,
+      jump_to_on_insert = "value",
+      select_on_insert = true,
     },
   },
 })
