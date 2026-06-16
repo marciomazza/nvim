@@ -229,6 +229,11 @@ function M.open_issues_report()
 
   table.sort(version_list)
 
+  local priority_rank = {}
+  for i, p in ipairs(env.priorities) do
+    priority_rank[p.name] = i
+  end
+
   local lines = { "# Tarefas" }
   for _, ver in ipairs(version_list) do
     lines[#lines + 1] = ""
@@ -245,6 +250,12 @@ function M.open_issues_report()
         lines[#lines + 1] = ""
       end
       local marker = status_marker[st] or "[ ]"
+      table.sort(by_version[ver][st], function(a, b)
+        local pa = priority_rank[a.priority] or 999
+        local pb = priority_rank[b.priority] or 999
+        if pa ~= pb then return pa > pb end
+        return a.id > b.id
+      end)
       for _, iss in ipairs(by_version[ver][st]) do
         local priority_tag = (iss.priority and iss.priority ~= env.default_priority)
             and (" @priority(" .. iss.priority .. ")")
