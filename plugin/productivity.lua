@@ -89,9 +89,6 @@ local function todo_foldexpr(lnum)
 end
 _G._todo_foldexpr = todo_foldexpr
 
-local function todo_foldtext() return vim.fn.getline(vim.v.foldstart) end
-_G._todo_foldtext = todo_foldtext
-
 -----------------------------------------------------------------------------------
 --- special setup for the file type
 -----------------------------------------------------------------------------------
@@ -106,7 +103,7 @@ vim.api.nvim_create_autocmd("FileType", {
     if not require("checkmate.buffer").is_active(ev.buf) then return end
     vim.opt_local.foldmethod = "expr"
     vim.opt_local.foldexpr = "v:lua._todo_foldexpr(v:lnum)"
-    vim.opt_local.foldtext = "v:lua._todo_foldtext()"
+    vim.opt_local.foldtext = ""
     vim.opt_local.foldlevel = 99
     local leader = vim.api.nvim_replace_termcodes("<leader>", true, false, true)
     local prefix = leader .. "T"
