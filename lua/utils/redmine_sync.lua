@@ -58,13 +58,9 @@ local function load_env()
     env.base_url .. "enumerations/issue_priorities.json",
   }
   local result = vim.system(cmd, { text = true }):wait()
-  if result.code ~= 0 then
-    error("Failed to fetch issue priorities: " .. (result.stderr or ""))
-  end
+  if result.code ~= 0 then error("Failed to fetch issue priorities: " .. (result.stderr or "")) end
   local ok, decoded = pcall(vim.json.decode, result.stdout)
-  if not ok then
-    error("Failed to parse issue priorities: " .. tostring(decoded))
-  end
+  if not ok then error("Failed to parse issue priorities: " .. tostring(decoded)) end
   env.priorities = vim
     .iter(decoded.issue_priorities or {})
     :filter(function(p) return p.name:lower() ~= "immediate" end)
@@ -87,13 +83,9 @@ local function load_env()
     env.project_url .. "versions.json",
   }
   local vresult = vim.system(vcmd, { text = true }):wait()
-  if vresult.code ~= 0 then
-    error("Failed to fetch versions: " .. (vresult.stderr or ""))
-  end
+  if vresult.code ~= 0 then error("Failed to fetch versions: " .. (vresult.stderr or "")) end
   local vok, vdecoded = pcall(vim.json.decode, vresult.stdout)
-  if not vok then
-    error("Failed to parse versions: " .. tostring(vdecoded))
-  end
+  if not vok then error("Failed to parse versions: " .. tostring(vdecoded)) end
   env.versions = vim
     .iter(vdecoded.versions or {})
     :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
@@ -136,9 +128,7 @@ end
 ---@return table
 local function json_decode(stdout)
   local ok, decoded = pcall(vim.json.decode, stdout)
-  if not ok then
-    error("JSON decode error: " .. tostring(decoded))
-  end
+  if not ok then error("JSON decode error: " .. tostring(decoded)) end
   return decoded
 end
 
@@ -230,9 +220,7 @@ function M.open_issues_report()
       by_version[ver] = {}
       version_list[#version_list + 1] = ver
     end
-    if not by_version[ver][st] then
-      by_version[ver][st] = {}
-    end
+    if not by_version[ver][st] then by_version[ver][st] = {} end
     table.insert(by_version[ver][st], iss)
   end
 
@@ -280,9 +268,7 @@ function M.populate_todo()
 
   local root = vim.fn.getcwd()
   local jj = vim.system({ "jj", "new" }, { text = true, cwd = root }):wait()
-  if jj.code ~= 0 then
-    error("jj new failed: " .. (jj.stderr or ""))
-  end
+  if jj.code ~= 0 then error("jj new failed: " .. (jj.stderr or "")) end
 
   local path = root .. "/todo.md"
   local f = assert(io.open(path, "w"), "Could not write " .. path)
@@ -290,9 +276,7 @@ function M.populate_todo()
   f:close()
 
   local bufnr = vim.fn.bufnr(path)
-  if bufnr ~= -1 then
-    vim.api.nvim_buf_call(bufnr, function() vim.cmd("edit") end)
-  end
+  if bufnr ~= -1 then vim.api.nvim_buf_call(bufnr, function() vim.cmd("edit") end) end
 end
 
 ---------------------------------------------------------------------------------
@@ -304,13 +288,9 @@ end
 ---@return {row: integer, level: integer, text: string}[]
 local function get_headings(bufnr)
   local ts_parser = vim.treesitter.get_parser(bufnr, "markdown")
-  if not ts_parser then
-    return {}
-  end
+  if not ts_parser then return {} end
   local tree = ts_parser:parse()[1]
-  if not tree then
-    return {}
-  end
+  if not tree then return {} end
 
   local query = vim.treesitter.query.parse("markdown", "(atx_heading) @h")
   local headings = {}
@@ -326,9 +306,7 @@ local function get_headings(bufnr)
         text = vim.trim(vim.treesitter.get_node_text(child, bufnr))
       end
     end
-    if text ~= "" then
-      headings[#headings + 1] = { row = row, level = level, text = text }
-    end
+    if text ~= "" then headings[#headings + 1] = { row = row, level = level, text = text } end
   end
 
   table.sort(headings, function(a, b) return a.row < b.row end)
@@ -377,9 +355,7 @@ end
 function M.enumerate_issues(filepath)
   -- Initialize checkmate config with defaults if not already done
   local cfg = require("checkmate.config")
-  if vim.tbl_isempty(cfg.options) then
-    cfg.setup({})
-  end
+  if vim.tbl_isempty(cfg.options) then cfg.setup({}) end
 
   local bufnr = vim.fn.bufadd(vim.fn.fnamemodify(filepath, ":p"))
   vim.fn.bufload(bufnr)
@@ -410,19 +386,13 @@ function M.enumerate_issues(filepath)
         for _, line in ipairs(lines) do
           if not line:match("^%s*$") then
             local indent = #(line:match("^%s*"))
-            if indent < min_indent then
-              min_indent = indent
-            end
+            if indent < min_indent then min_indent = indent end
           end
         end
-        if min_indent == math.huge then
-          min_indent = 0
-        end
+        if min_indent == math.huge then min_indent = 0 end
         local dedented = vim.iter(lines):map(function(l) return l:sub(min_indent + 1) end):totable()
         local trimmed = vim.trim(table.concat(dedented, "\n"))
-        if trimmed ~= "" then
-          description = trimmed
-        end
+        if trimmed ~= "" then description = trimmed end
       end
 
       local priority_meta = item.metadata.by_tag["priority"]
@@ -447,19 +417,15 @@ end
 ---@param item IssueFields
 ---@return table
 local function build_issue_fields(item)
-  local fields = { subject = item.subject }
+  local fields = { subject = item.subject, assigned_to_id = "me" }
   fields.status_id = env.status_id_by_name[item.status]
   if item.version ~= "Archive" then
     fields.fixed_version_id = env.version_id_by_name[item.version]
   end
-  if item.description then
-    fields.description = item.description
-  end
+  if item.description then fields.description = item.description end
   if item.priority then
     local p = vim.iter(env.priorities):find(function(p) return p.name == item.priority end)
-    if p then
-      fields.priority_id = p.id
-    end
+    if p then fields.priority_id = p.id end
   end
   return fields
 end
@@ -469,9 +435,7 @@ end
 ---@param item TodoIssue
 function M.update_issue(item)
   local issue_id = item.id and item.id:match("%d+")
-  if not issue_id then
-    error("missing issue id")
-  end
+  if not issue_id then error("missing issue id") end
   redmine_put(
     env.base_url .. "issues/" .. issue_id .. ".json",
     { issue = build_issue_fields(item) }
@@ -483,53 +447,39 @@ end
 ---@param item TodoIssue
 ---@return table decoded response
 function M.create_issue(item)
-  if item.id ~= nil then
-    error("item already has an issue id: " .. tostring(item.id))
-  end
+  if item.id ~= nil then error("item already has an issue id: " .. tostring(item.id)) end
   if not env.version_id_by_name[item.version] then
     error("unknown version: " .. tostring(item.version))
   end
   local fields = build_issue_fields(item)
-  fields.assigned_to_id = "me"
   fields.tracker = { id = 2, name = "Tarefa" }
   fields.custom_fields = { { id = 31, name = "Tipo de manutenção", value = "Projeto" } }
   return redmine_post(env.project_url .. "issues.json", { issue = fields })
 end
 
 local function create_or_update_issue(item)
-  if vim.trim(item.subject) == "" then
-    return
-  end
+  if vim.trim(item.subject) == "" then return end
   if item.id == nil then
     local response = M.create_issue(item)
     local new_id = response.issue and response.issue.id
-    if new_id then
-      require("checkmate").add_metadata("issue", "#" .. new_id)
-    end
+    if new_id then require("checkmate").add_metadata("issue", "#" .. new_id) end
   else
     M.update_issue(item)
   end
 end
 
 local function issues_differ(item, remote)
-  if remote.subject ~= item.subject then
-    return true
-  end
-  if env.status_id_by_name[item.status] and remote.status ~= item.status then
-    return true
-  end
+  if remote.subject ~= item.subject then return true end
+  if env.status_id_by_name[item.status] and remote.status ~= item.status then return true end
   if item.version ~= "Archive" then
     local local_vid = env.version_id_by_name[item.version]
     local remote_vid = remote.version and env.version_id_by_name[remote.version]
-    if local_vid ~= remote_vid then
-      return true
-    end
+    if local_vid ~= remote_vid then return true end
   end
-  if item.priority and item.priority ~= remote.priority then
-    return true
-  end
+  if item.priority and item.priority ~= remote.priority then return true end
   if item.description then
-    local remote_desc = remote.description and vim.trim(remote.description):gsub("\r\n", "\n") or nil
+    local remote_desc = remote.description and vim.trim(remote.description):gsub("\r\n", "\n")
+      or nil
     if item.description ~= remote_desc then return true end
   end
   return false
@@ -550,9 +500,7 @@ function M.create_or_update_all()
     if item.row < start_row then -- skip the rows before the current one (todo: perhaps remove)
       goto continue
     end
-    if vim.trim(item.subject) == "" then
-      goto continue
-    end
+    if vim.trim(item.subject) == "" then goto continue end
     if item.id ~= nil then
       local remote = redmine_by_id[item.id:match("%d+") or ""]
       if remote and not issues_differ(item, remote) then
@@ -588,13 +536,9 @@ function M.create_or_update_all()
   end
   local parts = {}
   for _, key in ipairs({ "updated", "created", "skipped", "errors" }) do
-    if counts[key] > 0 then
-      parts[#parts + 1] = counts[key] .. " " .. key
-    end
+    if counts[key] > 0 then parts[#parts + 1] = counts[key] .. " " .. key end
   end
-  if #parts > 0 then
-    vim.notify("Done: " .. table.concat(parts, ", "), vim.log.levels.INFO)
-  end
+  if #parts > 0 then vim.notify("Done: " .. table.concat(parts, ", "), vim.log.levels.INFO) end
 end
 
 --- Update or create the Redmine issue for the todo item on the current cursor line.
@@ -603,9 +547,7 @@ function M.update_issue_under_cursor()
   local row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
   local item = vim.iter(items):find(function(i) return i.row == row end)
-  if not item then
-    error("no issue found on current line")
-  end
+  if not item then error("no issue found on current line") end
   create_or_update_issue(item)
 end
 
@@ -615,13 +557,9 @@ function M.open_issue_under_cursor()
   local cursor = vim.api.nvim_win_get_cursor(0)
   local item =
     require("checkmate.parser").get_todo_item_at_position(bufnr, cursor[1] - 1, cursor[2])
-  if not item then
-    error("no todo item on current line")
-  end
+  if not item then error("no todo item on current line") end
   local issue_meta = item.metadata.by_tag["issue"]
-  if not issue_meta then
-    error("no @issue tag on current line")
-  end
+  if not issue_meta then error("no @issue tag on current line") end
   vim.ui.open(env.base_url .. "issues/" .. issue_meta.value:gsub("^#", ""))
 end
 
