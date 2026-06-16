@@ -528,8 +528,9 @@ local function issues_differ(item, remote)
   if item.priority and item.priority ~= remote.priority then
     return true
   end
-  if item.description and item.description ~= remote.description then
-    return true
+  if item.description then
+    local remote_desc = remote.description and vim.trim(remote.description):gsub("\r\n", "\n") or nil
+    if item.description ~= remote_desc then return true end
   end
   return false
 end
