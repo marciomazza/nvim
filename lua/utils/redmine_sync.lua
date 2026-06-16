@@ -73,6 +73,8 @@ local function load_env()
       return p
     end)
     :totable()
+  local default_p = vim.iter(env.priorities):find(function(p) return p.is_default end)
+  env.default_priority = default_p and default_p.name or nil
 
   local vcmd = {
     "curl",
@@ -253,24 +255,16 @@ function M.open_issues_report()
       end
       local marker = status_marker[st] or "[ ]"
       for _, iss in ipairs(by_version[ver][st]) do
-        local default_priority = vim.iter(env.priorities):find(function(p) return p.is_default end)
-        local priority_tag = (
-          iss.priority and iss.priority ~= (default_priority and default_priority.name)
-        )
+        local priority_tag = (iss.priority and iss.priority ~= env.default_priority.name)
             and (" @priority(" .. iss.priority .. ")")
           or ""
-        lines[#lines + 1] = "- "
-          .. marker
-          .. " "
-          .. iss.subject
-          .. priority_tag
-          .. " @issue(#"
-          .. iss.id
-          .. ")"
+        local issue_tag = " @issue(#" .. iss.id .. ")"
+        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. priority_tag .. issue_tag
         if iss.description then
           for _, dl in ipairs(vim.split(iss.description, "\n")) do
             lines[#lines + 1] = "  " .. dl
           end
+          lines[#lines + 1] = ""
         end
       end
     end
@@ -438,7 +432,7 @@ function M.enumerate_issues(filepath)
         id = issue_meta and issue_meta.value or nil,
         subject = todo_subject(item),
         description = description,
-        priority = priority_meta and priority_meta.value or nil,
+        priority = priority_meta and priority_meta.value or env.default_priority,
         row = item.range.start.row,
         state = item.state,
       }
@@ -521,19 +515,20 @@ local function issues_differ(item, remote)
   if remote.subject ~= item.subject then
     return true
   end
-  if remote.status ~= item.status then
+  if env.status_id_by_name[item.status] and remote.status ~= item.status then
     return true
   end
   if item.version ~= "Archive" then
-    local local_ver = env.version_id_by_name[item.version] and item.version or nil
-    if local_ver ~= remote.version then
+    local local_vid = env.version_id_by_name[item.version]
+    local remote_vid = remote.version and env.version_id_by_name[remote.version]
+    if local_vid ~= remote_vid then
       return true
     end
   end
-  if (item.priority or nil) ~= (remote.priority or nil) then
+  if item.priority and item.priority ~= remote.priority then
     return true
   end
-  if (item.description or nil) ~= (remote.description or nil) then
+  if item.description and item.description ~= remote.description then
     return true
   end
   return false
