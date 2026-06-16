@@ -46,14 +46,55 @@ require("checkmate").setup({
       select_on_insert = true,
     },
   },
+  style = {
+    CheckmateUncheckedAdditionalContent = { bg = "#ebebeb" },
+  },
 })
 
+vim.api.nvim_set_hl(0, "Folded", { link = "Normal" })
 vim.api.nvim_set_hl(0, "CheckmateMeta_started", { fg = "#1565c0" })
 vim.api.nvim_set_hl(0, "CheckmateMeta_done", { fg = "#1b7a1b" })
 vim.api.nvim_set_hl(0, "CheckmateCheckedMarker", { bold = true })
 local color_progress = "#cc7a00"
 vim.api.nvim_set_hl(0, "CheckmateInProgressMarker", { fg = color_progress })
 vim.api.nvim_set_hl(0, "CheckmateInProgressMainContent", { fg = color_progress })
+
+-----------------------------------------------------------------------------------
+--- FOLD
+-----------------------------------------------------------------------------------
+local todo_marker = "^%- [%[□✓▶✗]"
+local indented = "^  "
+
+local function next_nonempty_line(lnum)
+  local last = vim.fn.line("$")
+  local n = lnum + 1
+  while n <= last and vim.fn.getline(n) == "" do
+    n = n + 1
+  end
+  return vim.fn.getline(n)
+end
+
+local function todo_foldexpr(lnum)
+  local line = vim.fn.getline(lnum)
+  if line:match(todo_marker) then
+    return next_nonempty_line(lnum):match(indented) and ">1" or "0"
+  end
+  if line:match(indented) then return "1" end
+  if line == "" then
+    local prev = vim.fn.getline(lnum - 1)
+    if prev:match(indented) then return "1" end
+    if prev:match(todo_marker) and next_nonempty_line(lnum):match(indented) then return "1" end
+  end
+  return "0"
+end
+_G._todo_foldexpr = todo_foldexpr
+
+local function todo_foldtext() return vim.fn.getline(vim.v.foldstart) end
+_G._todo_foldtext = todo_foldtext
+
+-----------------------------------------------------------------------------------
+--- special setup for the file type
+-----------------------------------------------------------------------------------
 
 -- Remap all default <leader>T... keymaps to <leader>t... .
 -- checkmate registers its FileType autocmd inside setup(); registering ours
@@ -62,9 +103,11 @@ vim.api.nvim_set_hl(0, "CheckmateInProgressMainContent", { fg = color_progress }
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "markdown",
   callback = function(ev)
-    if not require("checkmate.buffer").is_active(ev.buf) then
-      return
-    end
+    if not require("checkmate.buffer").is_active(ev.buf) then return end
+    vim.opt_local.foldmethod = "expr"
+    vim.opt_local.foldexpr = "v:lua._todo_foldexpr(v:lnum)"
+    vim.opt_local.foldtext = "v:lua._todo_foldtext()"
+    vim.opt_local.foldlevel = 99
     local leader = vim.api.nvim_replace_termcodes("<leader>", true, false, true)
     local prefix = leader .. "T"
     for _, mode in ipairs({ "n", "v" }) do
@@ -105,9 +148,7 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "go", function()
       if vim.api.nvim_get_current_line():match("@issue%(%#%d+%)") then
         local _, err = require("utils.redmine_sync").open_issue_under_cursor()
-        if err then
-          vim.notify(err, vim.log.levels.WARN)
-        end
+        if err then vim.notify(err, vim.log.levels.WARN) end
       else
         require("utils").open_url()
       end

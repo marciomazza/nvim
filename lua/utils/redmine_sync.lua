@@ -263,6 +263,7 @@ function M.open_issues_report()
         local issue_tag = " @issue(#" .. iss.id .. ")"
         lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. priority_tag .. issue_tag
         if iss.description then
+          lines[#lines + 1] = ""
           for _, dl in ipairs(vim.split(iss.description, "\n")) do
             lines[#lines + 1] = "  " .. dl
           end
