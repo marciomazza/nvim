@@ -174,7 +174,10 @@ function M.open_issues()
           status = issue.status and issue.status.name or nil,
           version = issue.fixed_version and issue.fixed_version.name or nil,
           assigned_to = issue.assigned_to and issue.assigned_to.name or nil,
-          description = type(issue.description) == "string" and issue.description ~= "" and issue.description or nil,
+          description = type(issue.description) == "string"
+              and issue.description ~= ""
+              and issue.description:gsub("\r\n", "\n"):gsub("\r", "\n")
+            or nil,
           priority = issue.priority and issue.priority.name:lower() or nil,
         }
       end
@@ -243,7 +246,7 @@ function M.open_issues_report()
       end
       local marker = status_marker[st] or "[ ]"
       for _, iss in ipairs(by_version[ver][st]) do
-        local priority_tag = (iss.priority and iss.priority ~= env.default_priority.name)
+        local priority_tag = (iss.priority and iss.priority ~= env.default_priority)
             and (" @priority(" .. iss.priority .. ")")
           or ""
         local issue_tag = " @issue(#" .. iss.id .. ")"
@@ -478,9 +481,7 @@ local function issues_differ(item, remote)
   end
   if item.priority and item.priority ~= remote.priority then return true end
   if item.description then
-    local remote_desc = remote.description and vim.trim(remote.description):gsub("\r\n", "\n")
-      or nil
-    if item.description ~= remote_desc then return true end
+    if item.description ~= remote.description then return true end
   end
   return false
 end
