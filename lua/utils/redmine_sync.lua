@@ -174,7 +174,7 @@ function M.open_issues()
           status = issue.status and issue.status.name or nil,
           version = issue.fixed_version and issue.fixed_version.name or nil,
           assigned_to = issue.assigned_to and issue.assigned_to.name or nil,
-          description = issue.description ~= "" and issue.description or nil,
+          description = type(issue.description) == "string" and issue.description ~= "" and issue.description or nil,
           priority = issue.priority and issue.priority.name:lower() or nil,
         }
       end
