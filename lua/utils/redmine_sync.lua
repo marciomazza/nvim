@@ -486,7 +486,6 @@ local function issues_differ(item, remote)
 end
 
 function M.create_or_update_all()
-  local start_row = vim.api.nvim_win_get_cursor(0)[1] - 1
   local items = M.enumerate_issues(vim.api.nvim_buf_get_name(0))
 
   local redmine_by_id = {}
@@ -497,9 +496,6 @@ function M.create_or_update_all()
   local do_all = false
   local counts = { updated = 0, created = 0, skipped = 0, errors = 0 }
   for _, item in ipairs(items) do
-    if item.row < start_row then -- skip the rows before the current one (todo: perhaps remove)
-      goto continue
-    end
     if vim.trim(item.subject) == "" then goto continue end
     if item.id ~= nil then
       local remote = redmine_by_id[item.id:match("%d+") or ""]
