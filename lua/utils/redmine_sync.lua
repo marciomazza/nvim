@@ -30,91 +30,111 @@ local M = {}
 -- REDMINE -> TODO.MD
 ---------------------------------------------------------------------------------
 
---- Load configuration from .redmine.env.json in the current working directory (project root)
---- Validates required fields: project_url, base_url, token.
----@return table
-local function load_env()
+local env = nil
+
+local function init_env()
   local path = vim.fn.getcwd() .. "/.redmine.env.json"
-  local f = assert(io.open(path, "r"), "Could not open " .. path)
+  local f = io.open(path, "r")
+  if not f then return end
   local raw = f:read("*a")
   f:close()
-  local env = vim.json.decode(raw)
-
-  local keys = { "project_url", "base_url", "token", "open_statuses", "closed_statuses" }
-  for _, field in ipairs(keys) do
-    if not env[field] or env[field] == "" then
-      error(field .. " not found or empty in .redmine.env.json")
+  local ok, cfg = pcall(vim.json.decode, raw)
+  if not ok then
+    vim.notify("Redmine: failed to parse .redmine.env.json", vim.log.levels.WARN)
+    return
+  end
+  for _, field in ipairs({ "project_url", "base_url", "token", "open_statuses", "closed_statuses" }) do
+    if not cfg[field] or cfg[field] == "" then
+      vim.notify("Redmine: " .. field .. " missing in .redmine.env.json", vim.log.levels.WARN)
+      return
     end
   end
 
-  local cmd = {
-    "curl",
-    "-sf",
-    "-k",
-    "-H",
-    "X-Redmine-API-Key: " .. env.token,
-    "-H",
-    "Accept: application/json",
-    env.base_url .. "enumerations/issue_priorities.json",
-  }
-  local result = vim.system(cmd, { text = true }):wait()
-  if result.code ~= 0 then error("Failed to fetch issue priorities: " .. (result.stderr or "")) end
-  local ok, decoded = pcall(vim.json.decode, result.stdout)
-  if not ok then error("Failed to parse issue priorities: " .. tostring(decoded)) end
-  env.priorities = vim
-    .iter(decoded.issue_priorities or {})
-    :filter(function(p) return p.name:lower() ~= "immediate" end)
-    :map(function(p)
-      p.name = p.name:lower()
-      return p
-    end)
-    :totable()
-  local default_p = vim.iter(env.priorities):find(function(p) return p.is_default end)
-  env.default_priority = default_p and default_p.name or nil
+  local auth = { "-H", "X-Redmine-API-Key: " .. cfg.token, "-H", "Accept: application/json" }
+  vim.system(
+    vim.list_extend(
+      { "curl", "-sf", "-k", "-m", "5" },
+      vim.list_extend(auth, { cfg.base_url .. "enumerations/issue_priorities.json" })
+    ),
+    { text = true },
+    function(r)
+      if r.code ~= 0 then
+        vim.schedule(
+          function() vim.notify("Redmine unreachable: " .. (r.stderr or ""), vim.log.levels.WARN) end
+        )
+        return
+      end
+      local pok, pdata = pcall(vim.json.decode, r.stdout)
+      if not pok then
+        vim.schedule(
+          function() vim.notify("Redmine: failed to parse priorities", vim.log.levels.WARN) end
+        )
+        return
+      end
+      cfg.priorities = vim
+        .iter(pdata.issue_priorities or {})
+        :filter(function(p) return p.name:lower() ~= "immediate" end)
+        :map(function(p)
+          p.name = p.name:lower()
+          return p
+        end)
+        :totable()
+      local default_p = vim.iter(cfg.priorities):find(function(p) return p.is_default end)
+      cfg.default_priority = default_p and default_p.name or nil
 
-  local vcmd = {
-    "curl",
-    "-sf",
-    "-k",
-    "-H",
-    "X-Redmine-API-Key: " .. env.token,
-    "-H",
-    "Accept: application/json",
-    env.project_url .. "versions.json",
-  }
-  local vresult = vim.system(vcmd, { text = true }):wait()
-  if vresult.code ~= 0 then error("Failed to fetch versions: " .. (vresult.stderr or "")) end
-  local vok, vdecoded = pcall(vim.json.decode, vresult.stdout)
-  if not vok then error("Failed to parse versions: " .. tostring(vdecoded)) end
-  env.versions = vim
-    .iter(vdecoded.versions or {})
-    :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
-    :totable()
-  table.sort(env.versions, function(a, b) return a.name < b.name end)
-
-  env.version_id_by_name = {}
-  for _, v in ipairs(env.versions) do
-    env.version_id_by_name[v.name] = v.id
-  end
-
-  env.status_id_by_name = {}
-  for _, s in ipairs(env.open_statuses or {}) do
-    env.status_id_by_name[s.name] = s.id
-  end
-  for _, s in ipairs(env.closed_statuses or {}) do
-    env.status_id_by_name[s.name] = s.id
-  end
-
-  return env
+      local auth2 = { "-H", "X-Redmine-API-Key: " .. cfg.token, "-H", "Accept: application/json" }
+      vim.system(
+        vim.list_extend(
+          { "curl", "-sf", "-k", "-m", "5" },
+          vim.list_extend(auth2, { cfg.project_url .. "versions.json" })
+        ),
+        { text = true },
+        function(vr)
+          if vr.code ~= 0 then
+            vim.schedule(
+              function()
+                vim.notify("Redmine unreachable: " .. (vr.stderr or ""), vim.log.levels.WARN)
+              end
+            )
+            return
+          end
+          local vok, vdata = pcall(vim.json.decode, vr.stdout)
+          if not vok then
+            vim.schedule(
+              function() vim.notify("Redmine: failed to parse versions", vim.log.levels.WARN) end
+            )
+            return
+          end
+          cfg.versions = vim
+            .iter(vdata.versions or {})
+            :map(function(v) return { id = v.id, name = v.name, status = v.status } end)
+            :totable()
+          table.sort(cfg.versions, function(a, b) return a.name < b.name end)
+          cfg.version_id_by_name = {}
+          for _, v in ipairs(cfg.versions) do
+            cfg.version_id_by_name[v.name] = v.id
+          end
+          cfg.status_id_by_name = {}
+          for _, s in ipairs(cfg.open_statuses or {}) do
+            cfg.status_id_by_name[s.name] = s.id
+          end
+          for _, s in ipairs(cfg.closed_statuses or {}) do
+            cfg.status_id_by_name[s.name] = s.id
+          end
+          vim.schedule(function() env = cfg end)
+        end
+      )
+    end
+  )
 end
 
-local env = load_env()
+init_env()
 
 ---@param url string
 ---@param extra_args string[]
 ---@return string
 local function redmine_request(url, extra_args)
-  local cmd = { "curl", "-sf", "-k", "-H", "X-Redmine-API-Key: " .. env.token }
+  local cmd = { "curl", "-sf", "-k", "-m", "5", "-H", "X-Redmine-API-Key: " .. env.token }
   vim.list_extend(cmd, extra_args)
   cmd[#cmd + 1] = url
   local result = vim.system(cmd, { text = true }):wait()
@@ -570,6 +590,22 @@ function M.open_issue_under_cursor()
   local issue_meta = item.metadata.by_tag["issue"]
   if not issue_meta then error("no @issue tag on current line") end
   vim.ui.open(env.base_url .. "issues/" .. issue_meta.value:gsub("^#", ""))
+end
+
+for _, fname in ipairs({
+  "populate_todo",
+  "update_issue_under_cursor",
+  "create_or_update_all",
+  "open_issue_under_cursor",
+}) do
+  local orig = M[fname]
+  M[fname] = function(...)
+    if not env then
+      vim.notify("Redmine not yet available", vim.log.levels.WARN)
+      return
+    end
+    return orig(...)
+  end
 end
 
 return M
