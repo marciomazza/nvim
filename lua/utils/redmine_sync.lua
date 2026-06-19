@@ -207,6 +207,7 @@ end
 
 --- Maps checkmate todo states to Redmine status names.
 local state_to_redmine_status = {
+  unchecked = "New",
   in_progress = "In Progress",
   checked = "Resolved",
   cancelled = "Rejected",
@@ -265,16 +266,12 @@ function M.open_issues_report()
     )
     for _, st in ipairs(statuses) do
       lines[#lines + 1] = ""
-      if st ~= "In Progress" then
-        lines[#lines + 1] = "### " .. st
-        lines[#lines + 1] = ""
-      end
       local marker = status_marker[st] or "[ ]"
       table.sort(by_version[ver][st], function(a, b)
         local pa = priority_rank[a.priority] or 999
         local pb = priority_rank[b.priority] or 999
         if pa ~= pb then return pa > pb end
-        return a.id > b.id
+        return a.id < b.id
       end)
       for _, iss in ipairs(by_version[ver][st]) do
         local priority_tag = (iss.priority and iss.priority ~= env.default_priority)
@@ -348,25 +345,15 @@ local function get_headings(bufnr)
   return headings
 end
 
---- Return the version (h1) and status (h2) for the headings immediately above `target_row`.
+--- Return the version (h2) for the heading immediately above `target_row`.
 ---@param headings {row: integer, level: integer, text: string}[]
 ---@param target_row integer 0-indexed
----@return string|nil version, string|nil status
-local function context_for_row(headings, target_row)
-  local version, status = nil, nil
-  for _, h in ipairs(headings) do
-    if h.row <= target_row then
-      if h.level == 2 then
-        version = h.text
-        status = nil
-      elseif h.level == 3 then
-        status = h.text
-      end
-    else
-      break
-    end
+---@return string|nil
+local function version_from_heading(headings, target_row)
+  for i = #headings, 1, -1 do
+    local h = headings[i]
+    if h.row <= target_row and h.level == 2 then return h.text end
   end
-  return version, status
 end
 
 --- Extract a clean title from a TodoItem's first line.
@@ -409,7 +396,7 @@ function M.enumerate_issues(filepath)
   local results = vim
     .iter(todo_map)
     :map(function(item)
-      local version, status = context_for_row(headings, item.range.start.row)
+      local version = version_from_heading(headings, item.range.start.row)
       local issue_meta = item.metadata.by_tag["issue"]
 
       local description = nil
@@ -433,7 +420,7 @@ function M.enumerate_issues(filepath)
       local priority_meta = item.metadata.by_tag["priority"]
       return {
         version = version or "(no section)",
-        status = status or state_to_redmine_status[item.state],
+        status = state_to_redmine_status[item.state],
         id = issue_meta and issue_meta.value or nil,
         subject = todo_subject(item),
         description = description,
