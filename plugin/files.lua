@@ -1,7 +1,5 @@
 pack_changed_hook("fff.nvim", function(ev)
-  if not ev.data.active then
-    vim.cmd.packadd("fff.nvim")
-  end
+  if not ev.data.active then vim.cmd.packadd("fff.nvim") end
   require("fff.download").download_or_build_binary()
 end)
 
@@ -32,7 +30,6 @@ vim.keymap.set(
   "<leader>f",
   function()
     require("fff").live_grep({
-      grep = { modes = { "plain", "fuzzy" } },
       query = vim.fn.expand("<cword>"),
     })
   end,
