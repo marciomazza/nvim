@@ -16,6 +16,10 @@ end
 vim.opt.clipboard = "unnamedplus" -- use standard clipboard
 vim.opt.diffopt:append("iwhite") -- ignore whitespace in vimdiff
 
+-- spelllang from $LANG (e.g. pt_BR.UTF-8 -> "pt")
+local lang = (vim.env.LANG or "en"):lower():match("^([a-z][a-z])")
+vim.opt.spelllang = lang or "en"
+
 -- Searching
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
