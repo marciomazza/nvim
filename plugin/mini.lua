@@ -55,13 +55,9 @@ local MiniFiles = setup("mini.files", {
   },
   content = {
     filter = function(fs_entry)
-      if vim.startswith(fs_entry.name, ".") then
-        return false
-      end
+      if vim.startswith(fs_entry.name, ".") then return false end
       for _, pattern in ipairs(file_explorer_ignored) do
-        if vim.fn.match(fs_entry.name, pattern) >= 0 then
-          return false
-        end
+        if vim.fn.match(fs_entry.name, pattern) >= 0 then return false end
       end
       return true
     end,
@@ -69,9 +65,7 @@ local MiniFiles = setup("mini.files", {
 })
 
 local function minifiles_toggle()
-  if not MiniFiles.close() then
-    MiniFiles.open(vim.api.nvim_buf_get_name(0))
-  end
+  if not MiniFiles.close() then MiniFiles.open(vim.api.nvim_buf_get_name(0)) end
 end
 
 vim.keymap.set("n", "<F3>", minifiles_toggle, { desc = "Toggle file explorer" })

@@ -2,9 +2,7 @@ local M = {}
 
 local function find_ancestor(node, node_types)
   while node do
-    if vim.tbl_contains(node_types, node:type()) then
-      return node
-    end
+    if vim.tbl_contains(node_types, node:type()) then return node end
     node = node:parent()
   end
 end
@@ -35,9 +33,7 @@ function M.surround_tag_input()
   local ts = vim.treesitter
   local node = ts.get_node({ ignore_injections = false })
   local element = find_ancestor(node, { "element", "script_element", "style_element" })
-  if not element then
-    return
-  end
+  if not element then return end
   local start_tag, end_tag = element:child(0), element:child(element:child_count() - 1)
   return {
     left = ts_range_to_region(ts.get_range(start_tag)),

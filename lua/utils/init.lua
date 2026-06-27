@@ -2,9 +2,7 @@ local extended_ui_open = function()
   --- Open URLs under cursor with go (supports GitHub shorthand)
   local url = vim.fn.expand("<cfile>")
   -- Handle GitHub shorthand (e.g., "tpope/vim-surround")
-  if url:match("^[%w-_]+/[%w-_.]+$") then
-    url = "https://github.com/" .. url
-  end
+  if url:match("^[%w-_]+/[%w-_.]+$") then url = "https://github.com/" .. url end
   vim.ui.open(url)
 end
 vim.keymap.set("n", "go", extended_ui_open, { desc = "Open URL under cursor" })
@@ -15,9 +13,7 @@ local function pack_changed_hook(spec_name, callback)
   vim.api.nvim_create_autocmd("PackChanged", {
     callback = function(ev)
       local name, kind = ev.data.spec.name, ev.data.kind
-      if spec_name == name and (kind == "install" or kind == "update") then
-        callback(ev)
-      end
+      if spec_name == name and (kind == "install" or kind == "update") then callback(ev) end
     end,
   })
 end

@@ -3,9 +3,7 @@ local function get_instance_script_source(root_dir)
   local scripts = { "bin/instance", "bin/restore" }
   for _, script in ipairs(scripts) do
     local path = require("plenary.path"):new(root_dir, script)
-    if path:exists() then
-      return path:read()
-    end
+    if path:exists() then return path:read() end
   end
 end
 
@@ -21,7 +19,8 @@ local function get_paths_from_instance_script(root_dir)
     right: (list (string (string_content) @content)))
 ]]
   )
-  return vim.iter(query:iter_captures(root, src, 0, -1))
+  return vim
+    .iter(query:iter_captures(root, src, 0, -1))
     :filter(function(id) return query.captures[id] == "content" end)
     :map(function(_, node) return ts.get_node_text(node, src) end)
     :totable()
