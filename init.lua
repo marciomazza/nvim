@@ -19,9 +19,12 @@ end
 vim.opt.clipboard = "unnamedplus" -- use standard clipboard
 vim.opt.diffopt:append("iwhite") -- ignore whitespace in vimdiff
 
--- spelllang from $LANG (e.g. pt_BR.UTF-8 -> "pt")
-local lang = (vim.env.LANG or "en"):lower():match("^([a-z][a-z])")
-vim.opt.spelllang = lang or "en"
+-- spelllang from $LANG (e.g. pt_BR.UTF-8 -> "pt_br")
+vim.opt.spelllang = (vim.env.LANG or ""):lower():match("^%l%l_%l%l") or "pt_br"
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "gitcommit", "jjdescription" },
+  callback = function() vim.wo.spell = true end,
+})
 
 -- Searching
 vim.opt.ignorecase = true

@@ -28,13 +28,18 @@ local source_current_lua_file = function()
 end
 vim.keymap.set("n", "<leader>l", source_current_lua_file, { desc = "Source current lua file" })
 
--- toggle spell check
+-- toggle / switch spell check language
 for lang, key in pairs({ en_us = "<F6>", pt_br = "<F7>" }) do
   local toggle_spell_check = function()
-    vim.wo.spell = not vim.wo.spell
-    vim.opt_local.spelllang = lang
+    local current = vim.wo.spell and vim.bo.spelllang or ""
+    if current == lang then
+      vim.wo.spell = false
+    else
+      vim.wo.spell = true
+      vim.bo.spelllang = lang
+    end
   end
-  local desc = string.format("Toggle spell check (%s)", lang:sub(1, 2):upper())
+  local desc = string.format("Switch spell check to %s", lang:sub(1, 2):upper())
   vim.keymap.set("n", key, toggle_spell_check, { desc = desc })
 end
 
