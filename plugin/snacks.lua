@@ -23,7 +23,7 @@ require("snacks").setup({
       modifiable = false,
     },
   },
-  notifier = { enabled = true },
+  -- notifier = { enabled = true },
   quickfile = { enabled = true },
   words = { enabled = true },
   picker = {
