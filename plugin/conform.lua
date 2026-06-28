@@ -33,13 +33,95 @@ local function float_imports_to_top(bufnr, lines)
   end
 end
 
-local oxc = { "oxfmt", "oxlint" }
+local function python_pre_injected(self, ctx, lines, callback)
+  local query = vim.treesitter.query.get("python", "injections")
+  if not query then return callback(nil, lines) end
+  local root = vim.treesitter.get_parser(ctx.buf):trees()[1]:root()
+
+  local nodes = vim
+    .iter(query:iter_captures(root, ctx.buf))
+    :filter(function(id) return query.captures[id] == "injection.content" end)
+    :map(function(_, node) return node end)
+    :totable()
+  if #nodes == 0 then return callback(nil, lines) end
+
+  local text = table.concat(lines, "\n")
+  local slots = {}
+  local replacements = {}
+  local function register_slot(content, start_byte, end_byte)
+    slots[#slots + 1] = content
+    table.insert(
+      replacements,
+      { start_byte = start_byte, end_byte = end_byte, placeholder = "__SLOT_" .. #slots .. "__" }
+    )
+  end
+
+  local last_string_id = nil
+  for _, node in ipairs(nodes) do
+    local string_node = node:parent()
+    local string_id = string_node:id()
+    if string_id == last_string_id then goto continue end
+    last_string_id = string_id
+    for child in string_node:iter_children() do
+      local _, _, child_start, _, _, child_end = child:range(true)
+      if child:type() == "interpolation" then
+        register_slot(vim.treesitter.get_node_text(child, ctx.buf), child_start, child_end)
+      elseif child:type() == "string_content" then
+        local child_text = text:sub(child_start + 1, child_end)
+        local search_from = 1
+        while true do
+          local match_start, match_end, captured_braces = child_text:find("{{(.-)}}", search_from)
+          if not match_start then break end
+          register_slot(
+            "{{" .. captured_braces .. "}}",
+            child_start + match_start - 1,
+            child_start + match_end
+          )
+          search_from = match_end + 1
+        end
+      end
+    end
+    ::continue::
+  end
+
+  local prev_end = 0
+  local replaced_text = vim
+    .iter(replacements)
+    :map(function(r)
+      local slice_before = text:sub(prev_end + 1, r.start_byte)
+      prev_end = r.end_byte
+      return { slice_before, r.placeholder }
+    end)
+    :flatten()
+    :join("") .. text:sub(prev_end + 1)
+
+  vim.b[ctx.buf].fstring_js_slots = slots
+  callback(nil, vim.split(replaced_text, "\n"))
+end
+
+local function python_post_injected(self, ctx, lines, callback)
+  local slots = vim.b[ctx.buf].fstring_js_slots
+  if not slots then return callback(nil, lines) end
+  vim.b[ctx.buf].fstring_js_slots = nil
+  local text = table.concat(lines, "\n")
+  text = text:gsub("__SLOT_(%d+)__", function(i) return slots[tonumber(i)] end)
+  callback(nil, vim.split(text, "\n"))
+end
+
+local oxc = { "oxlint", "oxfmt" }
 local for_htmldjango = { "rustywind", "djangofmt" }
 
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
-    python = { "float_imports_to_top", "ruff_fix", "ruff_format" },
+    python = {
+      "python_pre_injected",
+      "injected",
+      "python_post_injected",
+      "float_imports_to_top",
+      "ruff_fix",
+      "ruff_format",
+    },
     htmldjango = for_htmldjango,
     html = for_htmldjango,
     javascript = oxc,
@@ -53,6 +135,8 @@ require("conform").setup({
     ["_"] = { "trim_whitespace", "trim_newlines" },
   },
   formatters = {
+    python_pre_injected = { format = python_pre_injected },
+    python_post_injected = { format = python_post_injected },
     float_imports_to_top = {
       -- keep this until ruff implements float-to-top (https://github.com/astral-sh/ruff/issues/6514)
       format = function(self, ctx, lines, callback)
