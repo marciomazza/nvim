@@ -140,9 +140,13 @@ require("conform").setup({
     injected = {
       options = {
         lang_to_formatters = {
-          javascript = { "oxlint", "oxfmt", "trim_single_semicolon" },
+          javascript = { "oxlint", "oxfmt_injected", "trim_single_semicolon" },
         },
       },
+    },
+    oxfmt_injected = {
+      inherit = "oxfmt",
+      append_args = { "-c", vim.fn.stdpath("config") .. "/.oxfmtrc.injected.json" },
     },
     trim_single_semicolon = {
       format = function(_, _, lines, callback)
