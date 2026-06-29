@@ -137,12 +137,28 @@ require("conform").setup({
   formatters = {
     python_pre_injected = { format = python_pre_injected },
     python_post_injected = { format = python_post_injected },
+    injected = {
+      options = {
+        lang_to_formatters = {
+          javascript = { "oxlint", "oxfmt", "trim_single_semicolon" },
+        },
+      },
+    },
+    trim_single_semicolon = {
+      format = function(_, _, lines, callback)
+        local n = 0
+        for _, l in ipairs(lines) do
+          if l:match(";$") then n = n + 1 end
+        end
+        if n == 1 then lines[#lines] = lines[#lines]:gsub(";$", "") end
+        callback(nil, lines)
+      end,
+    },
     float_imports_to_top = {
       -- keep this until ruff implements float-to-top (https://github.com/astral-sh/ruff/issues/6514)
-      format = function(self, ctx, lines, callback)
-        local out_lines = vim.deepcopy(lines)
-        float_imports_to_top(ctx.buf, out_lines)
-        callback(nil, out_lines)
+      format = function(_, ctx, lines, callback)
+        float_imports_to_top(ctx.buf, lines)
+        callback(nil, lines)
       end,
     },
     ruff_fix = {
