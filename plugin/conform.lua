@@ -10,50 +10,26 @@ local function find_import_insertion_line_number(bufnr)
     elseif node:type() == "expression_statement" and node:child(0):type() == "string" then
       -- found a module docstring => imports should start at the next line
       local _, _, line_number, _ = node:range()
-      return line_number + 1
+      return line_number + 2 -- treesitter ranges are 0 based => add 1 more
     else
-      return 0 -- no module docstring => imports should start at the very top
+      return 1 -- no module docstring => imports should start at the very top
     end
   end
 end
 
+local utils = require("utils")
+
 local function float_imports_to_top(bufnr, lines)
-  local diagnostics = vim
+  local misplaced_imports = vim
     .iter(vim.diagnostic.get(bufnr))
-    :filter(
-      function(d)
-        return d.source == "Ruff"
-          and d.user_data
-          and d.user_data.lsp
-          and d.user_data.lsp.code == "E402"
-      end
-    )
+    :filter(function(d) return d.source == "Ruff" and d.user_data.lsp.code == "E402" end)
+    :map(function(d) return vim.list_slice(lines, d.lnum + 1, d.end_lnum + 1) end)
     :totable()
-  if #diagnostics == 0 then return end
-
-  local insertion_index = find_import_insertion_line_number(bufnr) + 1
-  local root = vim.treesitter.get_parser(bufnr):trees()[1]:root()
-
-  local function import_range(lnum)
-    local node = root:named_descendant_for_range(lnum, 0, lnum, 0)
-    while node and node:parent() and node:parent() ~= root do
-      node = node:parent()
-    end
-    local t = node and node:type()
-    if t == "import_statement" or t == "import_from_statement" then
-      local sr, _, er = node:range()
-      return sr, er
-    end
-    return lnum, lnum
-  end
-
-  for _, d in ipairs(diagnostics) do
-    local start_row, end_row = import_range(d.lnum)
-    local count = end_row - start_row + 1
-    for i = 1, count do
-      table.insert(lines, insertion_index + i - 1, table.remove(lines, start_row + i))
-    end
-    insertion_index = insertion_index + count
+  if #misplaced_imports == 0 then return end
+  local insertion_index = find_import_insertion_line_number(bufnr)
+  for _, block in ipairs(misplaced_imports) do
+    utils.move_sublist(lines, block, insertion_index)
+    insertion_index = insertion_index + #block
   end
 end
 
