@@ -26,7 +26,11 @@
   (#set! injection.language "javascript"))
 
 ; Inject into strings returned from functions whose name ends in _js
-(return_statement
-  (string
-    (string_content) @injection.content)
-  (#set! injection.language "javascript"))
+(function_definition
+  name: (identifier) @_fn
+  (#match? @_fn "_js$")
+  body: (block
+    (return_statement
+      (string
+        (string_content) @injection.content))
+    (#set! injection.language "javascript")))
