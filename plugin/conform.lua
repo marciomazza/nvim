@@ -22,12 +22,14 @@ local function float_imports_to_top(bufnr, lines)
   local root = vim.treesitter.get_parser(bufnr):trees()[1]:root()
 
   local function import_range(lnum)
-    for node in root:iter_children() do
-      local start_row, _, end_row, _ = node:range()
-      local t = node:type()
-      if start_row == lnum and (t == "import_statement" or t == "import_from_statement") then
-        return start_row, end_row
-      end
+    local node = root:named_descendant_for_range(lnum, 0, lnum, 0)
+    while node and node:parent() and node:parent() ~= root do
+      node = node:parent()
+    end
+    local t = node and node:type()
+    if t == "import_statement" or t == "import_from_statement" then
+      local sr, _, er = node:range()
+      return sr, er
     end
     return lnum, lnum
   end
