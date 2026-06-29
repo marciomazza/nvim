@@ -18,6 +18,19 @@ local function find_import_insertion_line_number(bufnr)
 end
 
 local function float_imports_to_top(bufnr, lines)
+  local diagnostics = vim
+    .iter(vim.diagnostic.get(bufnr))
+    :filter(
+      function(d)
+        return d.source == "Ruff"
+          and d.user_data
+          and d.user_data.lsp
+          and d.user_data.lsp.code == "E402"
+      end
+    )
+    :totable()
+  if #diagnostics == 0 then return end
+
   local insertion_index = find_import_insertion_line_number(bufnr) + 1
   local root = vim.treesitter.get_parser(bufnr):trees()[1]:root()
 
@@ -34,20 +47,13 @@ local function float_imports_to_top(bufnr, lines)
     return lnum, lnum
   end
 
-  for _, d in pairs(vim.diagnostic.get(bufnr)) do
-    if
-      d.source == "Ruff"
-      and d.user_data
-      and d.user_data.lsp
-      and d.user_data.lsp.code == "E402"
-    then
-      local start_row, end_row = import_range(d.lnum)
-      local count = end_row - start_row + 1
-      for i = 1, count do
-        table.insert(lines, insertion_index + i - 1, table.remove(lines, start_row + i))
-      end
-      insertion_index = insertion_index + count
+  for _, d in ipairs(diagnostics) do
+    local start_row, end_row = import_range(d.lnum)
+    local count = end_row - start_row + 1
+    for i = 1, count do
+      table.insert(lines, insertion_index + i - 1, table.remove(lines, start_row + i))
     end
+    insertion_index = insertion_index + count
   end
 end
 
