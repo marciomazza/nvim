@@ -108,6 +108,25 @@ local function python_post_injected(self, ctx, lines, callback)
   callback(nil, vim.split(text, "\n"))
 end
 
+local function pre_js_in_py(self, ctx, lines, callback)
+  vim.b[ctx.buf].was_single_line = #lines == 1
+  callback(nil, lines)
+end
+
+local function trim_single_end_semicolon(lines)
+  local n = 0
+  for _, l in ipairs(lines) do
+    if l:match(";$") then n = n + 1 end
+  end
+  if n == 1 then lines[#lines] = lines[#lines]:gsub(";$", "") end
+end
+
+local function post_js_in_py(self, ctx, lines, callback)
+  if vim.b[ctx.buf].was_single_line then lines = { vim.iter(lines):join(" ") } end
+  trim_single_end_semicolon(lines)
+  callback(nil, lines)
+end
+
 local oxc = { "oxlint", "oxfmt" }
 local for_htmldjango = { "rustywind", "djangofmt" }
 
@@ -137,26 +156,24 @@ require("conform").setup({
   formatters = {
     python_pre_injected = { format = python_pre_injected },
     python_post_injected = { format = python_post_injected },
+    pre_js_in_py = { format = pre_js_in_py },
+    post_js_in_py = { format = post_js_in_py },
     injected = {
       options = {
         lang_to_formatters = {
-          javascript = { "oxlint", "oxfmt_injected", "trim_single_semicolon" },
+          javascript = {
+            "pre_js_in_py",
+            "oxlint",
+            "oxfmt_injected",
+            "post_js_in_py",
+            "trim_single_semicolon",
+          },
         },
       },
     },
     oxfmt_injected = {
       inherit = "oxfmt",
       append_args = { "-c", vim.fn.stdpath("config") .. "/.oxfmtrc.injected.json" },
-    },
-    trim_single_semicolon = {
-      format = function(_, _, lines, callback)
-        local n = 0
-        for _, l in ipairs(lines) do
-          if l:match(";$") then n = n + 1 end
-        end
-        if n == 1 then lines[#lines] = lines[#lines]:gsub(";$", "") end
-        callback(nil, lines)
-      end,
     },
     float_imports_to_top = {
       -- keep this until ruff implements float-to-top (https://github.com/astral-sh/ruff/issues/6514)
