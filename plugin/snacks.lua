@@ -16,6 +16,8 @@ require("snacks").setup({
   terminal = { enabled = true },
   image = {
     enabled = true,
+    max_width = 40,
+    max_height = 20,
     bo = {
       buftype = "nofile",
       bufhidden = "wipe",
