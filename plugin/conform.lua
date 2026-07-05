@@ -48,12 +48,17 @@ local function python_pre_injected(self, ctx, lines, callback)
   local text = table.concat(lines, "\n")
   local slots = {}
   local replacements = {}
-  local function register_slot(content, start_byte, end_byte)
-    slots[#slots + 1] = content
+
+  local function add_replace(start_byte, end_byte, replacement)
     table.insert(
       replacements,
-      { start_byte = start_byte, end_byte = end_byte, placeholder = "__SLOT_" .. #slots .. "__" }
+      { start_byte = start_byte, end_byte = end_byte, replace = replacement }
     )
+  end
+
+  local function register_slot(content, start_byte, end_byte)
+    slots[#slots + 1] = content
+    add_replace(start_byte, end_byte, "__SLOT_" .. #slots .. "__")
   end
 
   local last_string_id = nil
@@ -66,19 +71,6 @@ local function python_pre_injected(self, ctx, lines, callback)
       local _, _, child_start, _, _, child_end = child:range(true)
       if child:type() == "interpolation" then
         register_slot(vim.treesitter.get_node_text(child, ctx.buf), child_start, child_end)
-      elseif child:type() == "string_content" then
-        local child_text = text:sub(child_start + 1, child_end)
-        local search_from = 1
-        while true do
-          local match_start, match_end, captured_braces = child_text:find("{{(.-)}}", search_from)
-          if not match_start then break end
-          register_slot(
-            "{{" .. captured_braces .. "}}",
-            child_start + match_start - 1,
-            child_start + match_end
-          )
-          search_from = match_end + 1
-        end
       end
     end
     ::continue::
@@ -90,7 +82,7 @@ local function python_pre_injected(self, ctx, lines, callback)
     :map(function(r)
       local slice_before = text:sub(prev_end + 1, r.start_byte)
       prev_end = r.end_byte
-      return { slice_before, r.placeholder }
+      return { slice_before, r.replace }
     end)
     :flatten()
     :join("") .. text:sub(prev_end + 1)
@@ -110,6 +102,9 @@ end
 
 local function pre_js_in_py(self, ctx, lines, callback)
   vim.b[ctx.buf].was_single_line = #lines == 1
+  for i, line in ipairs(lines) do
+    lines[i] = line:gsub("{{", "{__BRACKET_START__;"):gsub("}}", ";__BRACKET_END__;}")
+  end
   callback(nil, lines)
 end
 
@@ -124,7 +119,10 @@ end
 local function post_js_in_py(self, ctx, lines, callback)
   if vim.b[ctx.buf].was_single_line then lines = { vim.iter(lines):join(" ") } end
   trim_single_end_semicolon(lines)
-  callback(nil, lines)
+  local text = table.concat(lines, "\n")
+  text = text:gsub("{%s*__BRACKET_START__%s*;", "{{")
+  text = text:gsub("%s*__BRACKET_END__;(%s*)}", "%1}}")
+  callback(nil, vim.split(text, "\n"))
 end
 
 local oxc = { "oxlint", "oxfmt" }
