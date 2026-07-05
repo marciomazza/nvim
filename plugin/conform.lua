@@ -192,7 +192,13 @@ require("conform").setup({
       stdin = false,
     },
     rustywind = {
-      append_args = { "--quiet", "--config-file", ".rustywind.json" },
+      -- skip class/className attrs containing "{" or "}" (e.g. {{ evento.status }}, {% if ... %})
+      -- so Django/Jinja template expressions aren't broken/reordered by the tokenizer
+      append_args = {
+        "--quiet",
+        "--custom-regex",
+        [[\bclass(?:Name)?\s*=\s*(?:"([^"{}]+)"|'([^'{}]+)')]],
+      },
     },
   },
   default_format_opts = {
