@@ -119,8 +119,20 @@ local function trim_single_end_semicolon(lines)
   if n == 1 then lines[#lines] = lines[#lines]:gsub(";$", "") end
 end
 
+local injected_print_width
+local function get_injected_print_width()
+  if injected_print_width then return injected_print_width end
+  local path = vim.fn.stdpath("config") .. "/.oxfmtrc.injected.json"
+  local ok, decoded = pcall(vim.json.decode, table.concat(vim.fn.readfile(path), "\n"))
+  injected_print_width = (ok and decoded.printWidth) or 80
+  return injected_print_width
+end
+
 local function post_js_in_py(self, ctx, lines, callback)
-  if vim.b[ctx.buf].was_single_line then lines = { vim.iter(lines):join(" ") } end
+  if vim.b[ctx.buf].was_single_line then
+    local joined = vim.iter(lines):map(vim.trim):join(" ")
+    if #joined <= get_injected_print_width() then lines = { joined } end
+  end
   trim_single_end_semicolon(lines)
   local text = table.concat(lines, "\n")
   text = text:gsub("{%s*__BRACKET_START__%s*;", "{{")
