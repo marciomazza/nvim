@@ -6,6 +6,7 @@ end)
 vim.pack.add({
   "https://github.com/wsdjeg/vim-fetch",
   "https://github.com/dmtrKovalenko/fff.nvim",
+  "https://github.com/MagicDuck/grug-far.nvim",
 })
 
 require("fff").setup({

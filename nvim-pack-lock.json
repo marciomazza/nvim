@@ -50,6 +50,10 @@
       "rev": "25050e4ed39e628282831d4cbecb1850454ce915",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "grug-far.nvim": {
+      "rev": "beb2ce490b72048c587e8a3d919cba1b4608bb04",
+      "src": "https://github.com/MagicDuck/grug-far.nvim"
+    },
     "jj.nvim": {
       "rev": "33179e2f15cd48b1a661f5a47088aa981c4ec0b5",
       "src": "https://github.com/nicolasgb/jj.nvim"
