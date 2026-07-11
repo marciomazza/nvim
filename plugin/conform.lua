@@ -58,7 +58,10 @@ local function python_pre_injected(self, ctx, lines, callback)
 
   local function register_slot(content, start_byte, end_byte)
     slots[#slots + 1] = content
-    add_replace(start_byte, end_byte, "__SLOT_" .. #slots .. "__")
+    local placeholder = "__SLOT_" .. #slots .. "__"
+    local pad = (end_byte - start_byte) - #placeholder
+    if pad > 0 then placeholder = placeholder .. string.rep("_", pad) end
+    add_replace(start_byte, end_byte, placeholder)
   end
 
   local last_string_id = nil
@@ -96,7 +99,7 @@ local function python_post_injected(self, ctx, lines, callback)
   if not slots then return callback(nil, lines) end
   vim.b[ctx.buf].fstring_js_slots = nil
   local text = table.concat(lines, "\n")
-  text = text:gsub("__SLOT_(%d+)__", function(i) return slots[tonumber(i)] end)
+  text = text:gsub("__SLOT_(%d+)_+", function(i) return slots[tonumber(i)] end)
   callback(nil, vim.split(text, "\n"))
 end
 
