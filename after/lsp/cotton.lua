@@ -8,12 +8,4 @@ return {
   },
   filetypes = { "html", "htmldjango" },
   root_markers = { "manage.py", "pyproject.toml", ".git", "cotton.config.json" },
-  init_options = {
-    templatePaths = { "templates/cotton" },
-  },
-  settings = {
-    djangoCotton = {
-      templatePaths = { "templates/cotton" },
-    },
-  },
 }

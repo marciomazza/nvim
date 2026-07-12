@@ -30,7 +30,7 @@ end
 ---https://github.com/neovim/nvim-lspconfig/blob/master/lsp/djlsp.lua
 ---@type vim.lsp.Config
 return {
-  -- Disabled while testing the dedicated Cotton language server.
+  -- fixme: Disabled while testing the dedicated Cotton language server.
   -- on_attach = function(client, _)
   --   local base_request = client.request
   --   client.request = function(_, method, ...)
