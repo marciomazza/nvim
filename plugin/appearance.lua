@@ -14,3 +14,25 @@ vim.opt.cursorline = true -- highlight the current line
 vim.opt.termguicolors = true -- required for colorizer and true color support
 require("colorizer").setup({ filetypes = { "*", "!markdown" } })
 vim.cmd.colorscheme("dayfox")
+
+-- Ghostty's terminfo lacks the Cs/Cr cursor-color capability, so Neovim never
+-- emits OSC 12 for the Cursor highlight; send it directly instead.
+vim.api.nvim_create_autocmd("VimEnter", {
+  once = true,
+  callback = function() io.write("\27]12;#FF8C00\27\\") end,
+})
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    io.write("\27]112\27\\") -- reset cursor color on quit
+  end,
+})
+
+-- switch to bright red while mini.jump is active, back to orange when it stops
+vim.api.nvim_create_autocmd("User", {
+  pattern = "MiniJumpStart",
+  callback = function() io.write("\27]12;#FF0000\27\\") end,
+})
+vim.api.nvim_create_autocmd("User", {
+  pattern = "MiniJumpStop",
+  callback = function() io.write("\27]12;#FF8C00\27\\") end,
+})
