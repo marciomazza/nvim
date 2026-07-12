@@ -48,7 +48,8 @@ require("mason-lspconfig").setup({
     "ts_ls",
     "oxfmt",
     "oxlint",
-    "htmx",
+    -- xxx disabled until a new release is made. 0.2.0 is broken and breaks other lsps hover and completion
+    -- "htmx",
     "bashls",
   },
 })
