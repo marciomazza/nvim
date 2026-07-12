@@ -31,6 +31,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.lsp.enable("pytest_lsp")
+vim.lsp.enable("cotton")
 
 require("mason").setup()
 require("mason-lspconfig").setup({
