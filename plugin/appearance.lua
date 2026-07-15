@@ -10,6 +10,7 @@ vim.wo.colorcolumn = "100" -- set a visual column marker at the 100th character 
 vim.o.scrolloff = 999 -- keep the cursor centered when scrolling
 vim.o.signcolumn = "auto" -- only show the sign column when there are signs to be displayed
 vim.opt.cursorline = true -- highlight the current line
+vim.o.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
 
 vim.opt.termguicolors = true -- required for colorizer and true color support
 require("colorizer").setup({ filetypes = { "*", "!markdown" } })
@@ -25,6 +26,16 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
   callback = function()
     io.write("\27]112\27\\") -- reset cursor color on quit
   end,
+})
+
+-- black bar for insert mode; normal mode keeps the orange block
+vim.api.nvim_create_autocmd("ModeChanged", {
+  pattern = "*:n",
+  callback = function() io.write("\27]12;#FF8C00\27\\") end,
+})
+vim.api.nvim_create_autocmd("ModeChanged", {
+  pattern = "*:i",
+  callback = function() io.write("\27]12;#FF0000\27\\") end,
 })
 
 -- switch to bright red while mini.jump is active, back to orange when it stops
