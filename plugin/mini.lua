@@ -152,7 +152,8 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "fff_input",
   callback = function() vim.b.minicompletion_disable = true end,
 })
-setup("mini.snippets")
+local gen_loader = require("mini.snippets").gen_loader
+setup("mini.snippets", { snippets = { gen_loader.from_lang() } })
 
 local MiniKeymap = setup("mini.keymap")
 -- NOTE: this will never insert tab, press <C-v><Tab> for that

@@ -1,8 +1,3 @@
-pack_changed_hook(
-  "LuaSnip",
-  function(ev) vim.system({ "make", "install_jsregexp" }, { cwd = ev.data.path }) end
-)
-
 vim.pack.add({
   "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/andymass/vim-matchup",
@@ -12,9 +7,7 @@ vim.pack.add({
   "https://github.com/stevearc/aerial.nvim",
   "https://github.com/tweekmonster/django-plus.vim",
   "https://github.com/folke/lazydev.nvim",
-  { src = "https://github.com/L3MON4D3/LuaSnip", version = vim.version.range("v2.*") },
   "https://github.com/rafamadriz/friendly-snippets",
-  "https://github.com/molleweide/LuaSnip-snippets.nvim",
   "https://github.com/esmuellert/codediff.nvim",
   "https://github.com/nicolasgb/jj.nvim",
 })
@@ -41,12 +34,6 @@ require("lazydev").setup({
     { path = "${3rd}/luv/library", words = { "vim%.uv" } },
   },
 })
-
-require("luasnip.loaders.from_vscode").lazy_load()
-require("luasnip.loaders.from_vscode").lazy_load({
-  paths = { vim.fn.stdpath("config") .. "/snippets" },
-})
-require("luasnip_snippets").load_snippets()
 
 local jj_log_current = "jj log -r @ --no-graph"
 
