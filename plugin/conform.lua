@@ -164,6 +164,7 @@ require("conform").setup({
     yaml = oxc,
     toml = { "tombi" },
     typst = { "typstyle" },
+    markdown = { "oxfmt" },
     ["_"] = { "trim_whitespace", "trim_newlines" },
   },
   formatters = {
