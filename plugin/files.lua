@@ -36,3 +36,9 @@ vim.keymap.set(
   end,
   { desc = "Live grep (current word)" }
 )
+vim.keymap.set(
+  "n",
+  "<leader>sr",
+  function() require("grug-far").open({ prefills = { search = vim.fn.expand("<cword>") } }) end,
+  { desc = "Search & replace (grug-far)" }
+)
