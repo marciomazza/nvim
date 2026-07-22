@@ -3,7 +3,7 @@
 return {
   cmd = {
     "node",
-    vim.fn.expand("~/repos/cotton-vscode-ext/out/server/server.js"),
+    vim.fn.expand("~/repos/cotton-vscode-ext/packages/language-server/out/server.js"),
     "--stdio",
   },
   filetypes = { "html", "htmldjango" },
