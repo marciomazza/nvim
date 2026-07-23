@@ -131,7 +131,7 @@ MiniClue.setup({
       { mode = "x", keys = "<Leader>r", desc = "+Refactor" },
     },
   },
-  window = { delay = 300 },
+  window = { delay = 300, config = { width = "auto" } },
 })
 
 ------------------------------------------------------------------------------------------
