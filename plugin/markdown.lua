@@ -12,7 +12,10 @@ vim.g.mkdp_filetypes = { "markdown" }
 vim.keymap.set("n", "<leader>mp", vim.cmd.MarkdownPreview, { desc = "Markdown Preview" })
 
 require("render-markdown").setup({
-  bullet = { enabled = false },
+  bullet = {
+    icons = { "⦁", "◦", "▪", "▫" },
+    right_pad = 1,
+  },
   anti_conceal = {
     enabled = false,
     ignore = {
