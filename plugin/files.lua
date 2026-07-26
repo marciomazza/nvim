@@ -17,7 +17,10 @@ require("fff").setup({
   layout = {
     height = 1,
     width = 1,
-    preview_size = 0.7,
+    preview_size = function(cols) return 90 / cols end,
+    min_list_height = 0,
+    preview_position = "right",
+    flex = false,
   },
 })
 vim.keymap.set(
