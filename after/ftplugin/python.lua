@@ -19,7 +19,7 @@ vim.keymap.set("n", "<leader>b", insert_breakpoint, { noremap = true, silent = t
 -- (see after/queries/python/injections.scm for which patterns qualify).
 -- highlights.scm priority tricks don't reliably override injection subtree
 -- highlights, so we apply extmarks directly at priority 200, which layers
--- bg+italic on top of the per-token JS colors from the injection.
+-- a bg tint on top of the per-token JS colors from the injection.
 
 local JS_NS = vim.api.nvim_create_namespace("python_js_embedded")
 
@@ -33,7 +33,7 @@ local function set_js_hl()
   local bg = math.floor(ch(base, 16) * 0.8 + ch(cyan, 16) * 0.2) * 0x10000
     + math.floor(ch(base, 8) * 0.8 + ch(cyan, 8) * 0.2) * 0x100
     + math.floor(ch(base, 0) * 0.8 + ch(cyan, 0) * 0.2)
-  vim.api.nvim_set_hl(0, "@python.js_embedded", { italic = true, bg = bg })
+  vim.api.nvim_set_hl(0, "@python.js_embedded", { bg = bg })
 end
 set_js_hl()
 vim.api.nvim_create_autocmd("ColorScheme", { callback = set_js_hl })
