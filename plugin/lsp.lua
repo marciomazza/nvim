@@ -33,7 +33,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 vim.lsp.enable("pytest_lsp")
 vim.lsp.enable("cotton")
 
-require("mason").setup()
+require("mason").setup({ npm = { ["min-release-age"] = 3 } })
 require("mason-lspconfig").setup({
   ensure_installed = {
     -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
