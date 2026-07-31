@@ -56,12 +56,16 @@ require("cyberdream").setup({
   highlights = {
     Visual = { bg = "#E8D5FF" },
 
+    Search = { bg = "#DCE3EA", fg = cyberdream_fg },
+    IncSearch = { bg = palette.purple, fg = cyberdream_bg },
+    CurSearch = { bg = palette.purple, fg = cyberdream_bg },
+
     MiniStatuslineDevinfo = { bg = "#DAD8CE" },
     MiniStatuslineFilename = { bg = "#E6E4D9" },
 
     MiniStatuslineFileinfo = { bg = "#DAD8CE" },
     -- swap active/inactive tab colors: active tabs now light, inactive tabs dark
-    MiniTablineCurrent = { fg = palette.orange, bg = "#F5EAA0", bold = true },
+    MiniTablineCurrent = { fg = palette.purple, bg = "#E8D5FF", bold = true },
     MiniTablineVisible = { fg = cyberdream_grey, bg = cyberdream_bg },
     MiniTablineHidden = { fg = cyberdream_fg, bg = cyberdream_bg_highlight },
     MiniTablineFill = { bg = cyberdream_bg_highlight },
