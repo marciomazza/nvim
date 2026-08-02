@@ -3,15 +3,15 @@
 ; JavaScript injections for Python files.
 ; Enables JS syntax highlighting inside Python strings that contain JavaScript,
 ; covering four patterns used in this codebase:
-;   1. Strings assigned to a variable named `js`
+;   1. Strings assigned to a variable ending in `js` or `JS`
 ;   2. String literals passed directly to .eval() or .eval_async()
 ;   3. Strings returned from functions whose name ends in `js`
 ;   4. pytest.mark.parametrize lists where a fixture name ends in `js`
 
-; Inject JavaScript into strings assigned to a variable named `js`
+; Inject JavaScript into strings assigned to a variable ending in `js` or `JS`
 (assignment
   left: (identifier) @_var
-  (#eq? @_var "js")
+  (#match? @_var "(js|JS)$")
   right: (string
     (string_content) @injection.content)
   (#set! injection.language "javascript"))
