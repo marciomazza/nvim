@@ -37,9 +37,36 @@ require("lazydev").setup({
 
 local jj_log_current = "jj log -r @ --no-graph"
 
+-- Both backends leave the diff panes at 50/50; widen the right side by 40 columns.
+-- Native sets the 'diff' window option; codediff doesn't, so fall back to its own API.
+local function widen_right_diff_pane()
+  vim.schedule(function()
+    local wins = vim.tbl_filter(
+      function(w) return vim.wo[w].diff end,
+      vim.api.nvim_tabpage_list_wins(0)
+    )
+    if #wins ~= 2 then
+      local ok, lifecycle = pcall(require, "codediff.ui.lifecycle")
+      local left, right = ok and lifecycle.get_windows(vim.api.nvim_get_current_tabpage())
+      if not (left and right) then return end
+      wins = { left, right }
+    end
+    table.sort(
+      wins,
+      function(a, b)
+        return vim.api.nvim_win_get_position(a)[2] < vim.api.nvim_win_get_position(b)[2]
+      end
+    )
+    local total = vim.api.nvim_win_get_width(wins[1]) + vim.api.nvim_win_get_width(wins[2])
+    vim.api.nvim_win_set_width(wins[2], math.floor(total / 2) + 40)
+    vim.api.nvim_set_current_win(wins[2])
+  end)
+end
+
 local function jj_diff()
   local is_empty = vim.fn.system(jj_log_current .. " -T 'empty'"):match("true")
   require("jj.diff").open_vdiff(is_empty and { rev = "@--" } or nil)
+  widen_right_diff_pane()
 end
 
 local function setup_and_jj_diff()
