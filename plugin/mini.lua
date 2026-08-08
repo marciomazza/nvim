@@ -152,8 +152,16 @@ vim.api.nvim_create_autocmd("FileType", {
   pattern = "fff_input",
   callback = function() vim.b.minicompletion_disable = true end,
 })
-local gen_loader = require("mini.snippets").gen_loader
-setup("mini.snippets", { snippets = { gen_loader.from_lang() } })
+local MiniSnippets = require("mini.snippets")
+local gen_loader = MiniSnippets.gen_loader
+setup("mini.snippets", {
+  snippets = { gen_loader.from_lang() },
+  expand = {
+    -- require non-whitespace before cursor, otherwise every snippet matches and Tab
+    -- opens a picker instead of inserting indentation on blank/indented lines
+    match = function(snips) return MiniSnippets.default_match(snips, { pattern_fuzzy = "%S+" }) end,
+  },
+})
 
 local MiniKeymap = setup("mini.keymap")
 -- NOTE: this will never insert tab, press <C-v><Tab> for that
