@@ -19,6 +19,14 @@ end
 vim.opt.clipboard = "unnamedplus" -- use standard clipboard
 vim.opt.diffopt:append("iwhite") -- ignore whitespace in vimdiff
 
+-- wrap breaks diff filler-line alignment when panes have unequal widths (e.g. widened right pane)
+vim.api.nvim_create_autocmd("OptionSet", {
+  pattern = "diff",
+  callback = function()
+    if vim.v.option_new == true then vim.wo.wrap = false end
+  end,
+})
+
 -- spelllang from $LANG (e.g. pt_BR.UTF-8 -> "pt_br")
 vim.opt.spelllang = (vim.env.LANG or ""):lower():match("^%l%l_%l%l") or "pt_br"
 vim.api.nvim_create_autocmd("FileType", {
