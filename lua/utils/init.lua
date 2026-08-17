@@ -64,11 +64,15 @@ for lang, key in pairs({ en_us = "<F6>", pt_br = "<F7>" }) do
   vim.keymap.set("n", key, toggle_spell_check, { desc = desc })
 end
 
+--- Buffer name, resolving markdown-table-wrap reader buffers to their real source file
+function M.real_bufname(bufnr)
+  local source_buf = vim.b[bufnr or 0].markdown_table_wrap_source
+  return vim.api.nvim_buf_get_name(source_buf or bufnr or 0)
+end
+
 -- Ctrl+g: also copy file path
 vim.keymap.set("n", "<C-g>", function()
-  -- markdown-table-wrap reader buffers rename themselves to a fake URI; recover the real source buffer
-  local source_buf = vim.b.markdown_table_wrap_source
-  vim.fn.setreg("+", vim.api.nvim_buf_get_name(source_buf or 0))
+  vim.fn.setreg("+", M.real_bufname())
   vim.cmd("file")
 end, { desc = "Show file info and copy it's path to clipboard" })
 
