@@ -65,7 +65,11 @@ local MiniFiles = setup("mini.files", {
 })
 
 local function minifiles_toggle()
-  if not MiniFiles.close() then MiniFiles.open(vim.api.nvim_buf_get_name(0)) end
+  if MiniFiles.close() then return end
+  local path = vim.api.nvim_buf_get_name(0)
+  -- some plugins (e.g. markdown-table-wrap reader mode) rename the buffer to a fake URI
+  if vim.fn.filereadable(path) == 0 then path = vim.fn.getcwd() end
+  MiniFiles.open(path)
 end
 
 vim.keymap.set("n", "<F3>", minifiles_toggle, { desc = "Toggle file explorer" })
