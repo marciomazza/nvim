@@ -9,8 +9,6 @@ vim.pack.add({
   "https://github.com/ice345/markdown-table-wrap.nvim",
 })
 
-require("markdown-table-wrap").setup()
-
 vim.g.mkdp_filetypes = { "markdown" }
 vim.keymap.set("n", "<leader>mp", vim.cmd.MarkdownPreview, { desc = "Markdown Preview" })
 
@@ -42,3 +40,5 @@ require("render-markdown").setup({
     },
   },
 })
+
+require("markdown-table-wrap").setup()

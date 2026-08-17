@@ -66,7 +66,9 @@ end
 
 -- Ctrl+g: also copy file path
 vim.keymap.set("n", "<C-g>", function()
-  vim.fn.setreg("+", vim.api.nvim_buf_get_name(0))
+  -- markdown-table-wrap reader buffers rename themselves to a fake URI; recover the real source buffer
+  local source_buf = vim.b.markdown_table_wrap_source
+  vim.fn.setreg("+", vim.api.nvim_buf_get_name(source_buf or 0))
   vim.cmd("file")
 end, { desc = "Show file info and copy it's path to clipboard" })
 
