@@ -66,8 +66,9 @@ local MiniFiles = setup("mini.files", {
 
 local function minifiles_toggle()
   if MiniFiles.close() then return end
-  local path = vim.api.nvim_buf_get_name(0)
-  -- some plugins (e.g. markdown-table-wrap reader mode) rename the buffer to a fake URI
+  -- markdown-table-wrap reader buffers rename themselves to a fake URI; recover the real source buffer
+  local source_buf = vim.b.markdown_table_wrap_source
+  local path = vim.api.nvim_buf_get_name(source_buf or 0)
   if vim.fn.filereadable(path) == 0 then path = vim.fn.getcwd() end
   MiniFiles.open(path)
 end
