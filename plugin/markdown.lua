@@ -11,6 +11,12 @@ vim.pack.add({
 
 vim.g.mkdp_filetypes = { "markdown" }
 vim.keymap.set("n", "<leader>mp", vim.cmd.MarkdownPreview, { desc = "Markdown Preview" })
+vim.keymap.set(
+  "n",
+  "<leader>mo",
+  vim.cmd.MarkdownTableToggleReader,
+  { desc = "Toggle Markdown table wrap" }
+)
 
 require("render-markdown").setup({
   bullet = {
