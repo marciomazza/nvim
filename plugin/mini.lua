@@ -167,8 +167,11 @@ setup("mini.snippets", {
 })
 
 local MiniKeymap = setup("mini.keymap")
--- NOTE: this will never insert tab, press <C-v><Tab> for that
+local function only_blank_before_cursor()
+  return vim.api.nvim_get_current_line():sub(1, vim.fn.col(".") - 1):match("%S") == nil
+end
 local tab_steps = {
+  { condition = only_blank_before_cursor, action = function() return "\t" end },
   "minisnippets_next",
   "minisnippets_expand",
   "pmenu_next",
