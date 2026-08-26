@@ -61,6 +61,9 @@ local function widen_right_diff_pane(attempt)
   )
   local total = vim.api.nvim_win_get_width(wins[1]) + vim.api.nvim_win_get_width(wins[2])
   vim.api.nvim_win_set_width(wins[2], math.floor(total / 2) + 40)
+  -- Without this, Vim's 'equalalways' resets the split back to 50/50 on the
+  -- next unrelated window event (completion popup, aerial toggle, etc).
+  vim.wo[wins[2]].winfixwidth = true
   vim.api.nvim_set_current_win(wins[2])
 end
 
