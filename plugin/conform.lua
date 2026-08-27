@@ -39,14 +39,38 @@ local function python_pre_injected(self, ctx, lines, callback)
     local string_id = string_node:id()
     if string_id == last_string_id then goto continue end
     last_string_id = string_id
+    -- Mark f-string regions so post_js_in_py knows to re-double every brace
+    -- the formatter emits (a lone `{` in an f-string is an interpolation).
+    local prefix = string_node:child(0)
+    local is_fstring = prefix
+      and prefix:type() == "string_start"
+      and vim.treesitter.get_node_text(prefix, ctx.buf):lower():find("f", 1, true)
+    local marker_pos = nil
     for child in string_node:iter_children() do
       local _, _, child_start, _, _, child_end = child:range(true)
       if child:type() == "interpolation" then
         register_slot(vim.treesitter.get_node_text(child, ctx.buf), child_start, child_end)
+      elseif child:type() == "string_content" then
+        -- Sit the marker right after the last real character, not on the
+        -- (less-indented) closing-quote line, so it can't lower the block's
+        -- detected common indent when conform dedents it.
+        local trimmed = vim.treesitter.get_node_text(child, ctx.buf):gsub("%s+$", "")
+        marker_pos = child_start + #trimmed
       end
     end
+    if is_fstring and marker_pos then add_replace(marker_pos, marker_pos, "/*__FSTR__*/") end
     ::continue::
   end
+
+  -- The f-string marker is appended after a string's slots but its byte offset
+  -- can precede them, so the rebuild below needs the list sorted by position.
+  table.sort(replacements, function(a, b)
+    if a.start_byte == b.start_byte then
+      return a.end_byte < b.end_byte
+    else
+      return a.start_byte < b.start_byte
+    end
+  end)
 
   local prev_end = 0
   local replaced_text = vim
@@ -74,10 +98,12 @@ end
 
 local function pre_js_in_py(self, ctx, lines, callback)
   vim.b[ctx.buf].was_single_line = #lines == 1
-  for i, line in ipairs(lines) do
-    lines[i] = line:gsub("{{", "{__BRACKET_START__;"):gsub("}}", ";__BRACKET_END__;}")
+  local text = table.concat(lines, "\n")
+  if text:find("/*__FSTR__*/", 1, true) then
+    vim.b[ctx.buf].is_fstring = true
+    text = text:gsub("{{", "{"):gsub("}}", "}")
   end
-  callback(nil, lines)
+  callback(nil, vim.split(text, "\n"))
 end
 
 local function trim_single_end_semicolon(lines)
@@ -98,15 +124,22 @@ local function get_injected_print_width()
 end
 
 local function post_js_in_py(self, ctx, lines, callback)
+  -- Strip the marker first: later steps inspect the last line's trailing `;`.
+  if vim.b[ctx.buf].is_fstring then
+    vim.b[ctx.buf].is_fstring = nil
+    -- A lone brace in an f-string is interpolation syntax; the formatter's
+    -- literal braces must all be doubled. Interpolations are still __SLOT__
+    -- tokens here, so they keep their single braces after restore.
+    local text = table.concat(lines, "\n"):gsub("[{}]", { ["{"] = "{{", ["}"] = "}}" })
+    text = text:gsub("%s*/%*__FSTR__%*/", "")
+    lines = vim.split(text, "\n")
+  end
   if vim.b[ctx.buf].was_single_line then
     local joined = vim.iter(lines):map(vim.trim):join(" ")
     if #joined <= get_injected_print_width() then lines = { joined } end
   end
   trim_single_end_semicolon(lines)
-  local text = table.concat(lines, "\n")
-  text = text:gsub("{%s*__BRACKET_START__%s*;", "{{")
-  text = text:gsub("%s*__BRACKET_END__;(%s*)}", "%1}}")
-  callback(nil, vim.split(text, "\n"))
+  callback(nil, lines)
 end
 
 local oxc = { "oxlint", "oxfmt" }
