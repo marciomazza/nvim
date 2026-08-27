@@ -34,6 +34,15 @@ require("lazydev").setup({
   },
 })
 
+-- jj strips JJ: lines anyway; just declutter the editor
+vim.api.nvim_create_autocmd("BufReadPost", {
+  pattern = "*.jjdescription",
+  callback = function()
+    vim.cmd([[silent! keeppatterns g/^JJ: Enter a description for the combined commit\.$/d]])
+    vim.cmd([[silent! keeppatterns g/^JJ: Description from the destination commit:$/d]])
+  end,
+})
+
 local jj_log_current = "jj log -r @ --no-graph"
 
 local function jj_diff()
