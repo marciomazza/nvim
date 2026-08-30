@@ -2,11 +2,15 @@
 ;
 ; JavaScript injections for Rust files.
 ; Enables JS syntax highlighting inside Rust string literals (plain or raw)
-; that contain JavaScript, covering three patterns used in this codebase:
+; that contain JavaScript, covering:
 ;   1. Strings assigned to a variable ending in `js` or `JS`
 ;   2. Strings returned from functions whose name ends in `js`
 ;   3. `for <name>js in [ ... ]` loops over a list of JS strings
 ;   4. `for (<name>js, ...) in &[ ("...", ...), ... ]` — first field of each tuple
+;
+; Inside `format!(r#"..."#)` the upstream macro->rust injection also paints the
+; raw string, so lua/js_embedded.lua re-stamps the JS token highlights on top
+; at a higher priority.
 
 ; let <var>js = "..." / r#"..."# / format!(r#"..."#)
 (let_declaration
