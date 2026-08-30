@@ -7,6 +7,7 @@
 ;   2. Strings returned from functions whose name ends in `js`
 ;   3. `for <name>js in [ ... ]` loops over a list of JS strings
 ;   4. `for (<name>js, ...) in &[ ("...", ...), ... ]` — first field of each tuple
+;   5. String arguments to `.eval()` / `.eval_async()`
 ;
 ; Inside `format!(r#"..."#)` the upstream macro->rust injection also paints the
 ; raw string, so lua/js_embedded.lua re-stamps the JS token highlights on top
@@ -46,6 +47,17 @@
   pattern: (identifier) @_var
   (#match? @_var "(js|JS)$")
   value: (array_expression [
+    (string_literal (string_content) @injection.content)
+    (raw_string_literal (string_content) @injection.content)
+  ])
+  (#set! injection.language "javascript"))
+
+; rt.eval("...") / rt.eval_async(r#"..."#)
+(call_expression
+  function: (field_expression
+    field: (field_identifier) @_method
+    (#match? @_method "^eval(_async)?$"))
+  arguments: (arguments [
     (string_literal (string_content) @injection.content)
     (raw_string_literal (string_content) @injection.content)
   ])

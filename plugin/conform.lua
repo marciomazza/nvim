@@ -123,7 +123,11 @@ local function rust_pre_injected(self, ctx, lines, callback)
       while macro and macro:type() ~= "macro_invocation" do
         macro = macro:parent()
       end
-      if macro then
+      -- Only format! strings need interpolation/brace handling; a raw string
+      -- passed to `.eval()` is plain JS and must not have its braces doubled.
+      local name = macro and macro:field("macro")[1]
+      name = name and vim.treesitter.get_node_text(name, text)
+      if name == "format" or name == "format_args" then
         local _, _, start_byte, _, _, end_byte = node:range(true)
         local body = text:sub(start_byte + 1, end_byte)
         body = body:gsub("{{", "\1"):gsub("}}", "\2")
