@@ -8,13 +8,18 @@
 ;   3. `for <name>js in [ ... ]` loops over a list of JS strings
 ;   4. `for (<name>js, ...) in &[ ("...", ...), ... ]` — first field of each tuple
 
-; let <var>js = "..." / r#"..."#
+; let <var>js = "..." / r#"..."# / format!(r#"..."#)
 (let_declaration
   pattern: (identifier) @_var
   (#match? @_var "(js|JS)$")
   value: [
     (string_literal (string_content) @injection.content)
     (raw_string_literal (string_content) @injection.content)
+    (macro_invocation
+      (token_tree [
+        (string_literal (string_content) @injection.content)
+        (raw_string_literal (string_content) @injection.content)
+      ]))
   ]
   (#set! injection.language "javascript"))
 
