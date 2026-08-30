@@ -52,7 +52,7 @@
   ])
   (#set! injection.language "javascript"))
 
-; rt.eval("...") / rt.run_async(r#"..."#) etc.
+; rt.eval("...") / rt.run_async(r#"..."#) / rt.run(&format!(r#"..."#)) etc.
 (call_expression
   function: (field_expression
     field: (field_identifier) @_method
@@ -60,6 +60,14 @@
   arguments: (arguments [
     (string_literal (string_content) @injection.content)
     (raw_string_literal (string_content) @injection.content)
+    (macro_invocation (token_tree [
+      (string_literal (string_content) @injection.content)
+      (raw_string_literal (string_content) @injection.content)
+    ]))
+    (reference_expression (macro_invocation (token_tree [
+      (string_literal (string_content) @injection.content)
+      (raw_string_literal (string_content) @injection.content)
+    ])))
   ])
   (#set! injection.language "javascript"))
 

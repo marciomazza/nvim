@@ -131,13 +131,14 @@ local function rust_pre_injected(self, ctx, lines, callback)
         local _, _, start_byte, _, _, end_byte = node:range(true)
         local body = text:sub(start_byte + 1, end_byte)
         body = body:gsub("{{", "\1"):gsub("}}", "\2")
-        body = body:gsub("(%b{})(;?)([^\n]*)", function(expr, semi, rest)
+        body = body:gsub("(%b{})(;?)", function(expr, semi)
           slots[#slots + 1] = { text = expr, semi = semi ~= "" }
-          -- In statement position emit a `;` so the placeholder is a complete
-          -- statement (a bare identifier before a `[`/`(` line trips up ASI).
-          local stmt = semi ~= "" or rest:match("^%s*$") ~= nil
-          return "__RUSTFMTSLOT" .. #slots .. "__" .. (stmt and ";" or "") .. rest
+          return "__RUSTFMTSLOT" .. #slots .. "__" .. semi
         end)
+        -- A placeholder alone on its line is a statement; give it a `;` so a
+        -- bare identifier before a `[`/`(` line can't trip up ASI.
+        body = body:gsub("(__RUSTFMTSLOT%d+__)([ \t]*\n)", "%1;%2")
+        body = body:gsub("(__RUSTFMTSLOT%d+__)([ \t]*)$", "%1;%2")
         body = body:gsub("\1", "{{"):gsub("\2", "}}")
         body = body:gsub("(%s*)$", "/*__FSTR__*/%1", 1)
         regions[#regions + 1] = { start_byte, end_byte, body }
