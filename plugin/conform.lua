@@ -39,7 +39,7 @@ local function python_pre_injected(self, ctx, lines, callback)
     local string_id = string_node:id()
     if string_id == last_string_id then goto continue end
     last_string_id = string_id
-    -- Mark f-string regions so post_js_in_py knows to re-double every brace
+    -- Mark f-string regions so post_js_injected knows to re-double every brace
     -- the formatter emits (a lone `{` in an f-string is an interpolation).
     local prefix = string_node:child(0)
     local is_fstring = prefix
@@ -99,7 +99,7 @@ end
 -- format!(r#"..."#) raw strings use `{name}` interpolation and `{{`/`}}` for
 -- literal braces. Slot the interpolations out (as bare identifiers so the JS
 -- formatter keeps them on their own line) and mark each region so
--- pre/post_js_in_py unescape the doubled braces around oxfmt, exactly as the
+-- pre/post_js_injected unescape the doubled braces around oxfmt, exactly as the
 -- f-string path does for Python. The trailing `;` is tracked per slot because
 -- oxfmt adds one to every statement whether the source had it or not.
 local function rust_pre_injected(self, ctx, lines, callback)
@@ -165,7 +165,7 @@ local function rust_post_injected(self, ctx, lines, callback)
   callback(nil, vim.split(text, "\n"))
 end
 
-local function pre_js_in_py(self, ctx, lines, callback)
+local function pre_js_injected(self, ctx, lines, callback)
   vim.b[ctx.buf].was_single_line = #lines == 1
   local text = table.concat(lines, "\n")
   if text:find("/*__FSTR__*/", 1, true) then
@@ -192,7 +192,7 @@ local function get_injected_print_width()
   return injected_print_width
 end
 
-local function post_js_in_py(self, ctx, lines, callback)
+local function post_js_injected(self, ctx, lines, callback)
   -- Strip the marker first: later steps inspect the last line's trailing `;`.
   if vim.b[ctx.buf].is_fstring then
     vim.b[ctx.buf].is_fstring = nil
@@ -245,16 +245,16 @@ require("conform").setup({
     python_post_injected = { format = python_post_injected },
     rust_pre_injected = { format = rust_pre_injected },
     rust_post_injected = { format = rust_post_injected },
-    pre_js_in_py = { format = pre_js_in_py },
-    post_js_in_py = { format = post_js_in_py },
+    pre_js_injected = { format = pre_js_injected },
+    post_js_injected = { format = post_js_injected },
     injected = {
       options = {
         lang_to_formatters = {
           javascript = {
-            "pre_js_in_py",
+            "pre_js_injected",
             "oxlint",
             "oxfmt_injected",
-            "post_js_in_py",
+            "post_js_injected",
             "trim_single_semicolon",
           },
         },
