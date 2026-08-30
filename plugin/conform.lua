@@ -97,21 +97,25 @@ local function python_post_injected(self, ctx, lines, callback)
 end
 
 -- format!(r#"..."#) raw strings use `{name}` interpolation and `{{`/`}}` for
--- literal braces. Slot the interpolations out (as comments so the JS formatter
--- leaves them alone) and mark each region so pre/post_js_in_py unescape the
--- doubled braces around oxfmt, exactly as the f-string path does for Python.
+-- literal braces. Slot the interpolations out (as bare identifiers so the JS
+-- formatter keeps them on their own line) and mark each region so
+-- pre/post_js_in_py unescape the doubled braces around oxfmt, exactly as the
+-- f-string path does for Python. The trailing `;` is tracked per slot because
+-- oxfmt adds one to every statement whether the source had it or not.
 local function rust_pre_injected(self, ctx, lines, callback)
   local query = vim.treesitter.query.get("rust", "injections")
   if not query then return callback(nil, lines) end
-  local ok, parser = pcall(vim.treesitter.get_parser, ctx.buf, "rust")
+  local text = table.concat(lines, "\n")
+  -- Parse the text we were handed, not the buffer: an earlier formatter
+  -- (rustfmt) may have shifted every byte offset already.
+  local ok, parser = pcall(vim.treesitter.get_string_parser, text, "rust")
   if not ok then return callback(nil, lines) end
   local root = parser:parse()[1]:root()
 
-  local text = table.concat(lines, "\n")
   local slots = {}
   local regions = {}
 
-  for id, node in query:iter_captures(root, ctx.buf) do
+  for id, node in query:iter_captures(root, text) do
     -- Our JS injections capture `string_content`; the upstream macro->rust
     -- rule captures the whole `token_tree` — skip that one.
     if query.captures[id] == "injection.content" and node:type() == "string_content" then
@@ -123,9 +127,12 @@ local function rust_pre_injected(self, ctx, lines, callback)
         local _, _, start_byte, _, _, end_byte = node:range(true)
         local body = text:sub(start_byte + 1, end_byte)
         body = body:gsub("{{", "\1"):gsub("}}", "\2")
-        body = body:gsub("%b{}", function(expr)
-          slots[#slots + 1] = expr
-          return "/*__SLOT_" .. #slots .. "__*/"
+        body = body:gsub("(%b{})(;?)([^\n]*)", function(expr, semi, rest)
+          slots[#slots + 1] = { text = expr, semi = semi ~= "" }
+          -- In statement position emit a `;` so the placeholder is a complete
+          -- statement (a bare identifier before a `[`/`(` line trips up ASI).
+          local stmt = semi ~= "" or rest:match("^%s*$") ~= nil
+          return "__RUSTFMTSLOT" .. #slots .. "__" .. (stmt and ";" or "") .. rest
         end)
         body = body:gsub("\1", "{{"):gsub("\2", "}}")
         body = body:gsub("(%s*)$", "/*__FSTR__*/%1", 1)
@@ -149,7 +156,12 @@ local function rust_post_injected(self, ctx, lines, callback)
   if not slots then return callback(nil, lines) end
   vim.b[ctx.buf].rust_js_slots = nil
   local text = table.concat(lines, "\n")
-  text = text:gsub("/%*__SLOT_(%d+)__%*/", function(i) return slots[tonumber(i)] end)
+  text = text:gsub("__RUSTFMTSLOT(%d+)__(;?)", function(i)
+    local slot = slots[tonumber(i)]
+    return slot.text .. (slot.semi and ";" or "")
+  end)
+  -- Safety net: if the JS formatter bailed on a region the marker survives.
+  text = text:gsub("%s*/%*__FSTR__%*/", "")
   callback(nil, vim.split(text, "\n"))
 end
 
@@ -205,7 +217,9 @@ local for_htmldjango = { "rustywind", "djangofmt" }
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
-    rust = { "rustfmt", "rust_pre_injected", "injected", "rust_post_injected" },
+    -- rustfmt last: `injected` reads line numbers straight off the buffer, so
+    -- nothing ahead of it may change the line count.
+    rust = { "rust_pre_injected", "injected", "rust_post_injected", "rustfmt" },
     python = {
       "python_pre_injected",
       "injected",
