@@ -53,11 +53,17 @@
   ])
   (#set! injection.language "javascript"))
 
-; rt.eval("...") / rt.try_eval_async(r#"..."#) / rt.run(&format!(r#"..."#)) etc.
+; rt.eval("...") / rt.try_eval_async(r#"..."#) / rt.eval::<String>("...") etc.
+; `generic_function` covers the turbofish form `rt.eval::<T>(...)`.
 (call_expression
-  function: (field_expression
-    field: (field_identifier) @_method
-    (#match? @_method "^(try_eval|eval|run)(_async)?$"))
+  function: [
+    (field_expression
+      field: (field_identifier) @_method)
+    (generic_function
+      function: (field_expression
+        field: (field_identifier) @_method))
+  ]
+  (#match? @_method "^(try_eval|eval|run)(_async)?$")
   arguments: (arguments [
     (string_literal (string_content) @injection.content)
     (raw_string_literal (string_content) @injection.content)
