@@ -2,7 +2,45 @@ vim.pack.add({
   "https://github.com/stevearc/conform.nvim",
 })
 
+-- Column the inline-JS body lands at once conform re-indents the formatted block
+-- back into the buffer: the indent of its first content line (conform re-adds
+-- that prefix to every wrapped line). If JS already sits on the opening-quote
+-- line, conform doesn't re-indent it and the body just starts at `scol`.
+-- lines: 1-indexed; srow/erow: 0-indexed first/last rows of the JS body.
+local function region_leading(lines, srow, scol, erow)
+  if lines[srow + 1] and lines[srow + 1]:sub(scol + 1):match("%S") then return scol end
+  for i = srow + 2, erow + 1 do
+    local ws = lines[i] and lines[i]:match("^(%s*)%S")
+    if ws then return #ws end
+  end
+  return scol
+end
+
+-- Print width per JS region, ordered by start row descending to match conform's
+-- region numbering (see below). Each region is formatted on its own and may sit
+-- at a different indent, so a wrapped line still fits 100 cols after re-indent.
+local function injected_region_width(lines, srow, scol, erow)
+  return { srow, math.max(100 - region_leading(lines, srow, scol, erow), 20) }
+end
+
+local function store_injected_regions(buf, list)
+  table.sort(list, function(a, b) return a[1] > b[1] end)
+  vim.b[buf].injected_js_regions = list
+end
+
+-- conform formats each region in a temp buffer `<real path>.<N>.js`, where N is
+-- the region's 1-based position ordered by start row descending (see
+-- conform/formatters/injected.lua). Walk the name back to that region's width.
+local function injected_js_width(ctx)
+  local name = vim.api.nvim_buf_get_name(ctx.buf)
+  local idx = tonumber(name:match("%.(%d+)%.js$"))
+  local buf = vim.fn.bufnr((name:gsub("%.%d+%.js$", "")), false)
+  local regions = idx and buf ~= -1 and vim.b[buf].injected_js_regions
+  return (regions and regions[idx] and regions[idx][2]) or 88
+end
+
 local function python_pre_injected(self, ctx, lines, callback)
+  vim.b[ctx.buf].injected_js_regions = nil
   local query = vim.treesitter.query.get("python", "injections")
   if not query then return callback(nil, lines) end
   local root = vim.treesitter.get_parser(ctx.buf):trees()[1]:root()
@@ -33,12 +71,14 @@ local function python_pre_injected(self, ctx, lines, callback)
     add_replace(start_byte, end_byte, placeholder)
   end
 
+  local js_regions = {}
   local last_string_id = nil
   for _, node in ipairs(nodes) do
     local string_node = node:parent()
     local string_id = string_node:id()
     if string_id == last_string_id then goto continue end
     last_string_id = string_id
+    local srow, _, erow = string_node:range()
     -- Mark f-string regions so post_js_injected knows to re-double every brace
     -- the formatter emits (a lone `{` in an f-string is an interpolation).
     local prefix = string_node:child(0)
@@ -56,11 +96,14 @@ local function python_pre_injected(self, ctx, lines, callback)
         -- detected common indent when conform dedents it.
         local trimmed = vim.treesitter.get_node_text(child, ctx.buf):gsub("%s+$", "")
         marker_pos = child_start + #trimmed
+        local _, body_col = child:range()
+        js_regions[#js_regions + 1] = injected_region_width(lines, srow, body_col, erow)
       end
     end
     if is_fstring and marker_pos then add_replace(marker_pos, marker_pos, "/*__FSTR__*/") end
     ::continue::
   end
+  store_injected_regions(ctx.buf, js_regions)
 
   -- The f-string marker is appended after a string's slots but its byte offset
   -- can precede them, so the rebuild below needs the list sorted by position.
@@ -88,6 +131,7 @@ local function python_pre_injected(self, ctx, lines, callback)
 end
 
 local function python_post_injected(self, ctx, lines, callback)
+  vim.b[ctx.buf].injected_js_regions = nil
   local slots = vim.b[ctx.buf].fstring_js_slots
   if not slots then return callback(nil, lines) end
   vim.b[ctx.buf].fstring_js_slots = nil
@@ -103,6 +147,7 @@ end
 -- f-string path does for Python. The trailing `;` is tracked per slot because
 -- oxfmt adds one to every statement whether the source had it or not.
 local function rust_pre_injected(self, ctx, lines, callback)
+  vim.b[ctx.buf].injected_js_regions = nil
   local query = vim.treesitter.query.get("rust", "injections")
   if not query then return callback(nil, lines) end
   local text = table.concat(lines, "\n")
@@ -114,6 +159,7 @@ local function rust_pre_injected(self, ctx, lines, callback)
 
   local slots = {}
   local regions = {}
+  local js_regions = {}
 
   for id, node in query:iter_captures(root, text) do
     -- Our JS injections capture `string_content`; the upstream macro->rust
@@ -124,6 +170,8 @@ local function rust_pre_injected(self, ctx, lines, callback)
       -- nested format! (e.g. inside assert!) isn't exposed as a macro_invocation,
       -- so match the call in the text just before the string.
       local _, _, start_byte, _, _, end_byte = node:range(true)
+      local srow, scol, erow = node:range()
+      js_regions[#js_regions + 1] = injected_region_width(lines, srow, scol, erow)
       local before = text
         :sub(1, start_byte)
         :gsub("r?#*[\"']%s*$", "")
@@ -147,6 +195,8 @@ local function rust_pre_injected(self, ctx, lines, callback)
     end
   end
 
+  store_injected_regions(ctx.buf, js_regions)
+
   if #regions == 0 then return callback(nil, lines) end
   vim.b[ctx.buf].rust_js_slots = slots
 
@@ -158,6 +208,7 @@ local function rust_pre_injected(self, ctx, lines, callback)
 end
 
 local function rust_post_injected(self, ctx, lines, callback)
+  vim.b[ctx.buf].injected_js_regions = nil
   local slots = vim.b[ctx.buf].rust_js_slots
   if not slots then return callback(nil, lines) end
   vim.b[ctx.buf].rust_js_slots = nil
@@ -189,15 +240,6 @@ local function trim_single_end_semicolon(lines)
   if n == 1 then lines[#lines] = lines[#lines]:gsub(";$", "") end
 end
 
-local injected_print_width
-local function get_injected_print_width()
-  if injected_print_width then return injected_print_width end
-  local path = vim.fn.stdpath("config") .. "/.oxfmtrc.injected.json"
-  local ok, decoded = pcall(vim.json.decode, table.concat(vim.fn.readfile(path), "\n"))
-  injected_print_width = (ok and decoded.printWidth) or 80
-  return injected_print_width
-end
-
 local function post_js_injected(self, ctx, lines, callback)
   -- Strip the marker first: later steps inspect the last line's trailing `;`.
   if vim.b[ctx.buf].is_fstring then
@@ -211,7 +253,7 @@ local function post_js_injected(self, ctx, lines, callback)
   end
   if vim.b[ctx.buf].was_single_line then
     local joined = vim.iter(lines):map(vim.trim):join(" ")
-    if #joined <= get_injected_print_width() then lines = { joined } end
+    if #joined <= injected_js_width(ctx) then lines = { joined } end
   end
   trim_single_end_semicolon(lines)
   callback(nil, lines)
@@ -268,7 +310,8 @@ require("conform").setup({
     },
     oxfmt_injected = {
       inherit = "oxfmt",
-      append_args = { "-c", vim.fn.stdpath("config") .. "/.oxfmtrc.injected.json" },
+      append_args = { "-c", vim.fn.stdpath("config") .. "/.oxfmtrc.injected.js" },
+      env = function(self, ctx) return { OXFMT_INJECTED_WIDTH = tostring(injected_js_width(ctx)) } end,
     },
     ruff_fix = {
       append_args = { "--unsafe-fixes" },
