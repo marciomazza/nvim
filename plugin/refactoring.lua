@@ -10,7 +10,6 @@ for _, map in ipairs({
   { key = "rv", method = "extract_var", desc = "Extract Variable" },
   { key = "ri", method = "inline_var", desc = "Inline Variable" },
   { key = "rI", method = "inline_func", desc = "Inline function" },
-  { key = "rs", method = "select_refactor", desc = "Select refactor" },
 }) do
   vim.keymap.set(
     { "n", "x" },
@@ -19,6 +18,14 @@ for _, map in ipairs({
     { desc = map.desc, expr = true }
   )
 end
+
+-- `select_refactor` opens its own picker; it must not be an `expr` mapping
+vim.keymap.set(
+  { "n", "x" },
+  "<leader>rs",
+  function() refactoring.select_refactor() end,
+  { desc = "Select refactor" }
+)
 
 -- `_` is the default textobject for "current line"
 vim.keymap.set(
