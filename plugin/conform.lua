@@ -119,16 +119,17 @@ local function rust_pre_injected(self, ctx, lines, callback)
     -- Our JS injections capture `string_content`; the upstream macro->rust
     -- rule captures the whole `token_tree` — skip that one.
     if query.captures[id] == "injection.content" and node:type() == "string_content" then
-      local macro = node:parent()
-      while macro and macro:type() ~= "macro_invocation" do
-        macro = macro:parent()
-      end
-      -- Only format! strings need interpolation/brace handling; a raw string
-      -- passed to `.eval()` is plain JS and must not have its braces doubled.
-      local name = macro and macro:field("macro")[1]
-      name = name and vim.treesitter.get_node_text(name, text)
-      if name == "format" or name == "format_args" then
-        local _, _, start_byte, _, _, end_byte = node:range(true)
+      -- Only format!/format_args! strings need interpolation slotting and brace
+      -- unescaping; a plain string passed to .eval()/.run() is literal JS. A
+      -- nested format! (e.g. inside assert!) isn't exposed as a macro_invocation,
+      -- so match the call in the text just before the string.
+      local _, _, start_byte, _, _, end_byte = node:range(true)
+      local before = text
+        :sub(1, start_byte)
+        :gsub("r?#*[\"']%s*$", "")
+        :gsub("/%*.-%*/%s*$", "")
+        :gsub("[&%s]*$", "")
+      if before:match("format%s*!%s*%($") or before:match("format_args%s*!%s*%($") then
         local body = text:sub(start_byte + 1, end_byte)
         body = body:gsub("{{", "\1"):gsub("}}", "\2")
         body = body:gsub("(%b{})(;?)", function(expr, semi)
