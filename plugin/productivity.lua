@@ -23,7 +23,6 @@ require("checkmate").setup({
     started = {
       aliases = { "init" },
       style = { fg = "#9fd6d5" },
-      get_value = function() return tostring(os.date("%m/%d/%y %H:%M")) end,
       key = "<leader>Ts",
       sort_order = 20,
       on_add = function(todo) require("checkmate").set_todo_state(todo, "in_progress") end,
