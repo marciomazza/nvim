@@ -67,6 +67,12 @@ MiniDiff.setup({
   source = {
     name = "jj",
     attach = function(buf)
+      -- checkmate swaps markdown markers for unicode in-buffer, so every line
+      -- shows as changed against the on-disk reference; skip diff for these files
+      local cm = require("checkmate.config").options
+      if require("checkmate.file_matcher").should_activate_for_buffer(buf, cm.files) then
+        return false
+      end
       jj_set_ref(buf)
       vim.api.nvim_create_autocmd({ "BufWritePost", "ShellCmdPost", "FocusGained" }, {
         buffer = buf,
