@@ -112,7 +112,7 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.foldmethod = "expr"
     vim.opt_local.foldexpr = "v:lua._todo_foldexpr(v:lnum)"
     vim.opt_local.foldtext = ""
-    vim.opt_local.foldlevel = 99
+    vim.opt_local.foldlevel = 0
     local leader = vim.api.nvim_replace_termcodes("<leader>", true, false, true)
     local prefix = leader .. "T"
     for _, mode in ipairs({ "n", "v" }) do
