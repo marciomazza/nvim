@@ -76,6 +76,15 @@ MiniDiff.setup({
   },
 })
 
+-- diff line-number highlights: dark fg + subtle bg tint for the light theme
+for _, s in ipairs({
+  { "MiniDiffSignAdd", "#3a6a00", "#e6eed0" },
+  { "MiniDiffSignChange", "#a35f00", "#f2e2a8" },
+  { "MiniDiffSignDelete", "#a01f24", "#f1d9d6" },
+}) do
+  vim.api.nvim_set_hl(0, s[1], { fg = s[2], bg = s[3], bold = true })
+end
+
 vim.keymap.set(
   "n",
   "<leader>D",
