@@ -158,5 +158,20 @@ vim.api.nvim_create_autocmd("FileType", {
         require("utils").open_url()
       end
     end, { buffer = ev.buf, desc = "Open Redmine issue or URL under cursor" })
+
+    -- checkmate binds <CR> for list continuation, which shadows completion.
+    -- Accept a selected completion item first; otherwise defer to checkmate.
+    local cm_cr
+    for _, map in ipairs(vim.api.nvim_buf_get_keymap(ev.buf, "i")) do
+      if map.lhs:lower() == "<cr>" then cm_cr = map.callback end
+    end
+    if cm_cr then
+      vim.keymap.set("i", "<CR>", function()
+        if vim.fn.pumvisible() == 1 and vim.fn.complete_info({ "selected" }).selected ~= -1 then
+          return "<C-y>"
+        end
+        return cm_cr()
+      end, { buffer = ev.buf, expr = true, desc = "Accept completion or continue todo list" })
+    end
   end,
 })
