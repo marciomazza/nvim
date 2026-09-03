@@ -40,10 +40,6 @@
       "rev": "c106c9472154d6b2c74b74565616b877ae8ed31d",
       "src": "https://github.com/projekt0n/github-nvim-theme"
     },
-    "gitsigns.nvim": {
-      "rev": "25050e4ed39e628282831d4cbecb1850454ce915",
-      "src": "https://github.com/lewis6991/gitsigns.nvim"
-    },
     "grug-far.nvim": {
       "rev": "beb2ce490b72048c587e8a3d919cba1b4608bb04",
       "src": "https://github.com/MagicDuck/grug-far.nvim"

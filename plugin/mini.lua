@@ -42,6 +42,48 @@ setup("mini.statusline")
 setup("mini.tabline")
 
 ------------------------------------------------------------------------------------------
+--- mini.diff (reference from jj: parent change, or grandparent when @ is empty)
+------------------------------------------------------------------------------------------
+local MiniDiff = require("mini.diff")
+
+local function jj_set_ref(buf)
+  local name = vim.api.nvim_buf_get_name(buf)
+  if name == "" or vim.fn.filereadable(name) == 0 then return end
+  local dir = vim.fs.dirname(name)
+  vim.system(
+    { "jj", "log", "-r", "@", "--no-graph", "-T", "empty" },
+    { text = true, cwd = dir },
+    function(r)
+      local rev = r.stdout:match("true") and "@--" or "@-"
+      vim.system({ "jj", "file", "show", "-r", rev, name }, { text = true, cwd = dir }, function(o)
+        if o.code ~= 0 then return end
+        vim.schedule(function() MiniDiff.set_ref_text(buf, o.stdout) end)
+      end)
+    end
+  )
+end
+
+MiniDiff.setup({
+  source = {
+    name = "jj",
+    attach = function(buf)
+      jj_set_ref(buf)
+      vim.api.nvim_create_autocmd({ "BufWritePost", "ShellCmdPost", "FocusGained" }, {
+        buffer = buf,
+        callback = function() jj_set_ref(buf) end,
+      })
+    end,
+  },
+})
+
+vim.keymap.set(
+  "n",
+  "<leader>D",
+  function() MiniDiff.toggle_overlay(0) end,
+  { desc = "Toggle jj diff overlay" }
+)
+
+------------------------------------------------------------------------------------------
 --- mini.files
 ------------------------------------------------------------------------------------------
 local file_explorer_ignored = { ".*\\.pyc", "__pycache__", "ipython_log\\.py.*" }

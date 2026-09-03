@@ -1,5 +1,4 @@
 vim.pack.add({
-  "https://github.com/lewis6991/gitsigns.nvim",
   "https://github.com/andymass/vim-matchup",
   "https://github.com/windwp/nvim-ts-autotag",
   "https://github.com/windwp/nvim-autopairs",
@@ -11,7 +10,6 @@ vim.pack.add({
   "https://github.com/nicolasgb/jj.nvim",
 })
 
-require("gitsigns").setup()
 vim.g.matchup_matchparen_offscreen = { method = "popup" }
 require("nvim-ts-autotag").setup()
 require("nvim-autopairs").setup()
