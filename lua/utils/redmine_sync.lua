@@ -328,7 +328,10 @@ function M.open_issues_report()
     end
 
     -- uncategorized issues sit directly under the version heading
-    if by_cat[""] then emit_issues(by_cat[""]) end
+    if by_cat[""] then
+      lines[#lines + 1] = ""
+      emit_issues(by_cat[""])
+    end
 
     local cat_order = vim.list_extend({}, CATEGORY_ORDER)
     local extras = {}
@@ -342,6 +345,7 @@ function M.open_issues_report()
       if by_cat[cat] then
         lines[#lines + 1] = ""
         lines[#lines + 1] = "### " .. cat
+        lines[#lines + 1] = ""
         emit_issues(by_cat[cat])
       end
     end
