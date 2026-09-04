@@ -1,6 +1,7 @@
--- Self-check for redmine_sync.heading_above. Run: nvim -l lua/utils/redmine_sync_test.lua
+-- Self-checks for redmine_sync. Run: nvim -l lua/utils/redmine_sync_test.lua
 
-local heading_above = require("utils.redmine_sync")._heading_above
+local rs = require("utils.redmine_sync")
+local heading_above = rs._heading_above
 
 -- rows:  0 "# Tasks"  2 "## v1"  4 "### triagem"  8 "## v2"
 local headings = {
@@ -24,5 +25,22 @@ assert(heading_above(headings, 9, 3) == nil)
 
 -- item above any h2
 assert(heading_above(headings, 1, 2) == nil)
+
+-- get_headings: an indented "### x" is description text, not a section heading
+local buf = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_buf_set_lines(buf, 0, -1, false, {
+  "# Tasks",
+  "",
+  "## v1",
+  "- [ ] a task @issue(#1)",
+  "",
+  "  some description",
+  "  ### sugestão",
+  "  - an idea",
+})
+vim.bo[buf].filetype = "markdown"
+vim.treesitter.get_parser(buf, "markdown"):parse()
+local got = vim.tbl_map(function(h) return h.text end, rs._get_headings(buf))
+assert(vim.deep_equal(got, { "Tasks", "v1" }), vim.inspect(got))
 
 print("ok")

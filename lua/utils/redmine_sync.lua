@@ -385,7 +385,7 @@ local function get_headings(bufnr)
   local headings = {}
 
   for _, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
-    local row = node:range()
+    local row, col = node:range()
     local level, text = 0, ""
     for child in node:iter_children() do
       local t = child:type()
@@ -395,12 +395,17 @@ local function get_headings(bufnr)
         text = vim.trim(vim.treesitter.get_node_text(child, bufnr))
       end
     end
-    if text ~= "" then headings[#headings + 1] = { row = row, level = level, text = text } end
+    -- Section headings live at column 0; an indented "### x" is just text
+    -- inside a todo item's description and must not split sections.
+    if col == 0 and text ~= "" then
+      headings[#headings + 1] = { row = row, level = level, text = text }
+    end
   end
 
   table.sort(headings, function(a, b) return a.row < b.row end)
   return headings
 end
+M._get_headings = get_headings
 
 --- Return the text of the nearest heading at `level` above `target_row`.
 --- Returns nil if a shallower heading is reached first (so an h3 category does
