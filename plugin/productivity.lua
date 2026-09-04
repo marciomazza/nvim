@@ -116,6 +116,14 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.foldexpr = "v:lua._todo_foldexpr(v:lnum)"
     vim.opt_local.foldtext = ""
     vim.opt_local.foldlevel = 0
+
+    -- 'foldmethod=expr' does not reliably recompute fold regions after edits or
+    -- checkmate's re-renders; force a full recompute when the buffer changes.
+    vim.api.nvim_create_autocmd("TextChanged", {
+      buffer = ev.buf,
+      callback = function() vim.cmd("silent! normal! zx") end,
+    })
+
     local leader = vim.api.nvim_replace_termcodes("<leader>", true, false, true)
     local prefix = leader .. "T"
     for _, mode in ipairs({ "n", "v" }) do
