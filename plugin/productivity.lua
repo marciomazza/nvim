@@ -89,9 +89,10 @@ local function todo_foldexpr(lnum)
   end
   if line:match(indented) then return "1" end
   if line == "" then
+    -- keep the blank a separator (visible) unless the folded block continues below
+    if not next_nonempty_line(lnum):match(indented) then return "0" end
     local prev = vim.fn.getline(lnum - 1)
-    if prev:match(indented) then return "1" end
-    if prev:match(todo_marker) and next_nonempty_line(lnum):match(indented) then return "1" end
+    if prev:match(indented) or prev:match(todo_marker) then return "1" end
   end
   return "0"
 end
