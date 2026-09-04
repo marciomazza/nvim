@@ -13,6 +13,7 @@ local M = {}
 ---@field assigned_to string|nil
 ---@field description string|nil
 ---@field priority string|nil
+---@field category string|nil
 
 ---@class IssueFields
 ---@field subject string
@@ -20,6 +21,7 @@ local M = {}
 ---@field version string|nil
 ---@field description string|nil
 ---@field priority string|nil
+---@field category string|nil
 
 ---@class TodoIssue : IssueFields
 ---@field id string|nil
@@ -31,6 +33,10 @@ local M = {}
 ---------------------------------------------------------------------------------
 
 local env = nil
+
+--- Fixed order for issue-category (h3) sections in the todo report.
+--- Categories not listed here follow, sorted alphabetically.
+local CATEGORY_ORDER = { "a seguir", "dúvidas", "repensar", "triagem" }
 
 local function init_env()
   local path = vim.fn.getcwd() .. "/.redmine.env.json"
@@ -121,7 +127,37 @@ local function init_env()
           for _, s in ipairs(cfg.closed_statuses or {}) do
             cfg.status_id_by_name[s.name] = s.id
           end
-          vim.schedule(function() env = cfg end)
+
+          local auth3 = { "-H", "X-Redmine-API-Key: " .. cfg.token, "-H", "Accept: application/json" }
+          vim.system(
+            vim.list_extend(
+              { "curl", "-sf", "-k", "-m", "5" },
+              vim.list_extend(auth3, { cfg.project_url .. "issue_categories.json" })
+            ),
+            { text = true },
+            function(cr)
+              if cr.code ~= 0 then
+                vim.schedule(
+                  function()
+                    vim.notify("Redmine unreachable: " .. (cr.stderr or ""), vim.log.levels.WARN)
+                  end
+                )
+                return
+              end
+              local cok, cdata = pcall(vim.json.decode, cr.stdout)
+              if not cok then
+                vim.schedule(
+                  function() vim.notify("Redmine: failed to parse categories", vim.log.levels.WARN) end
+                )
+                return
+              end
+              cfg.category_id_by_name = {}
+              for _, c in ipairs(cdata.issue_categories or {}) do
+                cfg.category_id_by_name[c.name:lower()] = c.id
+              end
+              vim.schedule(function() env = cfg end)
+            end
+          )
         end
       )
     end
@@ -199,6 +235,7 @@ function M.open_issues()
               and issue.description:gsub("\r\n", "\n"):gsub("\r", "\n")
             or nil,
           priority = issue.priority and issue.priority.name:lower() or nil,
+          category = issue.category and issue.category.name:lower() or nil,
         }
       end
     )
@@ -213,15 +250,11 @@ local state_to_redmine_status = {
   cancelled = "Rejected",
 }
 
---- Generate a markdown report of all open Redmine issues grouped by version then status.
+--- Generate a markdown report of all open Redmine issues grouped by version (h2)
+--- then issue category (h3).
 ---@return string
 function M.open_issues_report()
   local issues = M.open_issues()
-
-  local status_rank = {}
-  for i, s in ipairs(env.open_statuses or {}) do
-    status_rank[s.name] = i
-  end
 
   local todo_states = require("checkmate.config").options.todo_states or {}
   local default_md = { unchecked = " ", checked = "x" }
@@ -239,13 +272,11 @@ function M.open_issues_report()
   local version_list = {}
   for _, iss in ipairs(issues) do
     local ver = iss.version or "(no version)"
-    local st = iss.status or "Unknown"
     if not by_version[ver] then
       by_version[ver] = {}
       version_list[#version_list + 1] = ver
     end
-    if not by_version[ver][st] then by_version[ver][st] = {} end
-    table.insert(by_version[ver][st], iss)
+    table.insert(by_version[ver], iss)
   end
 
   table.sort(version_list)
@@ -255,37 +286,63 @@ function M.open_issues_report()
     priority_rank[p.name] = i
   end
 
+  local function sort_issues(list)
+    table.sort(list, function(a, b)
+      local pa = priority_rank[a.priority] or 999
+      local pb = priority_rank[b.priority] or 999
+      if pa ~= pb then return pa > pb end
+      return a.id < b.id
+    end)
+  end
+
   local lines = { "# Tarefas" }
+
+  local function emit_issues(list)
+    sort_issues(list)
+    for _, iss in ipairs(list) do
+      local priority_tag = (iss.priority and iss.priority ~= env.default_priority)
+          and (" @priority(" .. iss.priority .. ")")
+        or ""
+      local issue_tag = " @issue(#" .. iss.id .. ")"
+      local marker = status_marker[iss.status or ""] or "[ ]"
+      lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. priority_tag .. issue_tag
+      if iss.description then
+        lines[#lines + 1] = ""
+        for _, dl in ipairs(vim.split(iss.description, "\n")) do
+          lines[#lines + 1] = "  " .. dl
+        end
+        lines[#lines + 1] = ""
+      end
+    end
+  end
+
   for _, ver in ipairs(version_list) do
     lines[#lines + 1] = ""
     lines[#lines + 1] = "## " .. ver
-    local statuses = vim.tbl_keys(by_version[ver])
-    table.sort(
-      statuses,
-      function(a, b) return (status_rank[a] or 999) < (status_rank[b] or 999) end
-    )
-    for _, st in ipairs(statuses) do
-      lines[#lines + 1] = ""
-      local marker = status_marker[st] or "[ ]"
-      table.sort(by_version[ver][st], function(a, b)
-        local pa = priority_rank[a.priority] or 999
-        local pb = priority_rank[b.priority] or 999
-        if pa ~= pb then return pa > pb end
-        return a.id < b.id
-      end)
-      for _, iss in ipairs(by_version[ver][st]) do
-        local priority_tag = (iss.priority and iss.priority ~= env.default_priority)
-            and (" @priority(" .. iss.priority .. ")")
-          or ""
-        local issue_tag = " @issue(#" .. iss.id .. ")"
-        lines[#lines + 1] = "- " .. marker .. " " .. iss.subject .. priority_tag .. issue_tag
-        if iss.description then
-          lines[#lines + 1] = ""
-          for _, dl in ipairs(vim.split(iss.description, "\n")) do
-            lines[#lines + 1] = "  " .. dl
-          end
-          lines[#lines + 1] = ""
-        end
+
+    local by_cat = {}
+    for _, iss in ipairs(by_version[ver]) do
+      local key = iss.category or ""
+      by_cat[key] = by_cat[key] or {}
+      table.insert(by_cat[key], iss)
+    end
+
+    -- uncategorized issues sit directly under the version heading
+    if by_cat[""] then emit_issues(by_cat[""]) end
+
+    local cat_order = vim.list_extend({}, CATEGORY_ORDER)
+    local extras = {}
+    for key in pairs(by_cat) do
+      if key ~= "" and not vim.tbl_contains(CATEGORY_ORDER, key) then extras[#extras + 1] = key end
+    end
+    table.sort(extras)
+    vim.list_extend(cat_order, extras)
+
+    for _, cat in ipairs(cat_order) do
+      if by_cat[cat] then
+        lines[#lines + 1] = ""
+        lines[#lines + 1] = "### " .. cat
+        emit_issues(by_cat[cat])
       end
     end
   end
@@ -345,16 +402,23 @@ local function get_headings(bufnr)
   return headings
 end
 
---- Return the version (h2) for the heading immediately above `target_row`.
+--- Return the text of the nearest heading at `level` above `target_row`.
+--- Returns nil if a shallower heading is reached first (so an h3 category does
+--- not leak past its enclosing h2 version).
 ---@param headings {row: integer, level: integer, text: string}[]
 ---@param target_row integer 0-indexed
+---@param level integer
 ---@return string|nil
-local function version_from_heading(headings, target_row)
+local function heading_above(headings, target_row, level)
   for i = #headings, 1, -1 do
     local h = headings[i]
-    if h.row <= target_row and h.level == 2 then return h.text end
+    if h.row <= target_row then
+      if h.level == level then return h.text end
+      if h.level < level then return nil end
+    end
   end
 end
+M._heading_above = heading_above
 
 --- Extract a clean title from a TodoItem's first line.
 --- Strips the list marker and todo unicode marker; stops before any @tag.
@@ -396,7 +460,8 @@ function M.enumerate_issues(filepath)
   local results = vim
     .iter(todo_map)
     :map(function(item)
-      local version = version_from_heading(headings, item.range.start.row)
+      local version = heading_above(headings, item.range.start.row, 2)
+      local category = heading_above(headings, item.range.start.row, 3)
       local issue_meta = item.metadata.by_tag["issue"]
 
       local description = nil
@@ -425,6 +490,7 @@ function M.enumerate_issues(filepath)
         subject = todo_subject(item),
         description = description,
         priority = priority_meta and priority_meta.value or env.default_priority,
+        category = category and category:lower() or nil,
         row = item.range.start.row,
         state = item.state,
       }
@@ -445,6 +511,8 @@ local function build_issue_fields(item)
     fields.fixed_version_id = env.version_id_by_name[item.version]
   end
   if item.description then fields.description = item.description end
+  -- Empty string clears the category when the item sits under no h3 section.
+  fields.category_id = (item.category and env.category_id_by_name[item.category]) or ""
   if item.priority then
     local p = vim.iter(env.priorities):find(function(p) return p.name == item.priority end)
     if p then fields.priority_id = p.id end
@@ -499,6 +567,7 @@ local function issues_differ(item, remote)
     if local_vid ~= remote_vid then return true end
   end
   if item.priority and item.priority ~= remote.priority then return true end
+  if (item.category or "") ~= (remote.category or "") then return true end
   if item.description then
     if item.description ~= remote.description then return true end
   end
