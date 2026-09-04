@@ -48,10 +48,10 @@ require("checkmate").setup({
         return "high" -- Default priority when set (actual default is normal)
       end,
       choices = function() return { "low", "normal", "high", "urgent" } end,
-      key = "<leader>Tp",
+      key = "<leader>Tpp",
       sort_order = 10,
-      jump_to_on_insert = "value",
-      select_on_insert = true,
+      jump_to_on_insert = false,
+      select_on_insert = false,
     },
   },
   style = {
@@ -131,6 +131,18 @@ vim.api.nvim_create_autocmd("FileType", {
         end
       end
     end
+    for lhs, value in pairs({
+      ["<leader>tp0"] = "urgent",
+      ["<leader>tp1"] = "normal",
+      ["<leader>tp2"] = "low",
+    }) do
+      vim.keymap.set("n", lhs, function() require("checkmate").add_metadata("priority", value) end, {
+        buffer = ev.buf,
+        desc = "Set @priority(" .. value .. ")",
+        silent = true,
+      })
+    end
+
     local rs = require("utils.redmine_sync")
     vim.keymap.set(
       "n",
