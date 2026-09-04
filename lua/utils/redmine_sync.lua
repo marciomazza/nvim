@@ -461,7 +461,10 @@ function M.enumerate_issues(filepath)
     .iter(todo_map)
     :map(function(item)
       local version = heading_above(headings, item.range.start.row, 2)
-      local category = heading_above(headings, item.range.start.row, 3)
+      -- Only h3 sections whose name is an actual Redmine category count; other
+      -- h3 headings are just the user's own grouping and must not touch it.
+      local h3 = heading_above(headings, item.range.start.row, 3)
+      local category = h3 and env.category_id_by_name[h3:lower()] and h3:lower() or nil
       local issue_meta = item.metadata.by_tag["issue"]
 
       local description = nil
