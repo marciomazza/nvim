@@ -58,21 +58,24 @@ end
 vim.keymap.set("n", "<leader>d", setup_and_jj_diff, { desc = "JJ diff current buffer" })
 
 -- jj.nvim's native diff backend restores the cursor to where it was BEFORE the diff
--- opened, not where it ended up. Re-apply the correct position after its own
--- restore (which fires on the next tick, deferred by 10ms) has already run.
+-- opened, not where it ended up. Its restore runs via defer_fn(10), so re-apply the
+-- correct position on a slightly longer timer to land after it.
 vim.api.nvim_create_autocmd({ "BufWipeout", "BufHidden" }, {
   pattern = "jj://*",
-  callback = function(ev)
+  callback = function()
+    local file_win
     for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-      if vim.api.nvim_win_get_buf(win) ~= ev.buf then
-        local pos = vim.api.nvim_win_get_cursor(win)
-        vim.defer_fn(function()
-          if vim.api.nvim_win_is_valid(win) then
-            pcall(vim.api.nvim_win_set_cursor, win, pos)
-          end
-        end, 50)
+      if not vim.api.nvim_buf_get_name(vim.api.nvim_win_get_buf(win)):match("^jj://") then
+        file_win = win
         break
       end
     end
+    if not file_win then return end
+    local pos = vim.api.nvim_win_get_cursor(file_win)
+    vim.defer_fn(function()
+      if vim.api.nvim_win_is_valid(file_win) then
+        pcall(vim.api.nvim_win_set_cursor, file_win, pos)
+      end
+    end, 20)
   end,
 })
