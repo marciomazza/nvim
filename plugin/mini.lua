@@ -78,6 +78,17 @@ MiniDiff.setup({
         buffer = buf,
         callback = function() jj_set_ref(buf) end,
       })
+      -- on first computed diff, put the cursor on the first change
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "MiniDiffUpdated",
+        callback = function(args)
+          if args.data.buf ~= buf or vim.b[buf].first_change_jumped then return end
+          vim.b[buf].first_change_jumped = true
+          if vim.api.nvim_get_current_buf() == buf then
+            MiniDiff.goto_hunk("first", { wrap = false })
+          end
+        end,
+      })
     end,
   },
 })
