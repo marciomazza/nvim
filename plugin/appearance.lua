@@ -88,6 +88,14 @@ for name, hl in pairs(vim.api.nvim_get_hl(0, {})) do
   end
 end
 
+-- Use plain underline for spell errors instead of hard-to-read undercurl.
+for _, g in ipairs({ "SpellBad", "SpellCap", "SpellRare", "SpellLocal" }) do
+  local hl = vim.api.nvim_get_hl(0, { name = g })
+  hl.undercurl = nil
+  hl.underline = true
+  vim.api.nvim_set_hl(0, g, hl)
+end
+
 -- Ghostty's terminfo lacks the Cs/Cr cursor-color capability, so Neovim never
 -- emits OSC 12 for the Cursor highlight; send it directly instead.
 vim.api.nvim_create_autocmd("VimEnter", {
