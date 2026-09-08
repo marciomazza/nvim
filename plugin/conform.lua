@@ -338,7 +338,7 @@ require("conform").setup({
     lsp_format = "fallback",
   },
   format_after_save = function(bufnr)
-    local skip_patterns = { "/plone/", "/node_modules/", "/lib/python", "/repos/", "/dist/debug/" }
+    local skip_patterns = { "/plone/", "/node_modules/", "/lib/python", "/repos/", "/dist/debug/", "/extra/hc/h" }
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     local skip = vim.iter(skip_patterns):any(function(pattern) return bufname:match(pattern) end)
     return not skip and {}
