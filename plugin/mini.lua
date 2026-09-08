@@ -82,7 +82,8 @@ MiniDiff.setup({
       vim.api.nvim_create_autocmd("User", {
         pattern = "MiniDiffUpdated",
         callback = function(args)
-          if args.data.buf ~= buf or vim.b[buf].first_change_jumped then return end
+          local updated = args.data and args.data.buf or vim.api.nvim_get_current_buf()
+          if updated ~= buf or vim.b[buf].first_change_jumped then return end
           vim.b[buf].first_change_jumped = true
           if vim.api.nvim_get_current_buf() == buf then
             MiniDiff.goto_hunk("first", { wrap = false })
