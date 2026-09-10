@@ -280,8 +280,9 @@ require("conform").setup({
     javascript = oxc,
     typescript = oxc,
     json = oxc,
-    css = oxc,
-    scss = oxc,
+    -- oxlint can't lint CSS (exits non-zero); oxfmt handles it, incl. Tailwind v4
+    css = { "oxfmt" },
+    scss = { "oxfmt" },
     yaml = oxc,
     toml = { "tombi" },
     typst = { "typstyle" },
