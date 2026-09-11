@@ -85,7 +85,9 @@ MiniDiff.setup({
           local updated = args.data and args.data.buf or vim.api.nvim_get_current_buf()
           if updated ~= buf or vim.b[buf].first_change_jumped then return end
           vim.b[buf].first_change_jumped = true
-          if vim.api.nvim_get_current_buf() == buf then
+          -- only jump if the cursor hasn't already been placed elsewhere (e.g. by a
+          -- navigation command that opened this buffer)
+          if vim.api.nvim_get_current_buf() == buf and vim.deep_equal(vim.api.nvim_win_get_cursor(0), { 1, 0 }) then
             MiniDiff.goto_hunk("first", { wrap = false })
           end
         end,
