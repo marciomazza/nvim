@@ -96,6 +96,19 @@ for _, g in ipairs({ "SpellBad", "SpellCap", "SpellRare", "SpellLocal" }) do
   vim.api.nvim_set_hl(0, g, hl)
 end
 
+vim.api.nvim_create_autocmd({ "ColorScheme", "VimEnter" }, {
+  callback = function()
+    -- VM_Extend must NOT be a link to Search: vim-visual-multi does
+    -- `hi clear Search` on activation, which would wipe our bg through the link.
+    -- VM_Cursor matches VM_Extend so the 1-char MultiCursor highlight at the
+    -- cursor position blends with the rest of the selection.
+    local s = vim.api.nvim_get_hl(0, { name = "CurSearch" })
+    local h = { bg = s.bg, fg = s.fg, bold = true }
+    vim.api.nvim_set_hl(0, "VM_Extend", h)
+    vim.api.nvim_set_hl(0, "VM_Cursor", h)
+  end,
+})
+
 -- Ghostty's terminfo lacks the Cs/Cr cursor-color capability, so Neovim never
 -- emits OSC 12 for the Cursor highlight; send it directly instead.
 vim.api.nvim_create_autocmd("VimEnter", {
