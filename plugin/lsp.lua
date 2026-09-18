@@ -26,9 +26,36 @@ vim.api.nvim_create_autocmd("LspAttach", {
         return
       end
 
-      -- ts_ls: prefer implementation over the .d.ts type declaration
-      if #vim.lsp.get_clients({ bufnr = 0, name = "ts_ls" }) > 0 then
-        vim.lsp.buf.implementation()
+      -- ts_ls: prefer project-local implementation over the .d.ts type declaration
+      local ts_clients = vim.lsp.get_clients({ bufnr = 0, name = "ts_ls" })
+      if #ts_clients > 0 then
+        local client = ts_clients[1]
+        local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
+        client:request("textDocument/implementation", params, function(_, result)
+          if not result then
+            vim.lsp.buf.definition()
+            return
+          end
+          local results = vim.islist(result) and result or { result }
+          if #results == 0 then
+            vim.lsp.buf.definition()
+            return
+          end
+          -- Pick the first result inside cwd; otherwise the first non-`node_modules`; otherwise the first
+          local cwd = vim.uv.cwd() or ""
+          local pick
+          for _, loc in ipairs(results) do
+            local path = vim.uri_to_filepath(loc.uri or "")
+            if path:sub(1, #cwd) == cwd then
+              pick = loc
+              break
+            end
+          end
+          pick = pick or vim.tbl_filter(function(loc)
+            return not vim.uri_to_filepath(loc.uri or ""):match("/node_modules/")
+          end, results)[1] or results[1]
+          vim.lsp.util.show_document(pick, client.offset_encoding, { focus = true })
+        end, 0)
         return
       end
 
