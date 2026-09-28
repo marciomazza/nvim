@@ -8,11 +8,14 @@ vim.pack.add({
   "https://github.com/folke/lazydev.nvim",
   "https://github.com/rafamadriz/friendly-snippets",
   "https://github.com/nicolasgb/jj.nvim",
+  "https://github.com/nvim-lua/plenary.nvim",
+  "https://github.com/andythigpen/nvim-coverage",
 })
 
 vim.g.matchup_matchparen_offscreen = { method = "popup" }
 require("nvim-ts-autotag").setup()
 require("nvim-autopairs").setup()
+require("coverage").setup({ lcov_file = "lcov.info" })
 
 require("aerial").setup({
   layout = {
