@@ -37,7 +37,7 @@ vim.keymap.set(
 )
 vim.keymap.set(
   "x",
-  "<M-Down>",
+  "<D-Down>",
   function() ts_select.select_child(vim.v.count1) end,
   { desc = "Shrink selection" }
 )
