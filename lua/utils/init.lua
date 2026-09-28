@@ -70,10 +70,21 @@ function M.real_bufname(bufnr)
   return vim.api.nvim_buf_get_name(source_buf or bufnr or 0)
 end
 
--- Ctrl+g: also copy file path
-vim.keymap.set("n", "<C-g>", function()
+function M.relative_bufname(bufnr)
+  local path = M.real_bufname(bufnr)
+  local root = vim.fs.root(path, { ".git", ".jj" })
+  if root and vim.fs.basename(root) == ".scratch" then root = vim.fs.dirname(root) end
+  return root and vim.fs.relpath(root, path) or path
+end
+
+vim.keymap.set("n", "<C-h>", function()
   vim.fn.setreg("+", M.real_bufname())
   vim.cmd("file")
-end, { desc = "Show file info and copy it's path to clipboard" })
+end, { desc = "Show file info and copy its path to clipboard" })
+
+vim.keymap.set("n", "<C-g>", function()
+  vim.fn.setreg("+", M.relative_bufname())
+  vim.cmd("file")
+end, { desc = "Show file info and copy its project-relative path to clipboard" })
 
 return M
