@@ -15,7 +15,14 @@ vim.pack.add({
 vim.g.matchup_matchparen_offscreen = { method = "popup" }
 require("nvim-ts-autotag").setup()
 require("nvim-autopairs").setup()
-require("coverage").setup({ lcov_file = "lcov.info" })
+require("coverage").setup({
+  lcov_file = "lcov.info",
+  signs = {
+    covered = { hl = "CoverageCovered", text = "█" },
+    uncovered = { hl = "CoverageUncovered", text = "█" },
+    partial = { hl = "CoveragePartial", text = "█" },
+  },
+})
 
 require("aerial").setup({
   layout = {
