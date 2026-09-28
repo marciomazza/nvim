@@ -31,7 +31,7 @@ require("treesitter-modules").setup({
 local ts_select = require("vim.treesitter._select")
 vim.keymap.set(
   { "n", "x" },
-  "<M-Up>",
+  "<D-Up>",
   function() ts_select.select_parent(vim.v.count1) end,
   { desc = "Expand selection" }
 )
