@@ -51,9 +51,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
               break
             end
           end
-          pick = pick or vim.tbl_filter(function(loc)
-            return not vim.uri_to_filepath(loc.uri or ""):match("/node_modules/")
-          end, results)[1] or results[1]
+          pick = pick
+            or vim.tbl_filter(
+              function(loc) return not vim.uri_to_filepath(loc.uri or ""):match("/node_modules/") end,
+              results
+            )[1]
+            or results[1]
           vim.lsp.util.show_document(pick, client.offset_encoding, { focus = true })
         end, 0)
         return
@@ -85,5 +88,6 @@ require("mason-lspconfig").setup({
     -- xxx disabled until a new release is made. 0.2.0 is broken and breaks other lsps hover and completion
     -- "htmx",
     "bashls",
+    "rust_analyzer",
   },
 })
