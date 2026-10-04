@@ -122,7 +122,7 @@ local MiniFiles = setup("mini.files", {
   windows = {
     preview = true,
     width_focus = 30,
-    width_preview = 25,
+    width_preview = 70,
   },
   content = {
     filter = function(fs_entry)
